@@ -1,0 +1,49 @@
+security:
+
+    providers:
+        # fournisseur des utilisateurs à partir de l'entité Utilisateur
+        db_provider:
+            entity:
+                class: AppBundle:Security\Utilisateur
+                property: identifiant
+
+    encoders:
+        # Algorithme de cryptage des mots de passe de l'entité Utilisateur
+        AppBundle\Entity\Security\Utilisateur:
+            algorithm: bcrypt
+            cost: 15
+
+    firewalls:
+        # disables authentication for assets and the profiler, adapt it according to your needs
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+
+        # parefeu de l'application
+        main:
+            # protège toutes les url
+            pattern: ^/
+            # fourniseur des utilisateurs préconfiguré
+            provider: db_provider
+            # n'autorise aucune connexion sans authentification préalable
+            anonymous: ~
+            form_login:
+                # route d'authentification de l'application
+                login_path: app_login
+                # route de vérification des identifiants saisis
+                check_path: app_login_check
+                # générateur de token csrf pour la sécurité du formulaire
+                csrf_token_generator: security.csrf.token_manager
+                # route par défaut après l'authentification
+                default_target_path: app_index
+            logout:
+                # route de déconnexion
+                path: app_logout
+                # route accédée après déconnexion
+                target: app_login
+
+    access_control:
+        # la route de login est accessible à toute personne non authentifiée
+        - { path: ^/login$, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        # toutes les autres routes ne sont accessibles qu'aux personnes authentifiées
+        - { path: ^/, role: IS_AUTHENTICATED_FULLY }
