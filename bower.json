@@ -1,0 +1,17 @@
+{
+  "name": "bright/test-wenius",
+  "homepage": "https://github.com/dbissari/test-wenius",
+  "authors": [
+    "Serge Bissari <dbissari@gmail.com>"
+  ],
+  "description": "",
+  "main": "",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "web/assets"
+  ],
+  "dependencies": {
+    "bootstrap": "^3.3.7"
+  }
+}
