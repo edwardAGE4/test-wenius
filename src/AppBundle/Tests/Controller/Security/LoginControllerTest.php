@@ -1,10 +1,10 @@
 <?php
 
-namespace AppBundle\Tests\Controller;
+namespace AppBundle\Tests\Controller\Security;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class SecurityControllerTest extends WebTestCase
+class LoginControllerTest extends WebTestCase
 {
     public function testLogin()
     {
@@ -17,14 +17,14 @@ class SecurityControllerTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $crawler = $client->request('GET', '/loginCheck');
+        //$crawler = $client->request('GET', '/loginCheck');
     }
 
     public function testLogout()
     {
         $client = static::createClient();
 
-        $crawler = $client->request('GET', '/logout');
+        //$crawler = $client->request('GET', '/logout');
     }
 
 }

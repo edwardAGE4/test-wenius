@@ -18,10 +18,10 @@ class LoginController extends Controller
         $authenticationUtils = $this->get('security.authentication_utils');
         $error = $authenticationUtils->getLastAuthenticationError();
         $lastUsername = $authenticationUtils->getLastUsername();
-        return $this->render('AppBundle:Security/Login:login.html.twig', [
+        return $this->render('AppBundle:Security/Login:login.html.twig', array(
             'last_username'=>$lastUsername,
             'error'=>$error
-        ]);
+        ));
     }
 
     /**

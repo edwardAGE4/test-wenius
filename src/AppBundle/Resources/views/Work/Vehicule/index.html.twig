@@ -1,0 +1,44 @@
+{% extends 'AppBundle::base.html.twig' %}
+
+{% block body %}
+    <h1>Vehicules list</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Immatriculation</th>
+                <th>Marque</th>
+                <th>Modele</th>
+                <th>Type</th>
+                <th>Date achat</th>
+                <th>Created at</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for vehicule in vehicules %}
+            <tr>
+                <td><a href="{{ path('cars_show', { 'id': vehicule.id}) }}">{{ vehicule.immatriculation }}</a></td>
+                <td>{{ vehicule.marque }}</td>
+                <td>{{ vehicule.modele }}</td>
+                <td>{{ vehicule.type }}</td>
+                <td>{{ vehicule.dateAchat|date('d/m/Y') }}</td>
+                <td>{{ vehicule.createdAt|date('d/m/Y H:i') }}</td>
+                <td>
+                    <ul>
+                        <li>
+                            <a href="{{ path('cars_show', { 'id': vehicule.id }) }}">show</a>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <ul>
+        <li>
+            <a href="{{ path('cars_new') }}">Create a new vehicule</a>
+        </li>
+    </ul>
+{% endblock %}

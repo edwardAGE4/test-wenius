@@ -9,21 +9,9 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Table(name="vehicule")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\Work\VehiculeRepository")
- * @ORM\HasLifecycleCallbacks()
  */
 class Vehicule
 {
-    /**
-     * Id auto incrément des véhicules
-     *
-     * @var integer
-     *
-     * @ORM\Column(name="id", type="integer", nullable=false)
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
-    
     /**
      * @var \AppBundle\Entity\Security\Gestionnaire
      *
@@ -38,6 +26,7 @@ class Vehicule
      * @var string
      *
      * @ORM\Column(name="immatriculation", type="string", length=10, unique=true)
+     * @ORM\Id
      */
     private $immatriculation;
 
@@ -82,18 +71,8 @@ class Vehicule
      * @ORM\Column(name="deleted_at", type="datetime", nullable=true)
      */
     private $deletedAt;
-
-
-    /**
-     * Get id
-     *
-     * @return integer
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
     
+
     /**
      * Set immatriculation
      *
@@ -253,38 +232,5 @@ class Vehicule
     public function getDeletedAt()
     {
         return $this->deletedAt;
-    }
-
-    /**
-     * Set createur
-     *
-     * @param \AppBundle\Entity\Security\Gestionnaire $createur
-     * @return Vehicule
-     */
-    public function setCreateur(\AppBundle\Entity\Security\Gestionnaire $createur)
-    {
-        $this->createur = $createur;
-
-        return $this;
-    }
-
-    /**
-     * Get createur
-     *
-     * @return \AppBundle\Entity\Security\Gestionnaire 
-     */
-    public function getCreateur()
-    {
-        return $this->createur;
-    }
-
-    /**
-     * Instructions exécutées juste avant enregistrement du nouveau véhicule.
-     *
-     * @ORM\PrePersist()
-     */
-    public function prePersist()
-    {
-        $this->createdAt = new \DateTime();
     }
 }

@@ -1,0 +1,45 @@
+{% extends 'AppBundle::base.html.twig' %}
+
+{% block body %}
+    <h1>Vehicule</h1>
+
+    <table>
+        <tbody>
+            <tr>
+                <th>Immatriculation</th>
+                <td>{{ vehicule.immatriculation }}</td>
+            </tr>
+            <tr>
+                <th>Marque</th>
+                <td>{{ vehicule.marque }}</td>
+            </tr>
+            <tr>
+                <th>Modele</th>
+                <td>{{ vehicule.modele }}</td>
+            </tr>
+            <tr>
+                <th>Type</th>
+                <td>{{ vehicule.type }}</td>
+            </tr>
+            <tr>
+                <th>Date achat</th>
+                <td>{{ vehicule.dateAchat|date('d/m/Y') }}</td>
+            </tr>
+            <tr>
+                <th>Created at</th>
+                <td>{{ vehicule.createdAt|date('d/m/Y H:i') }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <ul>
+        <li>
+            <a href="{{ path('cars_index') }}">Back to the list</a>
+        </li>
+        <li>
+            {{ form_start(delete_form) }}
+                <input type="submit" value="Delete">
+            {{ form_end(delete_form) }}
+        </li>
+    </ul>
+{% endblock %}
