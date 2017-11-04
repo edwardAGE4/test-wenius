@@ -11,20 +11,15 @@
 
 namespace Symfony\Bridge\Twig\Node;
 
-use Twig\Compiler;
-use Twig\Node\Expression\ArrayExpression;
-use Twig\Node\Expression\ConstantExpression;
-use Twig\Node\Expression\FunctionExpression;
-
 /**
  * @author Bernhard Schussek <bschussek@gmail.com>
  */
-class SearchAndRenderBlockNode extends FunctionExpression
+class SearchAndRenderBlockNode extends \Twig_Node_Expression_Function
 {
-    public function compile(Compiler $compiler)
+    public function compile(\Twig_Compiler $compiler)
     {
         $compiler->addDebugInfo($this);
-        $compiler->raw('$this->env->getExtension(\'Symfony\Bridge\Twig\Extension\FormExtension\')->renderer->searchAndRenderBlock(');
+        $compiler->raw('$this->env->getExtension(\'form\')->renderer->searchAndRenderBlock(');
 
         preg_match('/_([^_]+)$/', $this->getAttribute('name'), $matches);
 
@@ -42,9 +37,9 @@ class SearchAndRenderBlockNode extends FunctionExpression
                     // the variables in the third argument
                     $label = $arguments[1];
                     $variables = isset($arguments[2]) ? $arguments[2] : null;
-                    $lineno = $label->getTemplateLine();
+                    $lineno = $label->getLine();
 
-                    if ($label instanceof ConstantExpression) {
+                    if ($label instanceof \Twig_Node_Expression_Constant) {
                         // If the label argument is given as a constant, we can either
                         // strip it away if it is empty, or integrate it into the array
                         // of variables at compile time.
@@ -53,8 +48,8 @@ class SearchAndRenderBlockNode extends FunctionExpression
                         // Only insert the label into the array if it is not empty
                         if (!twig_test_empty($label->getAttribute('value'))) {
                             $originalVariables = $variables;
-                            $variables = new ArrayExpression(array(), $lineno);
-                            $labelKey = new ConstantExpression('label', $lineno);
+                            $variables = new \Twig_Node_Expression_Array(array(), $lineno);
+                            $labelKey = new \Twig_Node_Expression_Constant('label', $lineno);
 
                             if (null !== $originalVariables) {
                                 foreach ($originalVariables->getKeyValuePairs() as $pair) {

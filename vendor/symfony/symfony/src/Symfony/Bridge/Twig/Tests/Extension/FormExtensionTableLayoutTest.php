@@ -19,7 +19,6 @@ use Symfony\Bridge\Twig\Extension\TranslationExtension;
 use Symfony\Component\Form\Tests\AbstractTableLayoutTest;
 use Symfony\Bridge\Twig\Tests\Extension\Fixtures\StubTranslator;
 use Symfony\Bridge\Twig\Tests\Extension\Fixtures\StubFilesystemLoader;
-use Twig\Environment;
 
 class FormExtensionTableLayoutTest extends AbstractTableLayoutTest
 {
@@ -40,7 +39,7 @@ class FormExtensionTableLayoutTest extends AbstractTableLayoutTest
             'form_table_layout.html.twig',
             'custom_widgets.html.twig',
         ));
-        $renderer = new TwigRenderer($rendererEngine, $this->getMockBuilder('Symfony\Component\Security\Csrf\CsrfTokenManagerInterface')->getMock());
+        $renderer = new TwigRenderer($rendererEngine, $this->getMock('Symfony\Component\Security\Csrf\CsrfTokenManagerInterface'));
 
         $this->extension = new FormExtension($renderer);
 
@@ -49,7 +48,7 @@ class FormExtensionTableLayoutTest extends AbstractTableLayoutTest
             __DIR__.'/Fixtures/templates/form',
         ));
 
-        $environment = new Environment($loader, array('strict_variables' => true));
+        $environment = new \Twig_Environment($loader, array('strict_variables' => true));
         $environment->addExtension(new TranslationExtension(new StubTranslator()));
         $environment->addGlobal('global', '');
         $environment->addExtension($this->extension);
@@ -100,7 +99,7 @@ class FormExtensionTableLayoutTest extends AbstractTableLayoutTest
 
     protected function renderLabel(FormView $view, $label = null, array $vars = array())
     {
-        if (null !== $label) {
+        if ($label !== null) {
             $vars += array('label' => $label);
         }
 

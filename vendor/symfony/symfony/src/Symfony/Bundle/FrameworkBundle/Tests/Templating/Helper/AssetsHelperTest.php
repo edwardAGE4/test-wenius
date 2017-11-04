@@ -11,28 +11,23 @@
 
 namespace Symfony\Bundle\FrameworkBundle\Tests\Templating\Helper;
 
-use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\FrameworkBundle\Templating\Helper\AssetsHelper;
 use Symfony\Component\Asset\Package;
 use Symfony\Component\Asset\Packages;
-use Symfony\Component\Asset\PathPackage;
 use Symfony\Component\Asset\VersionStrategy\StaticVersionStrategy;
 
-class AssetsHelperTest extends TestCase
+class AssetsHelperTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @group legacy
      */
     public function testLegacyGetUrl()
     {
-        $versionStrategy = new StaticVersionStrategy('22', '%s?version=%s');
-        $package = new Package($versionStrategy);
-        $imagePackage = new PathPackage('images', $versionStrategy);
-        $packages = new Packages($package, array('images' => $imagePackage));
+        $package = new Package(new StaticVersionStrategy('22', '%s?version=%s'));
+        $packages = new Packages($package);
         $helper = new AssetsHelper($packages);
 
         $this->assertEquals('me.png?version=42', $helper->getUrl('me.png', null, '42'));
-        $this->assertEquals('/images/me.png?version=42', $helper->getUrl('me.png', 'images', '42'));
     }
 
     /**

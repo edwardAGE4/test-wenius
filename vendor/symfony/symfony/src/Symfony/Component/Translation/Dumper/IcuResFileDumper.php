@@ -44,7 +44,7 @@ class IcuResFileDumper extends FileDumper
 
         foreach ($messages->all($domain) as $source => $target) {
             $indexes .= pack('v', strlen($data) + 28);
-            $data .= $source."\0";
+            $data    .= $source."\0";
         }
 
         $data .= $this->writePadding($data);
@@ -62,7 +62,7 @@ class IcuResFileDumper extends FileDumper
 
         $resOffset = $this->getPosition($data);
 
-        $data .= pack('v', count($messages->all($domain)))
+        $data .= pack('v', count($messages))
             .$indexes
             .$this->writePadding($data)
             .$resources
@@ -73,11 +73,11 @@ class IcuResFileDumper extends FileDumper
         $root = pack('V7',
             $resOffset + (2 << 28), // Resource Offset + Resource Type
             6,                      // Index length
-            $keyTop,                        // Index keys top
-            $bundleTop,                     // Index resources top
-            $bundleTop,                     // Index bundle top
-            count($messages->all($domain)), // Index max table length
-            0                               // Index attributes
+            $keyTop,                // Index keys top
+            $bundleTop,             // Index resources top
+            $bundleTop,             // Index bundle top
+            count($messages),       // Index max table length
+            0                       // Index attributes
         );
 
         $header = pack('vC2v4C12@32',
@@ -89,7 +89,11 @@ class IcuResFileDumper extends FileDumper
             1, 4, 0, 0              // Unicode version
         );
 
-        return $header.$root.$data;
+        $output = $header
+               .$root
+               .$data;
+
+        return $output;
     }
 
     private function writePadding($data)
@@ -103,7 +107,9 @@ class IcuResFileDumper extends FileDumper
 
     private function getPosition($data)
     {
-        return (strlen($data) + 28) / 4;
+        $position = (strlen($data) + 28) / 4;
+
+        return $position;
     }
 
     /**

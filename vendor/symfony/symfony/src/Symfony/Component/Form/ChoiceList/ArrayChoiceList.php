@@ -76,7 +76,7 @@ class ArrayChoiceList implements ChoiceListInterface
 
         if (null === $value && $this->castableToString($choices)) {
             $value = function ($choice) {
-                return false === $choice ? '0' : (string) $choice;
+                return (string) $choice;
             };
         }
 
@@ -141,7 +141,7 @@ class ArrayChoiceList implements ChoiceListInterface
         $choices = array();
 
         foreach ($values as $i => $givenValue) {
-            if (array_key_exists($givenValue, $this->choices)) {
+            if (isset($this->choices[$givenValue])) {
                 $choices[$i] = $this->choices[$givenValue];
             }
         }
@@ -183,13 +183,12 @@ class ArrayChoiceList implements ChoiceListInterface
     /**
      * Flattens an array into the given output variables.
      *
-     * @param array    $choices          The array to flatten
-     * @param callable $value            The callable for generating choice values
-     * @param array    $choicesByValues  The flattened choices indexed by the
-     *                                   corresponding values
-     * @param array    $keysByValues     The original keys indexed by the
-     *                                   corresponding values
-     * @param array    $structuredValues The values indexed by the original keys
+     * @param array    $choices         The array to flatten
+     * @param callable $value           The callable for generating choice values
+     * @param array    $choicesByValues The flattened choices indexed by the
+     *                                  corresponding values
+     * @param array    $keysByValues    The original keys indexed by the
+     *                                  corresponding values
      *
      * @internal Must not be used by user-land code
      */
@@ -219,11 +218,11 @@ class ArrayChoiceList implements ChoiceListInterface
      * Checks whether the given choices can be cast to strings without
      * generating duplicates.
      *
-     * @param array      $choices The choices
+     * @param array      $choices The choices.
      * @param array|null $cache   The cache for previously checked entries. Internal
      *
-     * @return bool returns true if the choices can be cast to strings and
-     *              false otherwise
+     * @return bool Returns true if the choices can be cast to strings and
+     *              false otherwise.
      */
     private function castableToString(array $choices, array &$cache = array())
     {
@@ -236,15 +235,11 @@ class ArrayChoiceList implements ChoiceListInterface
                 continue;
             } elseif (!is_scalar($choice)) {
                 return false;
-            }
-
-            $choice = false === $choice ? '0' : (string) $choice;
-
-            if (isset($cache[$choice])) {
+            } elseif (isset($cache[(string) $choice])) {
                 return false;
             }
 
-            $cache[$choice] = true;
+            $cache[(string) $choice] = true;
         }
 
         return true;

@@ -14,8 +14,6 @@ namespace Symfony\Bundle\TwigBundle\Extension;
 use Symfony\Bundle\TwigBundle\TokenParser\RenderTokenParser;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Fragment\FragmentHandler;
-use Twig\Extension\AbstractExtension;
-use Twig\TokenParser\AbstractTokenParser;
 
 /**
  * Twig extension for Symfony actions helper.
@@ -24,7 +22,7 @@ use Twig\TokenParser\AbstractTokenParser;
  *
  * @deprecated since version 2.2, to be removed in 3.0.
  */
-class ActionsExtension extends AbstractExtension
+class ActionsExtension extends \Twig_Extension
 {
     private $handler;
 
@@ -54,8 +52,6 @@ class ActionsExtension extends AbstractExtension
      * @param string $uri     A URI
      * @param array  $options An array of options
      *
-     * @return string|null The Response content or null when the Response is streamed
-     *
      * @see FragmentHandler::render()
      */
     public function renderUri($uri, array $options = array())
@@ -71,7 +67,7 @@ class ActionsExtension extends AbstractExtension
     /**
      * Returns the token parser instance to add to the existing list.
      *
-     * @return AbstractTokenParser[]
+     * @return array An array of \Twig_TokenParser instances
      */
     public function getTokenParsers()
     {

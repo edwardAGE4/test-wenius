@@ -11,15 +11,12 @@
 
 namespace Symfony\Bridge\Twig\Tests\Extension;
 
-use PHPUnit\Framework\TestCase;
 use Symfony\Bridge\Twig\Extension\TranslationExtension;
 use Symfony\Component\Translation\Translator;
 use Symfony\Component\Translation\MessageSelector;
 use Symfony\Component\Translation\Loader\ArrayLoader;
-use Twig\Environment;
-use Twig\Loader\ArrayLoader as TwigArrayLoader;
 
-class TranslationExtensionTest extends TestCase
+class TranslationExtensionTest extends \PHPUnit_Framework_TestCase
 {
     public function testEscaping()
     {
@@ -35,11 +32,11 @@ class TranslationExtensionTest extends TestCase
     {
         if ($expected != $this->getTemplate($template)->render($variables)) {
             echo $template."\n";
-            $loader = new TwigArrayLoader(array('index' => $template));
-            $twig = new Environment($loader, array('debug' => true, 'cache' => false));
+            $loader = new \Twig_Loader_Array(array('index' => $template));
+            $twig = new \Twig_Environment($loader, array('debug' => true, 'cache' => false));
             $twig->addExtension(new TranslationExtension(new Translator('en', new MessageSelector())));
 
-            echo $twig->compile($twig->parse($twig->tokenize($twig->getLoader()->getSourceContext('index'))))."\n\n";
+            echo $twig->compile($twig->parse($twig->tokenize($twig->getLoader()->getSource('index'), 'index')))."\n\n";
             $this->assertEquals($expected, $this->getTemplate($template)->render($variables));
         }
 
@@ -47,7 +44,7 @@ class TranslationExtensionTest extends TestCase
     }
 
     /**
-     * @expectedException        \Twig\Error\SyntaxError
+     * @expectedException        \Twig_Error_Syntax
      * @expectedExceptionMessage Unexpected token. Twig was looking for the "with", "from", or "into" keyword in "index" at line 3.
      */
     public function testTransUnknownKeyword()
@@ -56,7 +53,7 @@ class TranslationExtensionTest extends TestCase
     }
 
     /**
-     * @expectedException        \Twig\Error\SyntaxError
+     * @expectedException        \Twig_Error_Syntax
      * @expectedExceptionMessage A message inside a trans tag must be a simple text in "index" at line 2.
      */
     public function testTransComplexBody()
@@ -65,7 +62,7 @@ class TranslationExtensionTest extends TestCase
     }
 
     /**
-     * @expectedException        \Twig\Error\SyntaxError
+     * @expectedException        \Twig_Error_Syntax
      * @expectedExceptionMessage A message inside a transchoice tag must be a simple text in "index" at line 2.
      */
     public function testTransChoiceComplexBody()
@@ -90,17 +87,17 @@ class TranslationExtensionTest extends TestCase
 
             // transchoice
             array('{% transchoice count from "messages" %}{0} There is no apples|{1} There is one apple|]1,Inf] There is %count% apples{% endtranschoice %}',
-                'There is no apples', array('count' => 0)),
+                'There is no apples', array('count' => 0),),
             array('{% transchoice count %}{0} There is no apples|{1} There is one apple|]1,Inf] There is %count% apples{% endtranschoice %}',
-                'There is 5 apples', array('count' => 5)),
+                'There is 5 apples', array('count' => 5),),
             array('{% transchoice count %}{0} There is no apples|{1} There is one apple|]1,Inf] There is %count% apples (%name%){% endtranschoice %}',
-                'There is 5 apples (Symfony)', array('count' => 5, 'name' => 'Symfony')),
+                'There is 5 apples (Symfony)', array('count' => 5, 'name' => 'Symfony'),),
             array('{% transchoice count with { \'%name%\': \'Symfony\' } %}{0} There is no apples|{1} There is one apple|]1,Inf] There is %count% apples (%name%){% endtranschoice %}',
-                'There is 5 apples (Symfony)', array('count' => 5)),
+                'There is 5 apples (Symfony)', array('count' => 5),),
             array('{% transchoice count into "fr"%}{0} There is no apples|{1} There is one apple|]1,Inf] There is %count% apples{% endtranschoice %}',
-                'There is no apples', array('count' => 0)),
+                'There is no apples', array('count' => 0),),
             array('{% transchoice 5 into "fr"%}{0} There is no apples|{1} There is one apple|]1,Inf] There is %count% apples{% endtranschoice %}',
-                'There is 5 apples'),
+                'There is 5 apples',),
 
             // trans filter
             array('{{ "Hello"|trans }}', 'Hello'),
@@ -191,11 +188,11 @@ class TranslationExtensionTest extends TestCase
         }
 
         if (is_array($template)) {
-            $loader = new TwigArrayLoader($template);
+            $loader = new \Twig_Loader_Array($template);
         } else {
-            $loader = new TwigArrayLoader(array('index' => $template));
+            $loader = new \Twig_Loader_Array(array('index' => $template));
         }
-        $twig = new Environment($loader, array('debug' => true, 'cache' => false));
+        $twig = new \Twig_Environment($loader, array('debug' => true, 'cache' => false));
         $twig->addExtension(new TranslationExtension($translator));
 
         return $twig->loadTemplate('index');

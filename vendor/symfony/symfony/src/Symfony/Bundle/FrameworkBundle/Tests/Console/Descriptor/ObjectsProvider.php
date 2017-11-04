@@ -191,11 +191,9 @@ class CallableClass
     public function __invoke()
     {
     }
-
     public static function staticMethod()
     {
     }
-
     public function method()
     {
     }

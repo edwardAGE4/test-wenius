@@ -18,11 +18,10 @@ use Symfony\Component\DependencyInjection\DefinitionDecorator;
 use Symfony\Component\DependencyInjection\Loader\ClosureLoader;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\Validator\Validation;
 
 abstract class FrameworkExtensionTest extends TestCase
 {
-    private static $containerCache = array();
-
     abstract protected function loadFromFile(ContainerBuilder $container, $file);
 
     public function testCsrfProtection()
@@ -97,13 +96,6 @@ abstract class FrameworkExtensionTest extends TestCase
         $container = $this->createContainerFromFile('full');
 
         $this->assertTrue($container->hasDefinition('esi'), '->registerEsiConfiguration() loads esi.xml');
-    }
-
-    public function testSsi()
-    {
-        $container = $this->createContainerFromFile('full');
-
-        $this->assertTrue($container->hasDefinition('ssi'), '->registerSsiConfiguration() loads ssi.xml');
     }
 
     public function testEnabledProfiler()
@@ -233,7 +225,7 @@ abstract class FrameworkExtensionTest extends TestCase
         $this->assertEquals('translator.default', (string) $container->getAlias('translator'), '->registerTranslatorConfiguration() redefines translator service from identity to real translator');
         $options = $container->getDefinition('translator.default')->getArgument(3);
 
-        $files = array_map('realpath', $options['resource_files']['en']);
+        $files = array_map(function ($resource) { return realpath($resource); }, $options['resource_files']['en']);
         $ref = new \ReflectionClass('Symfony\Component\Validator\Validation');
         $this->assertContains(
             strtr(dirname($ref->getFileName()).'/Resources/translations/validators.en.xlf', '/', DIRECTORY_SEPARATOR),
@@ -301,7 +293,7 @@ abstract class FrameworkExtensionTest extends TestCase
         $this->assertSame('addMethodMapping', $calls[4][0]);
         $this->assertSame(array('loadValidatorMetadata'), $calls[4][1]);
         $this->assertSame('setMetadataCache', $calls[5][0]);
-        $this->assertEquals(array(new Reference('validator.mapping.cache.doctrine.apc')), $calls[5][1]);
+        $this->assertEquals(array(new Reference('validator.mapping.cache.apc')), $calls[5][1]);
     }
 
     /**
@@ -333,10 +325,6 @@ abstract class FrameworkExtensionTest extends TestCase
 
     public function testFileLinkFormat()
     {
-        if (ini_get('xdebug.file_link_format') || get_cfg_var('xdebug.file_link_format')) {
-            $this->markTestSkipped('A custom file_link_format is defined.');
-        }
-
         $container = $this->createContainerFromFile('full');
 
         $this->assertEquals('file%link%format', $container->getParameter('templating.helper.code.file_link_format'));
@@ -361,8 +349,7 @@ abstract class FrameworkExtensionTest extends TestCase
         require_once __DIR__.'/Fixtures/TestBundle/TestBundle.php';
 
         $container = $this->createContainerFromFile('validation_annotations', array(
-            'kernel.bundles' => array('TestBundle' => 'Symfony\\Bundle\\FrameworkBundle\\Tests\\TestBundle'),
-            'kernel.bundles_metadata' => array('TestBundle' => array('namespace' => 'Symfony\\Bundle\\FrameworkBundle\\Tests', 'parent' => null, 'path' => __DIR__.'/Fixtures/TestBundle')),
+            'kernel.bundles' => array('TestBundle' => 'Symfony\Bundle\FrameworkBundle\Tests\TestBundle'),
         ));
 
         $calls = $container->getDefinition('validator.builder')->getMethodCalls();
@@ -383,38 +370,11 @@ abstract class FrameworkExtensionTest extends TestCase
             // Testing symfony/framework-bundle with deps=high
             $this->assertStringEndsWith('symfony'.DIRECTORY_SEPARATOR.'form/Resources/config/validation.xml', $xmlMappings[0]);
         }
-        $this->assertStringEndsWith('TestBundle/Resources/config/validation.xml', $xmlMappings[1]);
+        $this->assertStringEndsWith('TestBundle'.DIRECTORY_SEPARATOR.'Resources'.DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.'validation.xml', $xmlMappings[1]);
 
         $yamlMappings = $calls[4][1][0];
         $this->assertCount(1, $yamlMappings);
-        $this->assertStringEndsWith('TestBundle/Resources/config/validation.yml', $yamlMappings[0]);
-    }
-
-    public function testValidationPathsUsingCustomBundlePath()
-    {
-        require_once __DIR__.'/Fixtures/CustomPathBundle/src/CustomPathBundle.php';
-
-        $container = $this->createContainerFromFile('validation_annotations', array(
-            'kernel.bundles' => array('CustomPathBundle' => 'Symfony\\Bundle\\FrameworkBundle\\Tests\\CustomPathBundle'),
-            'kernel.bundles_metadata' => array('TestBundle' => array('namespace' => 'Symfony\\Bundle\\FrameworkBundle\\Tests', 'parent' => null, 'path' => __DIR__.'/Fixtures/CustomPathBundle')),
-        ));
-
-        $calls = $container->getDefinition('validator.builder')->getMethodCalls();
-        $xmlMappings = $calls[3][1][0];
-        $this->assertCount(2, $xmlMappings);
-
-        try {
-            // Testing symfony/symfony
-            $this->assertStringEndsWith('Component'.DIRECTORY_SEPARATOR.'Form/Resources/config/validation.xml', $xmlMappings[0]);
-        } catch (\Exception $e) {
-            // Testing symfony/framework-bundle with deps=high
-            $this->assertStringEndsWith('symfony'.DIRECTORY_SEPARATOR.'form/Resources/config/validation.xml', $xmlMappings[0]);
-        }
-        $this->assertStringEndsWith('CustomPathBundle/Resources/config/validation.xml', $xmlMappings[1]);
-
-        $yamlMappings = $calls[4][1][0];
-        $this->assertCount(1, $yamlMappings);
-        $this->assertStringEndsWith('CustomPathBundle/Resources/config/validation.yml', $yamlMappings[0]);
+        $this->assertStringEndsWith('TestBundle'.DIRECTORY_SEPARATOR.'Resources'.DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.'validation.yml', $yamlMappings[0]);
     }
 
     public function testValidationNoStaticMethod()
@@ -495,17 +455,6 @@ abstract class FrameworkExtensionTest extends TestCase
         $this->assertEquals(new Reference('serializer.name_converter.camel_case_to_snake_case'), $container->getDefinition('serializer.normalizer.object')->getArgument(1));
     }
 
-    public function testObjectNormalizerRegistered()
-    {
-        $container = $this->createContainerFromFile('full');
-
-        $definition = $container->getDefinition('serializer.normalizer.object');
-        $tag = $definition->getTag('serializer.normalizer');
-
-        $this->assertEquals('Symfony\Component\Serializer\Normalizer\ObjectNormalizer', $definition->getClass());
-        $this->assertEquals(-1000, $tag[0]['priority']);
-    }
-
     public function testAssetHelperWhenAssetsAreEnabled()
     {
         $container = $this->createContainerFromFile('full');
@@ -552,22 +501,16 @@ abstract class FrameworkExtensionTest extends TestCase
     {
         return new ContainerBuilder(new ParameterBag(array_merge(array(
             'kernel.bundles' => array('FrameworkBundle' => 'Symfony\\Bundle\\FrameworkBundle\\FrameworkBundle'),
-            'kernel.bundles_metadata' => array('FrameworkBundle' => array('namespace' => 'Symfony\\Bundle\\FrameworkBundle', 'path' => __DIR__.'/../..', 'parent' => null)),
             'kernel.cache_dir' => __DIR__,
             'kernel.debug' => false,
             'kernel.environment' => 'test',
             'kernel.name' => 'kernel',
             'kernel.root_dir' => __DIR__,
-            'kernel.container_class' => 'testContainer',
         ), $data)));
     }
 
     protected function createContainerFromFile($file, $data = array())
     {
-        $cacheKey = md5(get_class($this).$file.serialize($data));
-        if (isset(self::$containerCache[$cacheKey])) {
-            return self::$containerCache[$cacheKey];
-        }
         $container = $this->createContainer($data);
         $container->registerExtension(new FrameworkExtension());
         $this->loadFromFile($container, $file);
@@ -576,7 +519,7 @@ abstract class FrameworkExtensionTest extends TestCase
         $container->getCompilerPassConfig()->setRemovingPasses(array());
         $container->compile();
 
-        return self::$containerCache[$cacheKey] = $container;
+        return $container;
     }
 
     protected function createContainerFromClosure($closure, $data = array())
@@ -603,7 +546,7 @@ abstract class FrameworkExtensionTest extends TestCase
 
         // packages
         $packages = $packages->getArgument(1);
-        $this->assertCount($legacy ? 4 : 5, $packages);
+        $this->assertCount($legacy ? 3 : 4, $packages);
 
         if (!$legacy) {
             $package = $container->getDefinition($packages['images_path']);
@@ -617,10 +560,7 @@ abstract class FrameworkExtensionTest extends TestCase
         $this->assertPathPackage($container, $package, '', '1.0.0', '%%s-%%s');
 
         $package = $container->getDefinition($packages['bar']);
-        $this->assertUrlPackage($container, $package, array('https://bar2.example.com'), $legacy ? null : 'SomeVersionScheme', $legacy ? '%%s?%%s' : '%%s?version=%%s');
-
-        $this->assertEquals($legacy ? 'assets.empty_version_strategy' : 'assets._version__default', (string) $container->getDefinition('assets._package_bar')->getArgument(1));
-        $this->assertEquals('assets.empty_version_strategy', (string) $container->getDefinition('assets._package_bar_null_version')->getArgument(1));
+        $this->assertUrlPackage($container, $package, array('https://bar2.example.com'), $legacy ? '' : 'SomeVersionScheme', $legacy ? '%%s?%%s' : '%%s?version=%%s');
     }
 
     private function assertPathPackage(ContainerBuilder $container, DefinitionDecorator $package, $basePath, $version, $format)
@@ -639,7 +579,7 @@ abstract class FrameworkExtensionTest extends TestCase
 
     private function assertVersionStrategy(ContainerBuilder $container, Reference $reference, $version, $format)
     {
-        $versionStrategy = $container->getDefinition((string) $reference);
+        $versionStrategy = $container->getDefinition($reference);
         if (null === $version) {
             $this->assertEquals('assets.empty_version_strategy', (string) $reference);
         } else {

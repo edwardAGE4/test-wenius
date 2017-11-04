@@ -11,18 +11,19 @@
 
 namespace Symfony\Component\Asset\Tests;
 
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\Asset\Package;
 use Symfony\Component\Asset\Packages;
 use Symfony\Component\Asset\VersionStrategy\StaticVersionStrategy;
+use Symfony\Component\Asset\Exception\InvalidArgumentException;
+use Symfony\Component\Asset\Exception\LogicException;
 
-class PackagesTest extends TestCase
+class PackagesTest extends \PHPUnit_Framework_TestCase
 {
     public function testGetterSetters()
     {
         $packages = new Packages();
-        $packages->setDefaultPackage($default = $this->getMockBuilder('Symfony\Component\Asset\PackageInterface')->getMock());
-        $packages->addPackage('a', $a = $this->getMockBuilder('Symfony\Component\Asset\PackageInterface')->getMock());
+        $packages->setDefaultPackage($default = $this->getMock('Symfony\Component\Asset\PackageInterface'));
+        $packages->addPackage('a', $a = $this->getMock('Symfony\Component\Asset\PackageInterface'));
 
         $this->assertEquals($default, $packages->getPackage());
         $this->assertEquals($a, $packages->getPackage('a'));
@@ -56,7 +57,7 @@ class PackagesTest extends TestCase
     }
 
     /**
-     * @expectedException \Symfony\Component\Asset\Exception\LogicException
+     * @expectedException LogicException
      */
     public function testNoDefaultPackage()
     {
@@ -65,7 +66,7 @@ class PackagesTest extends TestCase
     }
 
     /**
-     * @expectedException \Symfony\Component\Asset\Exception\InvalidArgumentException
+     * @expectedException InvalidArgumentException
      */
     public function testUndefinedPackage()
     {

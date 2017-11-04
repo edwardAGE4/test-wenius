@@ -12,7 +12,6 @@
 namespace Sensio\Bundle\GeneratorBundle\Manipulator;
 
 use Symfony\Component\HttpKernel\KernelInterface;
-use Sensio\Bundle\GeneratorBundle\Generator\Generator;
 
 /**
  * Changes the PHP code of a Kernel.
@@ -24,6 +23,11 @@ class KernelManipulator extends Manipulator
     protected $kernel;
     protected $reflected;
 
+    /**
+     * Constructor.
+     *
+     * @param KernelInterface $kernel A KernelInterface instance
+     */
     public function __construct(KernelInterface $kernel)
     {
         $this->kernel = $kernel;
@@ -35,7 +39,7 @@ class KernelManipulator extends Manipulator
      *
      * @param string $bundle The bundle class name
      *
-     * @return bool Whether the operation succeeded
+     * @return bool true if it worked, false otherwise
      *
      * @throws \RuntimeException If bundle is already defined
      */
@@ -99,7 +103,7 @@ class KernelManipulator extends Manipulator
                 // remove last close parentheses
                 $leadingContent = rtrim(preg_replace($closingSymbolRegex, '', rtrim($leadingContent)));
 
-                if ('(' !== substr($leadingContent, -1) && '[' !== substr($leadingContent, -1)) {
+                if (substr($leadingContent, -1) !== '(' && substr($leadingContent, -1) !== '[' ) {
                     // end of leading content is not open parentheses or bracket, then assume that array contains at least one element
                     $leadingContent = rtrim($leadingContent, ',').',';
                 }
@@ -111,7 +115,7 @@ class KernelManipulator extends Manipulator
                     array_slice($src, $this->line)
                 );
 
-                Generator::dump($this->getFilename(), implode('', $lines));
+                file_put_contents($this->getFilename(), implode('', $lines));
 
                 return true;
             }

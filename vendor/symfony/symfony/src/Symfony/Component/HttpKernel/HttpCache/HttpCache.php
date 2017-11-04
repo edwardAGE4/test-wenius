@@ -36,6 +36,8 @@ class HttpCache implements HttpKernelInterface, TerminableInterface
     private $traces = array();
 
     /**
+     * Constructor.
+     *
      * The available options are:
      *
      *   * debug:                 If true, the traces are added as a HTTP header to ease debugging
@@ -151,9 +153,9 @@ class HttpCache implements HttpKernelInterface, TerminableInterface
     /**
      * Gets the Surrogate instance.
      *
-     * @return SurrogateInterface A Surrogate instance
-     *
      * @throws \LogicException
+     *
+     * @return SurrogateInterface A Surrogate instance
      */
     public function getSurrogate()
     {
@@ -167,9 +169,9 @@ class HttpCache implements HttpKernelInterface, TerminableInterface
     /**
      * Gets the Esi instance.
      *
-     * @return Esi An Esi instance
-     *
      * @throws \LogicException
+     *
+     * @return Esi An Esi instance
      *
      * @deprecated since version 2.6, to be removed in 3.0. Use getSurrogate() instead
      */
@@ -200,9 +202,9 @@ class HttpCache implements HttpKernelInterface, TerminableInterface
         }
         $this->traces[$request->getMethod().' '.$path] = array();
 
-        if (!$request->isMethodSafe(false)) {
+        if (!$request->isMethodSafe()) {
             $response = $this->invalidate($request, $catch);
-        } elseif ($request->headers->has('expect') || !$request->isMethodCacheable()) {
+        } elseif ($request->headers->has('expect')) {
             $response = $this->pass($request, $catch);
         } else {
             $response = $this->lookup($request, $catch);
@@ -275,7 +277,7 @@ class HttpCache implements HttpKernelInterface, TerminableInterface
         // invalidate only when the response is successful
         if ($response->isSuccessful() || $response->isRedirect()) {
             try {
-                $this->store->invalidate($request);
+                $this->store->invalidate($request, $catch);
 
                 // As per the RFC, invalidate Location and Content-Location URLs if present
                 foreach (array('Location', 'Content-Location') as $header) {
@@ -372,9 +374,7 @@ class HttpCache implements HttpKernelInterface, TerminableInterface
         $subRequest = clone $request;
 
         // send no head requests because we want content
-        if ('HEAD' === $request->getMethod()) {
-            $subRequest->setMethod('GET');
-        }
+        $subRequest->setMethod('GET');
 
         // add our cached last-modified validator
         $subRequest->headers->set('if_modified_since', $entry->headers->get('Last-Modified'));
@@ -435,9 +435,7 @@ class HttpCache implements HttpKernelInterface, TerminableInterface
         $subRequest = clone $request;
 
         // send no head requests because we want content
-        if ('HEAD' === $request->getMethod()) {
-            $subRequest->setMethod('GET');
-        }
+        $subRequest->setMethod('GET');
 
         // avoid that the backend sends no content
         $subRequest->headers->remove('if_modified_since');
@@ -505,7 +503,7 @@ class HttpCache implements HttpKernelInterface, TerminableInterface
         $this->processResponseBody($request, $response);
 
         if ($this->isPrivateRequest($request) && !$response->headers->hasCacheControlDirective('public')) {
-            $response->setPrivate();
+            $response->setPrivate(true);
         } elseif ($this->options['default_ttl'] > 0 && null === $response->getTtl() && !$response->headers->getCacheControlDirective('must-revalidate')) {
             $response->setTtl($this->options['default_ttl']);
         }
@@ -568,7 +566,7 @@ class HttpCache implements HttpKernelInterface, TerminableInterface
                 $wait += 50000;
             }
 
-            if ($wait < 5000000) {
+            if ($wait < 2000000) {
                 // replace the current entry with the fresh one
                 $new = $this->lookup($request);
                 $entry->headers = $new->headers;
@@ -602,9 +600,6 @@ class HttpCache implements HttpKernelInterface, TerminableInterface
      */
     protected function store(Request $request, Response $response)
     {
-        if (!$response->headers->has('Date')) {
-            $response->setDate(\DateTime::createFromFormat('U', time()));
-        }
         try {
             $this->store->write($request, $response);
 
@@ -631,6 +626,14 @@ class HttpCache implements HttpKernelInterface, TerminableInterface
      */
     private function restoreResponseBody(Request $request, Response $response)
     {
+        if ($request->isMethod('HEAD') || 304 === $response->getStatusCode()) {
+            $response->setContent(null);
+            $response->headers->remove('X-Body-Eval');
+            $response->headers->remove('X-Body-File');
+
+            return;
+        }
+
         if ($response->headers->has('X-Body-Eval')) {
             ob_start();
 
@@ -646,11 +649,7 @@ class HttpCache implements HttpKernelInterface, TerminableInterface
                 $response->headers->set('Content-Length', strlen($response->getContent()));
             }
         } elseif ($response->headers->has('X-Body-File')) {
-            // Response does not include possibly dynamic content (ESI, SSI), so we need
-            // not handle the content for HEAD requests
-            if (!$request->isMethod('HEAD')) {
-                $response->setContent(file_get_contents($response->headers->get('X-Body-File')));
-            }
+            $response->setContent(file_get_contents($response->headers->get('X-Body-File')));
         } else {
             return;
         }

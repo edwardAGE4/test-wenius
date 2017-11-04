@@ -42,7 +42,7 @@ class Scope
     /**
      * Opens a new child scope.
      *
-     * @return self
+     * @return Scope
      */
     public function enter()
     {
@@ -52,7 +52,7 @@ class Scope
     /**
      * Closes current scope and returns parent one.
      *
-     * @return self|null
+     * @return Scope|null
      */
     public function leave()
     {
@@ -67,9 +67,9 @@ class Scope
      * @param string $key
      * @param mixed  $value
      *
-     * @return $this
-     *
      * @throws \LogicException
+     *
+     * @return Scope Current scope
      */
     public function set($key, $value)
     {

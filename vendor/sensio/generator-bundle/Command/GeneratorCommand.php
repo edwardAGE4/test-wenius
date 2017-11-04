@@ -23,9 +23,6 @@ use Sensio\Bundle\GeneratorBundle\Command\Helper\QuestionHelper;
  */
 abstract class GeneratorCommand extends ContainerAwareCommand
 {
-    /**
-     * @var Generator
-     */
     private $generator;
 
     // only useful for unit tests

@@ -27,6 +27,8 @@ class InMemoryUserProvider implements UserProviderInterface
     private $users;
 
     /**
+     * Constructor.
+     *
      * The user array is a hash where the keys are usernames and the values are
      * an array of attributes: 'password', 'enabled', and 'roles'.
      *
@@ -89,17 +91,17 @@ class InMemoryUserProvider implements UserProviderInterface
      */
     public function supportsClass($class)
     {
-        return 'Symfony\Component\Security\Core\User\User' === $class;
+        return $class === 'Symfony\Component\Security\Core\User\User';
     }
 
     /**
      * Returns the user by given username.
      *
-     * @param string $username The username
+     * @param string $username The username.
      *
      * @return User
      *
-     * @throws UsernameNotFoundException if user whose given username does not exist
+     * @throws UsernameNotFoundException If user whose given username does not exist.
      */
     private function getUser($username)
     {

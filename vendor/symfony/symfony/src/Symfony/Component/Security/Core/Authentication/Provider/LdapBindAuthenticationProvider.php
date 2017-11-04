@@ -35,6 +35,8 @@ class LdapBindAuthenticationProvider extends UserAuthenticationProvider
     private $dnString;
 
     /**
+     * Constructor.
+     *
      * @param UserProviderInterface $userProvider               A UserProvider
      * @param UserCheckerInterface  $userChecker                A UserChecker
      * @param string                $providerKey                The provider key
@@ -70,10 +72,6 @@ class LdapBindAuthenticationProvider extends UserAuthenticationProvider
     {
         $username = $token->getUsername();
         $password = $token->getCredentials();
-
-        if ('' === $password) {
-            throw new BadCredentialsException('The presented password must not be empty.');
-        }
 
         try {
             $username = $this->ldap->escape($username, '', LDAP_ESCAPE_DN);

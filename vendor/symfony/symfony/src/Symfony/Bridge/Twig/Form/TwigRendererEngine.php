@@ -13,8 +13,6 @@ namespace Symfony\Bridge\Twig\Form;
 
 use Symfony\Component\Form\AbstractRendererEngine;
 use Symfony\Component\Form\FormView;
-use Twig\Environment;
-use Twig\Template;
 
 /**
  * @author Bernhard Schussek <bschussek@gmail.com>
@@ -22,19 +20,19 @@ use Twig\Template;
 class TwigRendererEngine extends AbstractRendererEngine implements TwigRendererEngineInterface
 {
     /**
-     * @var Environment
+     * @var \Twig_Environment
      */
     private $environment;
 
     /**
-     * @var Template
+     * @var \Twig_Template
      */
     private $template;
 
     /**
      * {@inheritdoc}
      */
-    public function setEnvironment(Environment $environment)
+    public function setEnvironment(\Twig_Environment $environment)
     {
         $this->environment = $environment;
     }
@@ -72,11 +70,11 @@ class TwigRendererEngine extends AbstractRendererEngine implements TwigRendererE
      *
      * @see getResourceForBlock()
      *
-     * @param string   $cacheKey  The cache key of the form view
-     * @param FormView $view      The form view for finding the applying themes
-     * @param string   $blockName The name of the block to load
+     * @param string   $cacheKey  The cache key of the form view.
+     * @param FormView $view      The form view for finding the applying themes.
+     * @param string   $blockName The name of the block to load.
      *
-     * @return bool True if the resource could be loaded, false otherwise
+     * @return bool True if the resource could be loaded, false otherwise.
      */
     protected function loadResourceForBlockName($cacheKey, FormView $view, $blockName)
     {
@@ -143,7 +141,7 @@ class TwigRendererEngine extends AbstractRendererEngine implements TwigRendererE
     /**
      * Loads the resources for all blocks in a theme.
      *
-     * @param string $cacheKey The cache key for storing the resource
+     * @param string $cacheKey The cache key for storing the resource.
      * @param mixed  $theme    The theme to load the block from. This parameter
      *                         is passed by reference, because it might be necessary
      *                         to initialize the theme first. Any changes made to
@@ -152,13 +150,13 @@ class TwigRendererEngine extends AbstractRendererEngine implements TwigRendererE
      */
     protected function loadResourcesFromTheme($cacheKey, &$theme)
     {
-        if (!$theme instanceof Template) {
-            /* @var Template $theme */
+        if (!$theme instanceof \Twig_Template) {
+            /* @var \Twig_Template $theme */
             $theme = $this->environment->loadTemplate($theme);
         }
 
         if (null === $this->template) {
-            // Store the first Template instance that we find so that
+            // Store the first \Twig_Template instance that we find so that
             // we can call displayBlock() later on. It doesn't matter *which*
             // template we use for that, since we pass the used blocks manually
             // anyway.

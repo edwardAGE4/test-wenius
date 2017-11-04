@@ -27,12 +27,10 @@ class DebugBundle extends Bundle
             $container = $this->container;
 
             // This code is here to lazy load the dump stack. This default
-            // configuration is overridden in CLI mode on 'console.command' event.
-            // The dump data collector is used by default, so dump output is sent to
-            // the WDT. In a CLI context, if dump is used too soon, the data collector
-            // will buffer it, and release it at the end of the script.
+            // configuration for CLI mode is overridden in HTTP mode on
+            // 'kernel.request' event
             VarDumper::setHandler(function ($var) use ($container) {
-                $dumper = $container->get('data_collector.dump');
+                $dumper = $container->get('var_dumper.cli_dumper');
                 $cloner = $container->get('var_dumper.cloner');
                 $handler = function ($var) use ($dumper, $cloner) {
                     $dumper->dump($cloner->cloneVar($var));

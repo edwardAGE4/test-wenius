@@ -7,7 +7,7 @@
 
     <doctrine-cache>
         <provider name="my_memcached_cache">
-            <memcached persistent-id="app">
+            <memcached>
                 <server host="127.0.0.1" port="11211"/>
             </memcached>
         </provider>

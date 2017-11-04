@@ -1,5 +1,5 @@
 {
-    "Version": "2.1.31.86",
+    "Version": "2.1.8.19",
     "Names": {
         "AED": [
             "AED",
@@ -100,10 +100,6 @@
         "FKP": [
             "FKP",
             "Libra das Ilhas Falkland"
-        ],
-        "GBP": [
-            "£",
-            "Libra esterlina britânica"
         ],
         "GHS": [
             "GHS",
@@ -219,11 +215,11 @@
         ],
         "NIC": [
             "NIC",
-            "Córdoba nicaraguano (1988–1991)"
+            "Córdoba nicaraguano"
         ],
         "NIO": [
             "NIO",
-            "Córdoba nicaraguano"
+            "Córdoba de ouro da Nicarágua"
         ],
         "OMR": [
             "OMR",

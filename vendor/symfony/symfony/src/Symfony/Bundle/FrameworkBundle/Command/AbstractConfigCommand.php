@@ -29,13 +29,7 @@ abstract class AbstractConfigCommand extends ContainerDebugCommand
     {
         $headers = array('Bundle name', 'Extension alias');
         $rows = array();
-
-        $bundles = $this->getContainer()->get('kernel')->getBundles();
-        usort($bundles, function ($bundleA, $bundleB) {
-            return strcmp($bundleA->getName(), $bundleB->getName());
-        });
-
-        foreach ($bundles as $bundle) {
+        foreach ($this->getContainer()->get('kernel')->getBundles() as $bundle) {
             $extension = $bundle->getContainerExtension();
             $rows[] = array($bundle->getName(), $extension ? $extension->getAlias() : '');
         }
@@ -45,35 +39,32 @@ abstract class AbstractConfigCommand extends ContainerDebugCommand
         } else {
             $output->writeln('Available registered bundles with their extension alias if available:');
             $table = new Table($output);
-            $table->setHeaders($headers)->setRows($rows)->render();
+            $table->setHeaders($headers)->setRows($rows)->render($output);
         }
     }
 
     protected function findExtension($name)
     {
+        $extension = null;
         $bundles = $this->initializeBundles();
         foreach ($bundles as $bundle) {
-            if ($name === $bundle->getName()) {
-                if (!$bundle->getContainerExtension()) {
-                    throw new \LogicException(sprintf('Bundle "%s" does not have a container extension.', $name));
-                }
-
-                return $bundle->getContainerExtension();
-            }
-
             $extension = $bundle->getContainerExtension();
-            if ($extension && $name === $extension->getAlias()) {
-                return $extension;
+
+            if ($extension && ($name === $extension->getAlias() || $name === $bundle->getName())) {
+                break;
             }
         }
 
-        if ('Bundle' !== substr($name, -6)) {
-            $message = sprintf('No extensions with configuration available for "%s"', $name);
-        } else {
+        if (!$extension) {
             $message = sprintf('No extension with alias "%s" is enabled', $name);
+            if (preg_match('/Bundle$/', $name)) {
+                $message = sprintf('No extensions with configuration available for "%s"', $name);
+            }
+
+            throw new \LogicException($message);
         }
 
-        throw new \LogicException($message);
+        return $extension;
     }
 
     public function validateConfiguration(ExtensionInterface $extension, $configuration)
@@ -92,7 +83,7 @@ abstract class AbstractConfigCommand extends ContainerDebugCommand
         // Re-build bundle manually to initialize DI extensions that can be extended by other bundles in their build() method
         // as this method is not called when the container is loaded from the cache.
         $container = $this->getContainerBuilder();
-        $bundles = $this->getContainer()->get('kernel')->getBundles();
+        $bundles = $this->getContainer()->get('kernel')->registerBundles();
         foreach ($bundles as $bundle) {
             if ($extension = $bundle->getContainerExtension()) {
                 $container->registerExtension($extension);

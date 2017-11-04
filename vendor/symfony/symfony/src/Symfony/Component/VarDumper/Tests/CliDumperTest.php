@@ -14,8 +14,6 @@ namespace Symfony\Component\VarDumper\Tests;
 use Symfony\Component\VarDumper\Cloner\VarCloner;
 use Symfony\Component\VarDumper\Dumper\CliDumper;
 use Symfony\Component\VarDumper\Test\VarDumperTestCase;
-use Twig\Environment;
-use Twig\Loader\FilesystemLoader;
 
 /**
  * @author Nicolas Grekas <p@tchwork.com>
@@ -47,7 +45,7 @@ class CliDumperTest extends VarDumperTestCase
         $closure54 = '';
         $r = defined('HHVM_VERSION') ? '' : '#%d';
 
-        if (\PHP_VERSION_ID >= 50400) {
+        if (PHP_VERSION_ID >= 50400) {
             $closure54 = <<<EOTXT
 
     class: "Symfony\Component\VarDumper\Tests\CliDumperTest"
@@ -71,12 +69,15 @@ array:24 [
   7 => b"é\\x00"
   "[]" => []
   "res" => stream resource {@{$res}
-%A  wrapper_type: "plainfile"
+    wrapper_type: "plainfile"
     stream_type: "STDIO"
     mode: "r"
     unread_bytes: 0
     seekable: true
-%A  options: []
+    timed_out: false
+    blocked: true
+    eof: false
+    options: []
   }
   "obj" => Symfony\Component\VarDumper\Tests\Fixture\DumbFoo {#%d
     +foo: "foo"
@@ -122,7 +123,7 @@ EOTXT
         $var = xml_parser_create();
 
         $this->assertDumpMatchesFormat(
-            <<<'EOTXT'
+            <<<EOTXT
 xml resource {
   current_byte_index: %i
   current_column_number: %i
@@ -133,72 +134,6 @@ EOTXT
             ,
             $var
         );
-    }
-
-    public function testJsonCast()
-    {
-        $var = (array) json_decode('{"0":{},"1":null}');
-        foreach ($var as &$v) {
-        }
-        $var[] = &$v;
-        $var[''] = 2;
-
-        if (\PHP_VERSION_ID >= 70200) {
-            $this->assertDumpMatchesFormat(
-                <<<'EOTXT'
-array:4 [
-  0 => {}
-  1 => &1 null
-  2 => &1 null
-  "" => 2
-]
-EOTXT
-                ,
-                $var
-            );
-        } else {
-            $this->assertDumpMatchesFormat(
-                <<<'EOTXT'
-array:4 [
-  "0" => {}
-  "1" => &1 null
-  0 => &1 null
-  "" => 2
-]
-EOTXT
-                ,
-                $var
-            );
-        }
-    }
-
-    public function testObjectCast()
-    {
-        $var = (object) array(1 => 1);
-        $var->{1} = 2;
-
-        if (\PHP_VERSION_ID >= 70200) {
-            $this->assertDumpMatchesFormat(
-                <<<'EOTXT'
-{
-  +"1": 2
-}
-EOTXT
-                ,
-                $var
-            );
-        } else {
-            $this->assertDumpMatchesFormat(
-                <<<'EOTXT'
-{
-  +1: 1
-  +"1": 2
-}
-EOTXT
-                ,
-                $var
-            );
-        }
     }
 
     public function testClosedResource()
@@ -222,7 +157,7 @@ EOTXT
 
         $this->assertStringMatchesFormat(
             <<<EOTXT
-Closed resource @{$res}
+Unknown resource @{$res}
 
 EOTXT
             ,
@@ -230,15 +165,12 @@ EOTXT
         );
     }
 
-    /**
-     * @requires function Twig\Template::getSourceContext
-     */
     public function testThrowingCaster()
     {
         $out = fopen('php://memory', 'r+b');
 
         require_once __DIR__.'/Fixtures/Twig.php';
-        $twig = new \__TwigTemplate_VarDumperFixture_u75a09(new Environment(new FilesystemLoader()));
+        $twig = new \__TwigTemplate_VarDumperFixture_u75a09(new \Twig_Environment(new \Twig_Loader_Filesystem()));
 
         $dumper = new CliDumper();
         $dumper->setColors(false);
@@ -254,11 +186,12 @@ EOTXT
             ':stream' => eval('return function () use ($twig) {
                 try {
                     $twig->render(array());
-                } catch (\Twig\Error\RuntimeError $e) {
+                } catch (\Twig_Error_Runtime $e) {
                     throw $e->getPrevious();
                 }
             };'),
         ));
+        $line = __LINE__ - 2;
         $ref = (int) $out;
 
         $data = $cloner->cloneVar($out);
@@ -266,44 +199,55 @@ EOTXT
         rewind($out);
         $out = stream_get_contents($out);
 
+        if (method_exists($twig, 'getSource')) {
+            $twig = <<<EOTXT
+          foo.twig:2: """
+            foo bar\\n
+                twig source\\n
+            \\n
+            """
+
+EOTXT;
+        } else {
+            $twig = '';
+        }
+
         $r = defined('HHVM_VERSION') ? '' : '#%d';
         $this->assertStringMatchesFormat(
             <<<EOTXT
 stream resource {@{$ref}
-%Awrapper_type: "PHP"
+  wrapper_type: "PHP"
   stream_type: "MEMORY"
   mode: "%s+b"
   unread_bytes: 0
   seekable: true
   uri: "php://memory"
-%Aoptions: []
+  timed_out: false
+  blocked: true
+  eof: false
+  options: []
   ⚠: Symfony\Component\VarDumper\Exception\ThrowingCasterException {{$r}
     #message: "Unexpected Exception thrown from a caster: Foobar"
     -trace: {
       %d. __TwigTemplate_VarDumperFixture_u75a09->doDisplay() ==> new Exception(): {
         src: {
-          %sTwig.php:21: """
+          %sTwig.php:19: """
                 // line 2\\n
                 throw new \Exception('Foobar');\\n
             }\\n
             """
-          bar.twig:2: """
-            foo bar\\n
-              twig source\\n
-            \\n
-            """
-        }
+{$twig}        }
       }
-      %d. Twig%cTemplate->displayWithErrorHandling() ==> __TwigTemplate_VarDumperFixture_u75a09->doDisplay(): {
+      %d. Twig_Template->displayWithErrorHandling() ==> __TwigTemplate_VarDumperFixture_u75a09->doDisplay(): {
         src: {
           %sTemplate.php:%d: """
             try {\\n
                 \$this->doDisplay(\$context, \$blocks);\\n
-            } catch (Twig%sError \$e) {\\n
+            } catch (Twig_Error \$e) {\\n
             """
         }
       }
-      %d. Twig%cTemplate->display() ==> Twig%cTemplate->displayWithErrorHandling(): {
+      %d. Twig_Template->display() ==> Twig_Template->displayWithErrorHandling(): {
         src: {
           %sTemplate.php:%d: """
             {\\n
@@ -312,19 +256,21 @@ stream resource {@{$ref}
             """
         }
       }
-      %d. Twig%cTemplate->render() ==> Twig%cTemplate->display(): {
+      %d. Twig_Template->render() ==> Twig_Template->display(): {
         src: {
           %sTemplate.php:%d: """
             try {\\n
                 \$this->display(\$context);\\n
-            } catch (%s \$e) {\\n
+            } catch (Exception \$e) {\\n
             """
         }
       }
-      %d. %slosure%s() ==> Twig%cTemplate->render(): {
+      %d. %slosure%s() ==> Twig_Template->render(): {
         src: {
-          %sCliDumperTest.php:%d: """
-%A
+          %sCliDumperTest.php:{$line}: """
+                    }\\n
+                };'),\\n
+            ));\\n
             """
         }
       }
@@ -377,7 +323,7 @@ EOTXT
         $var = $this->getSpecialVars();
 
         $this->assertDumpEquals(
-            <<<'EOTXT'
+            <<<EOTXT
 array:3 [
   0 => array:1 [
     0 => &1 array:1 [
@@ -423,7 +369,7 @@ EOTXT
         $dumper->dump($data);
 
         $this->assertSame(
-            <<<'EOTXT'
+            <<<EOTXT
 array:2 [
   1 => array:1 [
     "GLOBALS" => &1 array:1 [
@@ -445,7 +391,7 @@ EOTXT
      */
     public function testBuggyRefs()
     {
-        if (\PHP_VERSION_ID >= 50600) {
+        if (PHP_VERSION_ID >= 50600) {
             $this->markTestSkipped('PHP 5.6 fixed refs counting');
         }
 
@@ -465,7 +411,7 @@ EOTXT
         });
 
         $this->assertSame(
-            <<<'EOTXT'
+            <<<EOTXT
 array:1 [
   0 => array:1 [
     0 => array:1 [

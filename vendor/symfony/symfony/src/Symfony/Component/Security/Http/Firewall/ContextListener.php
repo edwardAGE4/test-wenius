@@ -33,6 +33,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 class ContextListener implements ListenerInterface
 {
     private $tokenStorage;
+    private $contextKey;
     private $sessionKey;
     private $logger;
     private $userProviders;
@@ -53,6 +54,7 @@ class ContextListener implements ListenerInterface
 
         $this->tokenStorage = $tokenStorage;
         $this->userProviders = $userProviders;
+        $this->contextKey = $contextKey;
         $this->sessionKey = '_security_'.$contextKey;
         $this->logger = $logger;
         $this->dispatcher = $dispatcher;
@@ -148,8 +150,6 @@ class ContextListener implements ListenerInterface
             return $token;
         }
 
-        $userNotFoundByProvider = false;
-
         foreach ($this->userProviders as $provider) {
             try {
                 $refreshedUser = $provider->refreshUser($user);
@@ -167,12 +167,8 @@ class ContextListener implements ListenerInterface
                     $this->logger->warning('Username could not be found in the selected user provider.', array('username' => $e->getUsername(), 'provider' => get_class($provider)));
                 }
 
-                $userNotFoundByProvider = true;
+                return;
             }
-        }
-
-        if ($userNotFoundByProvider) {
-            return null;
         }
 
         throw new \RuntimeException(sprintf('There is no user provider for user "%s".', get_class($user)));

@@ -65,7 +65,7 @@ class InterventionController extends Controller
         if ($form->isSubmitted()) {
             // Enregistrement du créateur
             $intervention->setCreateur($this->getUser());
-            
+
             // Enregistrement de l'opération concernée
             $intervention->setOperation($operation);
 

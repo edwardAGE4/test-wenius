@@ -29,10 +29,8 @@ class StubCaster
             $stub->handle = $c->handle;
             $stub->cut = $c->cut;
 
-            $a = array();
+            return array();
         }
-
-        return $a;
     }
 
     public static function castCutArray(CutArrayStub $c, array $a, Stub $stub, $isNested)
@@ -62,7 +60,7 @@ class StubCaster
 
             if ($c->value) {
                 foreach (array_keys($c->value) as $k) {
-                    $keys[] = !isset($k[0]) || "\0" !== $k[0] ? Caster::PREFIX_VIRTUAL.$k : $k;
+                    $keys[] = Caster::PREFIX_VIRTUAL.$k;
                 }
                 // Preserve references with array_combine()
                 $a = array_combine($keys, $c->value);

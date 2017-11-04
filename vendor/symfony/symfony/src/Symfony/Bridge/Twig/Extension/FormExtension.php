@@ -14,12 +14,6 @@ namespace Symfony\Bridge\Twig\Extension;
 use Symfony\Bridge\Twig\TokenParser\FormThemeTokenParser;
 use Symfony\Bridge\Twig\Form\TwigRendererInterface;
 use Symfony\Component\Form\Extension\Core\View\ChoiceView;
-use Twig\Environment;
-use Twig\Extension\AbstractExtension;
-use Twig\Extension\InitRuntimeInterface;
-use Twig\TwigFilter;
-use Twig\TwigFunction;
-use Twig\TwigTest;
 
 /**
  * FormExtension extends Twig with form capabilities.
@@ -27,7 +21,7 @@ use Twig\TwigTest;
  * @author Fabien Potencier <fabien@symfony.com>
  * @author Bernhard Schussek <bschussek@gmail.com>
  */
-class FormExtension extends AbstractExtension implements InitRuntimeInterface
+class FormExtension extends \Twig_Extension implements \Twig_Extension_InitRuntimeInterface
 {
     /**
      * This property is public so that it can be accessed directly from compiled
@@ -45,7 +39,7 @@ class FormExtension extends AbstractExtension implements InitRuntimeInterface
     /**
      * {@inheritdoc}
      */
-    public function initRuntime(Environment $environment)
+    public function initRuntime(\Twig_Environment $environment)
     {
         $this->renderer->setEnvironment($environment);
     }
@@ -67,16 +61,16 @@ class FormExtension extends AbstractExtension implements InitRuntimeInterface
     public function getFunctions()
     {
         return array(
-            new TwigFunction('form_enctype', null, array('node_class' => 'Symfony\Bridge\Twig\Node\FormEnctypeNode', 'is_safe' => array('html'), 'deprecated' => true, 'alternative' => 'form_start')),
-            new TwigFunction('form_widget', null, array('node_class' => 'Symfony\Bridge\Twig\Node\SearchAndRenderBlockNode', 'is_safe' => array('html'))),
-            new TwigFunction('form_errors', null, array('node_class' => 'Symfony\Bridge\Twig\Node\SearchAndRenderBlockNode', 'is_safe' => array('html'))),
-            new TwigFunction('form_label', null, array('node_class' => 'Symfony\Bridge\Twig\Node\SearchAndRenderBlockNode', 'is_safe' => array('html'))),
-            new TwigFunction('form_row', null, array('node_class' => 'Symfony\Bridge\Twig\Node\SearchAndRenderBlockNode', 'is_safe' => array('html'))),
-            new TwigFunction('form_rest', null, array('node_class' => 'Symfony\Bridge\Twig\Node\SearchAndRenderBlockNode', 'is_safe' => array('html'))),
-            new TwigFunction('form', null, array('node_class' => 'Symfony\Bridge\Twig\Node\RenderBlockNode', 'is_safe' => array('html'))),
-            new TwigFunction('form_start', null, array('node_class' => 'Symfony\Bridge\Twig\Node\RenderBlockNode', 'is_safe' => array('html'))),
-            new TwigFunction('form_end', null, array('node_class' => 'Symfony\Bridge\Twig\Node\RenderBlockNode', 'is_safe' => array('html'))),
-            new TwigFunction('csrf_token', array($this, 'renderCsrfToken')),
+            new \Twig_SimpleFunction('form_enctype', null, array('node_class' => 'Symfony\Bridge\Twig\Node\FormEnctypeNode', 'is_safe' => array('html'), 'deprecated' => true, 'alternative' => 'form_start')),
+            new \Twig_SimpleFunction('form_widget', null, array('node_class' => 'Symfony\Bridge\Twig\Node\SearchAndRenderBlockNode', 'is_safe' => array('html'))),
+            new \Twig_SimpleFunction('form_errors', null, array('node_class' => 'Symfony\Bridge\Twig\Node\SearchAndRenderBlockNode', 'is_safe' => array('html'))),
+            new \Twig_SimpleFunction('form_label', null, array('node_class' => 'Symfony\Bridge\Twig\Node\SearchAndRenderBlockNode', 'is_safe' => array('html'))),
+            new \Twig_SimpleFunction('form_row', null, array('node_class' => 'Symfony\Bridge\Twig\Node\SearchAndRenderBlockNode', 'is_safe' => array('html'))),
+            new \Twig_SimpleFunction('form_rest', null, array('node_class' => 'Symfony\Bridge\Twig\Node\SearchAndRenderBlockNode', 'is_safe' => array('html'))),
+            new \Twig_SimpleFunction('form', null, array('node_class' => 'Symfony\Bridge\Twig\Node\RenderBlockNode', 'is_safe' => array('html'))),
+            new \Twig_SimpleFunction('form_start', null, array('node_class' => 'Symfony\Bridge\Twig\Node\RenderBlockNode', 'is_safe' => array('html'))),
+            new \Twig_SimpleFunction('form_end', null, array('node_class' => 'Symfony\Bridge\Twig\Node\RenderBlockNode', 'is_safe' => array('html'))),
+            new \Twig_SimpleFunction('csrf_token', array($this, 'renderCsrfToken')),
         );
     }
 
@@ -86,7 +80,7 @@ class FormExtension extends AbstractExtension implements InitRuntimeInterface
     public function getFilters()
     {
         return array(
-            new TwigFilter('humanize', array($this, 'humanize')),
+            new \Twig_SimpleFilter('humanize', array($this, 'humanize')),
         );
     }
 
@@ -96,16 +90,16 @@ class FormExtension extends AbstractExtension implements InitRuntimeInterface
     public function getTests()
     {
         return array(
-            new TwigTest('selectedchoice', array($this, 'isSelectedChoice')),
+            new \Twig_SimpleTest('selectedchoice', array($this, 'isSelectedChoice')),
         );
     }
 
     /**
      * Renders a CSRF token.
      *
-     * @param string $intention The intention of the protected action
+     * @param string $intention The intention of the protected action.
      *
-     * @return string A CSRF token
+     * @return string A CSRF token.
      */
     public function renderCsrfToken($intention)
     {
@@ -115,9 +109,9 @@ class FormExtension extends AbstractExtension implements InitRuntimeInterface
     /**
      * Makes a technical name human readable.
      *
-     * @param string $text The text to humanize
+     * @param string $text The text to humanize.
      *
-     * @return string The humanized text
+     * @return string The humanized text.
      */
     public function humanize($text)
     {
@@ -140,10 +134,10 @@ class FormExtension extends AbstractExtension implements InitRuntimeInterface
      * seems to be much more efficient at executing filters than at executing
      * methods of an object.
      *
-     * @param ChoiceView   $choice        The choice to check
-     * @param string|array $selectedValue The selected value to compare
+     * @param ChoiceView   $choice        The choice to check.
+     * @param string|array $selectedValue The selected value to compare.
      *
-     * @return bool Whether the choice is selected
+     * @return bool Whether the choice is selected.
      *
      * @see ChoiceView::isSelected()
      */

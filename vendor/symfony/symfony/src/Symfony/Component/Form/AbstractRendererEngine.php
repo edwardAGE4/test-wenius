@@ -126,11 +126,11 @@ abstract class AbstractRendererEngine implements FormRendererEngineInterface
      *
      * @see getResourceForBlock()
      *
-     * @param string   $cacheKey  The cache key of the form view
-     * @param FormView $view      The form view for finding the applying themes
-     * @param string   $blockName The name of the block to load
+     * @param string   $cacheKey  The cache key of the form view.
+     * @param FormView $view      The form view for finding the applying themes.
+     * @param string   $blockName The name of the block to load.
      *
-     * @return bool True if the resource could be loaded, false otherwise
+     * @return bool True if the resource could be loaded, false otherwise.
      */
     abstract protected function loadResourceForBlockName($cacheKey, FormView $view, $blockName);
 
@@ -139,16 +139,16 @@ abstract class AbstractRendererEngine implements FormRendererEngineInterface
      *
      * @see getResourceForBlockHierarchy()
      *
-     * @param string   $cacheKey           the cache key used for storing the
-     *                                     resource
-     * @param FormView $view               the form view for finding the applying
-     *                                     themes
-     * @param array    $blockNameHierarchy the block hierarchy, with the most
-     *                                     specific block name at the end
-     * @param int      $hierarchyLevel     the level in the block hierarchy that
-     *                                     should be loaded
+     * @param string   $cacheKey           The cache key used for storing the
+     *                                     resource.
+     * @param FormView $view               The form view for finding the applying
+     *                                     themes.
+     * @param array    $blockNameHierarchy The block hierarchy, with the most
+     *                                     specific block name at the end.
+     * @param int      $hierarchyLevel     The level in the block hierarchy that
+     *                                     should be loaded.
      *
-     * @return bool True if the resource could be loaded, false otherwise
+     * @return bool True if the resource could be loaded, false otherwise.
      */
     private function loadResourceForBlockNameHierarchy($cacheKey, FormView $view, array $blockNameHierarchy, $hierarchyLevel)
     {

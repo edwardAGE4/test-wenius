@@ -11,18 +11,15 @@
 
 namespace Symfony\Bridge\Twig\Tests\Extension;
 
-use PHPUnit\Framework\TestCase;
 use Symfony\Bridge\Twig\Extension\HttpKernelExtension;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Fragment\FragmentHandler;
-use Twig\Environment;
-use Twig\Loader\ArrayLoader;
 
-class HttpKernelExtensionTest extends TestCase
+class HttpKernelExtensionTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @expectedException \Twig\Error\RuntimeError
+     * @expectedException \Twig_Error_Runtime
      */
     public function testFragmentWithError()
     {
@@ -48,19 +45,13 @@ class HttpKernelExtensionTest extends TestCase
         ;
         $renderer = new FragmentHandler($context);
 
-        if (method_exists($this, 'expectException')) {
-            $this->expectException('InvalidArgumentException');
-            $this->expectExceptionMessage('The "inline" renderer does not exist.');
-        } else {
-            $this->setExpectedException('InvalidArgumentException', 'The "inline" renderer does not exist.');
-        }
-
+        $this->setExpectedException('InvalidArgumentException', 'The "inline" renderer does not exist.');
         $renderer->render('/foo');
     }
 
     protected function getFragmentHandler($return)
     {
-        $strategy = $this->getMockBuilder('Symfony\\Component\\HttpKernel\\Fragment\\FragmentRendererInterface')->getMock();
+        $strategy = $this->getMock('Symfony\\Component\\HttpKernel\\Fragment\\FragmentRendererInterface');
         $strategy->expects($this->once())->method('getName')->will($this->returnValue('inline'));
         $strategy->expects($this->once())->method('render')->will($return);
 
@@ -71,13 +62,15 @@ class HttpKernelExtensionTest extends TestCase
 
         $context->expects($this->any())->method('getCurrentRequest')->will($this->returnValue(Request::create('/')));
 
-        return new FragmentHandler($context, array($strategy), false);
+        $renderer = new FragmentHandler($context, array($strategy), false);
+
+        return $renderer;
     }
 
     protected function renderTemplate(FragmentHandler $renderer, $template = '{{ render("foo") }}')
     {
-        $loader = new ArrayLoader(array('index' => $template));
-        $twig = new Environment($loader, array('debug' => true, 'cache' => false));
+        $loader = new \Twig_Loader_Array(array('index' => $template));
+        $twig = new \Twig_Environment($loader, array('debug' => true, 'cache' => false));
         $twig->addExtension(new HttpKernelExtension($renderer));
 
         return $twig->render('index');

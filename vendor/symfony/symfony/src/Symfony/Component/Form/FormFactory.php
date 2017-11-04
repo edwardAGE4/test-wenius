@@ -153,13 +153,7 @@ class FormFactory implements FormFactoryInterface
 
         // user options may override guessed options
         if ($typeGuess) {
-            $attrs = array();
-            $typeGuessOptions = $typeGuess->getOptions();
-            if (isset($typeGuessOptions['attr']) && isset($options['attr'])) {
-                $attrs = array('attr' => array_merge($typeGuessOptions['attr'], $options['attr']));
-            }
-
-            $options = array_merge($typeGuessOptions, $options, $attrs);
+            $options = array_merge($typeGuess->getOptions(), $options);
         }
 
         return $this->createNamedBuilder($property, $type, $data, $options);
@@ -169,9 +163,9 @@ class FormFactory implements FormFactoryInterface
      * Wraps a type into a ResolvedFormTypeInterface implementation and connects
      * it with its parent type.
      *
-     * @param FormTypeInterface $type The type to resolve
+     * @param FormTypeInterface $type The type to resolve.
      *
-     * @return ResolvedFormTypeInterface The resolved type
+     * @return ResolvedFormTypeInterface The resolved type.
      */
     private function resolveType(FormTypeInterface $type)
     {

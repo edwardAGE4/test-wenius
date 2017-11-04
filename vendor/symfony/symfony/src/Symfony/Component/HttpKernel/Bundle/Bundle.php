@@ -141,7 +141,7 @@ abstract class Bundle implements BundleInterface
     /**
      * Returns the bundle parent name.
      *
-     * @return string|null The Bundle parent name it overrides or null if no parent
+     * @return string The Bundle parent name it overrides or null if no parent
      */
     public function getParent()
     {
@@ -191,7 +191,7 @@ abstract class Bundle implements BundleInterface
         foreach ($finder as $file) {
             $ns = $prefix;
             if ($relativePath = $file->getRelativePath()) {
-                $ns .= '\\'.str_replace('/', '\\', $relativePath);
+                $ns .= '\\'.strtr($relativePath, '/', '\\');
             }
             $class = $ns.'\\'.$file->getBasename('.php');
             if ($this->container) {

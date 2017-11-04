@@ -26,6 +26,8 @@ class LazyLoadingFragmentHandler extends FragmentHandler
     private $rendererIds = array();
 
     /**
+     * Constructor.
+     *
      * RequestStack will become required in 3.0.
      *
      * @param ContainerInterface $container    A container
@@ -52,7 +54,6 @@ class LazyLoadingFragmentHandler extends FragmentHandler
     /**
      * Adds a service as a fragment renderer.
      *
-     * @param string $name     The service name
      * @param string $renderer The render service id
      */
     public function addRendererService($name, $renderer)

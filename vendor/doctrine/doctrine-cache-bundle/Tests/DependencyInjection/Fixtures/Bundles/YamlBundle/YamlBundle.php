@@ -18,4 +18,5 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 class YamlBundle extends Bundle
 {
+
 }

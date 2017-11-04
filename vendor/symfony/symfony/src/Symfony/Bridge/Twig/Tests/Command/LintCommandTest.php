@@ -11,15 +11,12 @@
 
 namespace Symfony\Bridge\Twig\Tests\Command;
 
-use PHPUnit\Framework\TestCase;
 use Symfony\Bridge\Twig\Command\LintCommand;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Tester\CommandTester;
-use Twig\Loader\FilesystemLoader;
-use Twig\Environment;
 
-class LintCommandTest extends TestCase
+class LintCommandTest extends \PHPUnit_Framework_TestCase
 {
     private $files;
 
@@ -73,7 +70,7 @@ class LintCommandTest extends TestCase
      */
     private function createCommandTester()
     {
-        $twig = new Environment(new FilesystemLoader());
+        $twig = new \Twig_Environment(new \Twig_Loader_Filesystem());
 
         $command = new LintCommand();
         $command->setTwigEnvironment($twig);

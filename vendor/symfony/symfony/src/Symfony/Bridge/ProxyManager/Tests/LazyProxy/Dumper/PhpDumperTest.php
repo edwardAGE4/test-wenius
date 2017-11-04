@@ -11,7 +11,6 @@
 
 namespace Symfony\Bridge\ProxyManager\Tests\LazyProxy\Dumper;
 
-use PHPUnit\Framework\TestCase;
 use Symfony\Bridge\ProxyManager\LazyProxy\PhpDumper\ProxyDumper;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
@@ -22,42 +21,9 @@ use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
  *
  * @author Marco Pivetta <ocramius@gmail.com>
  */
-class PhpDumperTest extends TestCase
+class PhpDumperTest extends \PHPUnit_Framework_TestCase
 {
     public function testDumpContainerWithProxyService()
-    {
-        $this->assertStringMatchesFormatFile(
-            __DIR__.'/../Fixtures/php/lazy_service_structure.txt',
-            $this->dumpLazyServiceProjectServiceContainer(),
-            '->dump() does generate proxy lazy loading logic.'
-        );
-    }
-
-    /**
-     * Verifies that the generated container retrieves the same proxy instance on multiple subsequent requests.
-     */
-    public function testDumpContainerWithProxyServiceWillShareProxies()
-    {
-        if (!class_exists('LazyServiceProjectServiceContainer', false)) {
-            eval('?>'.$this->dumpLazyServiceProjectServiceContainer());
-        }
-
-        $container = new \LazyServiceProjectServiceContainer();
-
-        $proxy = $container->get('foo');
-        $this->assertInstanceOf('stdClass', $proxy);
-        $this->assertInstanceOf('ProxyManager\Proxy\LazyLoadingInterface', $proxy);
-        $this->assertSame($proxy, $container->get('foo'));
-
-        $this->assertFalse($proxy->isProxyInitialized());
-
-        $proxy->initializeProxy();
-
-        $this->assertTrue($proxy->isProxyInitialized());
-        $this->assertSame($proxy, $container->get('foo'));
-    }
-
-    private function dumpLazyServiceProjectServiceContainer()
     {
         $container = new ContainerBuilder();
 
@@ -69,6 +35,34 @@ class PhpDumperTest extends TestCase
 
         $dumper->setProxyDumper(new ProxyDumper());
 
-        return $dumper->dump(array('class' => 'LazyServiceProjectServiceContainer'));
+        $dumpedString = $dumper->dump();
+
+        $this->assertStringMatchesFormatFile(
+            __DIR__.'/../Fixtures/php/lazy_service_structure.txt',
+            $dumpedString,
+            '->dump() does generate proxy lazy loading logic.'
+        );
+    }
+
+    /**
+     * Verifies that the generated container retrieves the same proxy instance on multiple subsequent requests.
+     */
+    public function testDumpContainerWithProxyServiceWillShareProxies()
+    {
+        require_once __DIR__.'/../Fixtures/php/lazy_service.php';
+
+        $container = new \LazyServiceProjectServiceContainer();
+
+        /* @var $proxy \stdClass_c1d194250ee2e2b7d2eab8b8212368a8 */
+        $proxy = $container->get('foo');
+        $this->assertInstanceOf('stdClass_c1d194250ee2e2b7d2eab8b8212368a8', $proxy);
+        $this->assertSame($proxy, $container->get('foo'));
+
+        $this->assertFalse($proxy->isProxyInitialized());
+
+        $proxy->initializeProxy();
+
+        $this->assertTrue($proxy->isProxyInitialized());
+        $this->assertSame($proxy, $container->get('foo'));
     }
 }

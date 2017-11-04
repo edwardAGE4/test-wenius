@@ -160,28 +160,19 @@ class XliffFileLoader implements LoaderInterface
     }
 
     /**
-     * Validates and parses the given file into a DOMDocument.
-     *
      * @param string       $file
      * @param \DOMDocument $dom
      * @param string       $schema source of the schema
      *
-     * @throws \RuntimeException
      * @throws InvalidResourceException
      */
     private function validateSchema($file, \DOMDocument $dom, $schema)
     {
         $internalErrors = libxml_use_internal_errors(true);
 
-        $disableEntities = libxml_disable_entity_loader(false);
-
         if (!@$dom->schemaValidateSource($schema)) {
-            libxml_disable_entity_loader($disableEntities);
-
             throw new InvalidResourceException(sprintf('Invalid resource provided: "%s"; Errors: %s', $file, implode("\n", $this->getXmlErrors($internalErrors))));
         }
-
-        libxml_disable_entity_loader($disableEntities);
 
         $dom->normalizeDocument();
 
@@ -277,7 +268,7 @@ class XliffFileLoader implements LoaderInterface
 
             $namespace = $xliff->attributes->getNamedItem('xmlns');
             if ($namespace) {
-                if (0 !== substr_compare('urn:oasis:names:tc:xliff:document:', $namespace->nodeValue, 0, 34)) {
+                if (substr_compare('urn:oasis:names:tc:xliff:document:', $namespace->nodeValue, 0, 34) !== 0) {
                     throw new \InvalidArgumentException(sprintf('Not a valid XLIFF namespace "%s"', $namespace));
                 }
 

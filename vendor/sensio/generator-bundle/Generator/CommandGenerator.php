@@ -23,6 +23,11 @@ class CommandGenerator extends Generator
 {
     private $filesystem;
 
+    /**
+     * Constructor.
+     *
+     * @param Filesystem $filesystem A Filesystem instance
+     */
     public function __construct(Filesystem $filesystem)
     {
         $this->filesystem = $filesystem;
@@ -32,7 +37,7 @@ class CommandGenerator extends Generator
     {
         $bundleDir = $bundle->getPath();
         $commandDir = $bundleDir.'/Command';
-        self::mkdir($commandDir);
+        $this->filesystem->mkdir($commandDir);
 
         $commandClassName = $this->classify($name).'Command';
         $commandFile = $commandDir.'/'.$commandClassName.'.php';
@@ -55,7 +60,7 @@ class CommandGenerator extends Generator
      *
      * @param string $string
      *
-     * @return string The string transformed to be a valid PHP class name
+     * @return The string transformed to be a valid PHP class name
      */
     public function classify($string)
     {

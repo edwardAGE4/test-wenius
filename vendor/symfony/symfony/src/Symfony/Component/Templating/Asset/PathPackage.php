@@ -25,6 +25,8 @@ class PathPackage extends Package
     private $basePath;
 
     /**
+     * Constructor.
+     *
      * @param string $basePath The base path to be prepended to relative paths
      * @param string $version  The package version
      * @param string $format   The format used to apply the version

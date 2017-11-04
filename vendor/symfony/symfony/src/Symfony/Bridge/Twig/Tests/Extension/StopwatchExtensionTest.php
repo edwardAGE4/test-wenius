@@ -11,16 +11,12 @@
 
 namespace Symfony\Bridge\Twig\Tests\Extension;
 
-use PHPUnit\Framework\TestCase;
 use Symfony\Bridge\Twig\Extension\StopwatchExtension;
-use Twig\Environment;
-use Twig\Error\RuntimeError;
-use Twig\Loader\ArrayLoader;
 
-class StopwatchExtensionTest extends TestCase
+class StopwatchExtensionTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @expectedException \Twig\Error\SyntaxError
+     * @expectedException \Twig_Error_Syntax
      */
     public function testFailIfStoppingWrongEvent()
     {
@@ -32,12 +28,12 @@ class StopwatchExtensionTest extends TestCase
      */
     public function testTiming($template, $events)
     {
-        $twig = new Environment(new ArrayLoader(array('template' => $template)), array('debug' => true, 'cache' => false, 'autoescape' => 'html', 'optimizations' => 0));
+        $twig = new \Twig_Environment(new \Twig_Loader_Array(array('template' => $template)), array('debug' => true, 'cache' => false, 'autoescape' => 'html', 'optimizations' => 0));
         $twig->addExtension(new StopwatchExtension($this->getStopwatch($events)));
 
         try {
             $nodes = $twig->render('template');
-        } catch (RuntimeError $e) {
+        } catch (\Twig_Error_Runtime $e) {
             throw $e->getPrevious();
         }
     }
@@ -57,7 +53,7 @@ class StopwatchExtensionTest extends TestCase
     protected function getStopwatch($events = array())
     {
         $events = is_array($events) ? $events : array($events);
-        $stopwatch = $this->getMockBuilder('Symfony\Component\Stopwatch\Stopwatch')->getMock();
+        $stopwatch = $this->getMock('Symfony\Component\Stopwatch\Stopwatch');
 
         $i = -1;
         foreach ($events as $eventName) {

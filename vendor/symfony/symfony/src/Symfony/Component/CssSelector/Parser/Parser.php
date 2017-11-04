@@ -33,6 +33,8 @@ class Parser implements ParserInterface
     private $tokenizer;
 
     /**
+     * Constructor.
+     *
      * @param null|Tokenizer $tokenizer
      */
     public function __construct(Tokenizer $tokenizer = null)
@@ -56,9 +58,9 @@ class Parser implements ParserInterface
      *
      * @param Token[] $tokens
      *
-     * @return array
-     *
      * @throws SyntaxErrorException
+     *
+     * @return array
      */
     public static function parseSeries(array $tokens)
     {
@@ -131,9 +133,9 @@ class Parser implements ParserInterface
      *
      * @param TokenStream $stream
      *
-     * @return Node\SelectorNode
-     *
      * @throws SyntaxErrorException
+     *
+     * @return Node\SelectorNode
      */
     private function parserSelectorNode(TokenStream $stream)
     {
@@ -171,9 +173,9 @@ class Parser implements ParserInterface
      * @param TokenStream $stream
      * @param bool        $insideNegation
      *
-     * @return array
-     *
      * @throws SyntaxErrorException
+     *
+     * @return array
      */
     private function parseSimpleSelector(TokenStream $stream, $insideNegation = false)
     {
@@ -328,9 +330,9 @@ class Parser implements ParserInterface
      * @param Node\NodeInterface $selector
      * @param TokenStream        $stream
      *
-     * @return Node\AttributeNode
-     *
      * @throws SyntaxErrorException
+     *
+     * @return Node\AttributeNode
      */
     private function parseAttributeNode(Node\NodeInterface $selector, TokenStream $stream)
     {

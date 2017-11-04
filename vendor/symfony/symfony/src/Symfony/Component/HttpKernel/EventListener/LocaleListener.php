@@ -36,6 +36,8 @@ class LocaleListener implements EventSubscriberInterface
     private $requestStack;
 
     /**
+     * Constructor.
+     *
      * RequestStack will become required in 3.0.
      *
      * @param RequestStack                      $requestStack  A RequestStack instance

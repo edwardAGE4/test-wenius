@@ -11,12 +11,11 @@
 
 namespace Symfony\Bundle\FrameworkBundle\Tests\Routing;
 
-use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 
-class RouterTest extends TestCase
+class RouterTest extends \PHPUnit_Framework_TestCase
 {
     public function testGenerateWithServiceParam()
     {
@@ -215,7 +214,7 @@ class RouterTest extends TestCase
      */
     private function getServiceContainer(RouteCollection $routes)
     {
-        $loader = $this->getMockBuilder('Symfony\Component\Config\Loader\LoaderInterface')->getMock();
+        $loader = $this->getMock('Symfony\Component\Config\Loader\LoaderInterface');
 
         $loader
             ->expects($this->any())
@@ -223,7 +222,7 @@ class RouterTest extends TestCase
             ->will($this->returnValue($routes))
         ;
 
-        $sc = $this->getMockBuilder('Symfony\\Component\\DependencyInjection\\Container')->setMethods(array('get'))->getMock();
+        $sc = $this->getMock('Symfony\\Component\\DependencyInjection\\Container', array('get'));
 
         $sc
             ->expects($this->once())

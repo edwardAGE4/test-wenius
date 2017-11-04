@@ -169,10 +169,10 @@
         {% for message in messages %}
             <tr>
                 <td class="font-normal text-small">{{ message.locale }}</td>
-                <td class="font-normal text-small text-bold nowrap">{{ message.domain }}</td>
+                <td class="font-normal text-small text-bold">{{ message.domain }}</td>
                 <td class="font-normal text-small">{{ message.count }}</td>
                 <td>
-                    <span class="nowrap">{{ message.id }}</span>
+                    {{ message.id }}
 
                     {% if message.transChoiceNumber is not null %}
                         <small class="newline">(pluralization is used)</small>
@@ -189,7 +189,7 @@
                         </div>
                     {% endif %}
                 </td>
-                <td class="prewrap">{{ message.translation }}</td>
+                <td>{{ message.translation }}</td>
             </tr>
         {% endfor %}
         </tbody>

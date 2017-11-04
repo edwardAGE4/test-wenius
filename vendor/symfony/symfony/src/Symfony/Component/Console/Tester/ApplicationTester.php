@@ -35,7 +35,9 @@ class ApplicationTester
     private $statusCode;
 
     /**
-     * @param Application $application An Application instance to test
+     * Constructor.
+     *
+     * @param Application $application An Application instance to test.
      */
     public function __construct(Application $application)
     {

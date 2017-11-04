@@ -71,29 +71,23 @@ class PoFileLoader extends FileLoader
 
         $messages = array();
         $item = $defaults;
-        $flags = array();
 
         while ($line = fgets($stream)) {
             $line = trim($line);
 
-            if ('' === $line) {
+            if ($line === '') {
                 // Whitespace indicated current item is done
-                if (!in_array('fuzzy', $flags)) {
-                    $this->addMessage($messages, $item);
-                }
+                $this->addMessage($messages, $item);
                 $item = $defaults;
-                $flags = array();
-            } elseif ('#,' === substr($line, 0, 2)) {
-                $flags = array_map('trim', explode(',', substr($line, 2)));
-            } elseif ('msgid "' === substr($line, 0, 7)) {
+            } elseif (substr($line, 0, 7) === 'msgid "') {
                 // We start a new msg so save previous
                 // TODO: this fails when comments or contexts are added
                 $this->addMessage($messages, $item);
                 $item = $defaults;
                 $item['ids']['singular'] = substr($line, 7, -1);
-            } elseif ('msgstr "' === substr($line, 0, 8)) {
+            } elseif (substr($line, 0, 8) === 'msgstr "') {
                 $item['translated'] = substr($line, 8, -1);
-            } elseif ('"' === $line[0]) {
+            } elseif ($line[0] === '"') {
                 $continues = isset($item['translated']) ? 'translated' : 'ids';
 
                 if (is_array($item[$continues])) {
@@ -102,17 +96,15 @@ class PoFileLoader extends FileLoader
                 } else {
                     $item[$continues] .= substr($line, 1, -1);
                 }
-            } elseif ('msgid_plural "' === substr($line, 0, 14)) {
+            } elseif (substr($line, 0, 14) === 'msgid_plural "') {
                 $item['ids']['plural'] = substr($line, 14, -1);
-            } elseif ('msgstr[' === substr($line, 0, 7)) {
+            } elseif (substr($line, 0, 7) === 'msgstr[') {
                 $size = strpos($line, ']');
                 $item['translated'][(int) substr($line, 7, 1)] = substr($line, $size + 3, -1);
             }
         }
         // save last item
-        if (!in_array('fuzzy', $flags)) {
-            $this->addMessage($messages, $item);
-        }
+        $this->addMessage($messages, $item);
         fclose($stream);
 
         return $messages;

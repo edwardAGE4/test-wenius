@@ -26,6 +26,8 @@ class ExprBuilder
     public $thenPart;
 
     /**
+     * Constructor.
+     *
      * @param NodeDefinition $node The related node
      */
     public function __construct(NodeDefinition $node)
@@ -38,7 +40,7 @@ class ExprBuilder
      *
      * @param \Closure $then
      *
-     * @return $this
+     * @return ExprBuilder
      */
     public function always(\Closure $then = null)
     {
@@ -58,7 +60,7 @@ class ExprBuilder
      *
      * @param \Closure $closure
      *
-     * @return $this
+     * @return ExprBuilder
      */
     public function ifTrue(\Closure $closure = null)
     {
@@ -74,7 +76,7 @@ class ExprBuilder
     /**
      * Tests if the value is a string.
      *
-     * @return $this
+     * @return ExprBuilder
      */
     public function ifString()
     {
@@ -86,7 +88,7 @@ class ExprBuilder
     /**
      * Tests if the value is null.
      *
-     * @return $this
+     * @return ExprBuilder
      */
     public function ifNull()
     {
@@ -98,7 +100,7 @@ class ExprBuilder
     /**
      * Tests if the value is an array.
      *
-     * @return $this
+     * @return ExprBuilder
      */
     public function ifArray()
     {
@@ -112,7 +114,7 @@ class ExprBuilder
      *
      * @param array $array
      *
-     * @return $this
+     * @return ExprBuilder
      */
     public function ifInArray(array $array)
     {
@@ -126,7 +128,7 @@ class ExprBuilder
      *
      * @param array $array
      *
-     * @return $this
+     * @return ExprBuilder
      */
     public function ifNotInArray(array $array)
     {
@@ -140,7 +142,7 @@ class ExprBuilder
      *
      * @param \Closure $closure
      *
-     * @return $this
+     * @return ExprBuilder
      */
     public function then(\Closure $closure)
     {
@@ -152,7 +154,7 @@ class ExprBuilder
     /**
      * Sets a closure returning an empty array.
      *
-     * @return $this
+     * @return ExprBuilder
      */
     public function thenEmptyArray()
     {
@@ -168,7 +170,7 @@ class ExprBuilder
      *
      * @param string $message
      *
-     * @return $this
+     * @return ExprBuilder
      *
      * @throws \InvalidArgumentException
      */
@@ -182,7 +184,7 @@ class ExprBuilder
     /**
      * Sets a closure unsetting this key of the array at validation time.
      *
-     * @return $this
+     * @return ExprBuilder
      *
      * @throws UnsetKeyException
      */
@@ -196,7 +198,7 @@ class ExprBuilder
     /**
      * Returns the related node.
      *
-     * @return NodeDefinition|ArrayNodeDefinition|VariableNodeDefinition
+     * @return NodeDefinition
      *
      * @throws \RuntimeException
      */

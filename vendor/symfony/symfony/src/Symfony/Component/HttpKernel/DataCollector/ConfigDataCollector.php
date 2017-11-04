@@ -17,6 +17,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
+ * ConfigDataCollector.
+ *
  * @author Fabien Potencier <fabien@symfony.com>
  */
 class ConfigDataCollector extends DataCollector
@@ -30,6 +32,8 @@ class ConfigDataCollector extends DataCollector
     private $cacheVersionInfo = true;
 
     /**
+     * Constructor.
+     *
      * @param string $name    The name of the application using the web profiler
      * @param string $version The version of the application using the web profiler
      */
@@ -71,7 +75,7 @@ class ConfigDataCollector extends DataCollector
             'wincache_enabled' => extension_loaded('wincache') && ini_get('wincache.ocenabled'),
             'zend_opcache_enabled' => extension_loaded('Zend OPcache') && ini_get('opcache.enable'),
             'bundles' => array(),
-            'sapi_name' => PHP_SAPI,
+            'sapi_name' => php_sapi_name(),
         );
 
         if (isset($this->kernel)) {

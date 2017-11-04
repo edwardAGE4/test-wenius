@@ -12,12 +12,11 @@
 namespace Symfony\Bridge\Doctrine\Tests\DataCollector;
 
 use Doctrine\DBAL\Platforms\MySqlPlatform;
-use PHPUnit\Framework\TestCase;
 use Symfony\Bridge\Doctrine\DataCollector\DoctrineDataCollector;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class DoctrineDataCollectorTest extends TestCase
+class DoctrineDataCollectorTest extends \PHPUnit_Framework_TestCase
 {
     public function testCollectConnections()
     {
@@ -140,20 +139,20 @@ class DoctrineDataCollectorTest extends TestCase
             ->method('getDatabasePlatform')
             ->will($this->returnValue(new MySqlPlatform()));
 
-        $registry = $this->getMockBuilder('Doctrine\Common\Persistence\ManagerRegistry')->getMock();
+        $registry = $this->getMock('Doctrine\Common\Persistence\ManagerRegistry');
         $registry
-            ->expects($this->any())
-            ->method('getConnectionNames')
-            ->will($this->returnValue(array('default' => 'doctrine.dbal.default_connection')));
+                ->expects($this->any())
+                ->method('getConnectionNames')
+                ->will($this->returnValue(array('default' => 'doctrine.dbal.default_connection')));
         $registry
-            ->expects($this->any())
-            ->method('getManagerNames')
-            ->will($this->returnValue(array('default' => 'doctrine.orm.default_entity_manager')));
+                ->expects($this->any())
+                ->method('getManagerNames')
+                ->will($this->returnValue(array('default' => 'doctrine.orm.default_entity_manager')));
         $registry->expects($this->any())
             ->method('getConnection')
             ->will($this->returnValue($connection));
 
-        $logger = $this->getMockBuilder('Doctrine\DBAL\Logging\DebugStack')->getMock();
+        $logger = $this->getMock('Doctrine\DBAL\Logging\DebugStack');
         $logger->queries = $queries;
 
         $collector = new DoctrineDataCollector($registry);

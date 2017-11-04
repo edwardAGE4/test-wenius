@@ -42,11 +42,11 @@ class BooleanToStringTransformer implements DataTransformerInterface
     /**
      * Transforms a Boolean into a string.
      *
-     * @param bool $value Boolean value
+     * @param bool $value Boolean value.
      *
-     * @return string String value
+     * @return string String value.
      *
-     * @throws TransformationFailedException if the given value is not a Boolean
+     * @throws TransformationFailedException If the given value is not a Boolean.
      */
     public function transform($value)
     {
@@ -64,11 +64,11 @@ class BooleanToStringTransformer implements DataTransformerInterface
     /**
      * Transforms a string into a Boolean.
      *
-     * @param string $value String value
+     * @param string $value String value.
      *
-     * @return bool Boolean value
+     * @return bool Boolean value.
      *
-     * @throws TransformationFailedException if the given value is not a string
+     * @throws TransformationFailedException If the given value is not a string.
      */
     public function reverseTransform($value)
     {

@@ -2,18 +2,17 @@
 
 namespace Symfony\Bundle\FrameworkBundle\Tests\Routing;
 
-use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Symfony\Bundle\FrameworkBundle\Controller\ControllerNameParser;
 use Symfony\Bundle\FrameworkBundle\Routing\DelegatingLoader;
 use Symfony\Component\Config\Loader\LoaderResolver;
 
-class DelegatingLoaderTest extends TestCase
+class DelegatingLoaderTest extends \PHPUnit_Framework_TestCase
 {
     /** @var ControllerNameParser */
     private $controllerNameParser;
 
-    protected function setUp()
+    public function setUp()
     {
         $this->controllerNameParser = $this->getMockBuilder('Symfony\Bundle\FrameworkBundle\Controller\ControllerNameParser')
             ->disableOriginalConstructor()

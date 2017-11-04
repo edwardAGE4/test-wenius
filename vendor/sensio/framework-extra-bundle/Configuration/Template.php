@@ -24,7 +24,7 @@ class Template extends ConfigurationAnnotation
     /**
      * The template reference.
      *
-     * @var TemplateReference|string
+     * @var TemplateReference
      */
     protected $template;
 
@@ -48,13 +48,6 @@ class Template extends ConfigurationAnnotation
      * @var bool
      */
     protected $streamable = false;
-
-    /**
-     * The controller (+action) this annotation is set to.
-     *
-     * @var array
-     */
-    private $owner;
 
     /**
      * Returns the array of templates variables.
@@ -164,23 +157,5 @@ class Template extends ConfigurationAnnotation
     public function allowArray()
     {
         return false;
-    }
-
-    /**
-     * @param array $owner
-     */
-    public function setOwner(array $owner)
-    {
-        $this->owner = $owner;
-    }
-
-    /**
-     * The controller (+action) this annotation is attached to.
-     *
-     * @return array
-     */
-    public function getOwner()
-    {
-        return $this->owner;
     }
 }

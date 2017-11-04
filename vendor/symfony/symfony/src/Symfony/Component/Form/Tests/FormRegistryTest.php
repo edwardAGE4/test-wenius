@@ -11,7 +11,6 @@
 
 namespace Symfony\Component\Form\Tests;
 
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\Form\FormRegistry;
 use Symfony\Component\Form\FormTypeGuesserChain;
 use Symfony\Component\Form\ResolvedFormType;
@@ -30,7 +29,7 @@ use Symfony\Component\Form\Tests\Fixtures\LegacyFooType;
 /**
  * @author Bernhard Schussek <bschussek@gmail.com>
  */
-class FormRegistryTest extends TestCase
+class FormRegistryTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var FormRegistry
@@ -64,9 +63,9 @@ class FormRegistryTest extends TestCase
 
     protected function setUp()
     {
-        $this->resolvedTypeFactory = $this->getMockBuilder('Symfony\Component\Form\ResolvedFormTypeFactory')->getMock();
-        $this->guesser1 = $this->getMockBuilder('Symfony\Component\Form\FormTypeGuesserInterface')->getMock();
-        $this->guesser2 = $this->getMockBuilder('Symfony\Component\Form\FormTypeGuesserInterface')->getMock();
+        $this->resolvedTypeFactory = $this->getMock('Symfony\Component\Form\ResolvedFormTypeFactory');
+        $this->guesser1 = $this->getMock('Symfony\Component\Form\FormTypeGuesserInterface');
+        $this->guesser2 = $this->getMock('Symfony\Component\Form\FormTypeGuesserInterface');
         $this->extension1 = new TestExtension($this->guesser1);
         $this->extension2 = new TestExtension($this->guesser2);
         $this->registry = new FormRegistry(array(
@@ -119,9 +118,6 @@ class FormRegistryTest extends TestCase
         $this->registry->getType('stdClass');
     }
 
-    /**
-     * @group legacy
-     */
     public function testLegacyGetTypeFromExtension()
     {
         $type = new LegacyFooType();
@@ -160,9 +156,6 @@ class FormRegistryTest extends TestCase
         $this->assertSame($resolvedType, $this->registry->getType(get_class($type)));
     }
 
-    /**
-     * @group legacy
-     */
     public function testLegacyGetTypeWithTypeExtensions()
     {
         $type = new LegacyFooType();
@@ -205,9 +198,6 @@ class FormRegistryTest extends TestCase
         $this->assertSame($resolvedType, $this->registry->getType(get_class($type)));
     }
 
-    /**
-     * @group legacy
-     */
     public function testLegacyGetTypeConnectsParent()
     {
         $parentType = new LegacyFooType();
@@ -293,9 +283,6 @@ class FormRegistryTest extends TestCase
         $this->assertFalse($this->registry->hasType('stdClass'));
     }
 
-    /**
-     * @group legacy
-     */
     public function testLegacyHasTypeAfterLoadingFromExtension()
     {
         $type = new LegacyFooType();
@@ -318,7 +305,7 @@ class FormRegistryTest extends TestCase
         $this->assertEquals($expectedGuesser, $this->registry->getTypeGuesser());
 
         $registry = new FormRegistry(
-            array($this->getMockBuilder('Symfony\Component\Form\FormExtensionInterface')->getMock()),
+            array($this->getMock('Symfony\Component\Form\FormExtensionInterface')),
             $this->resolvedTypeFactory
         );
 

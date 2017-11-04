@@ -12,16 +12,13 @@
 namespace Symfony\Bridge\Twig\Extension;
 
 use Symfony\Component\Yaml\Dumper as YamlDumper;
-use Symfony\Component\Yaml\Yaml;
-use Twig\Extension\AbstractExtension;
-use Twig\TwigFilter;
 
 /**
  * Provides integration of the Yaml component with Twig.
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class YamlExtension extends AbstractExtension
+class YamlExtension extends \Twig_Extension
 {
     /**
      * {@inheritdoc}
@@ -29,8 +26,8 @@ class YamlExtension extends AbstractExtension
     public function getFilters()
     {
         return array(
-            new TwigFilter('yaml_encode', array($this, 'encode')),
-            new TwigFilter('yaml_dump', array($this, 'dump')),
+            new \Twig_SimpleFilter('yaml_encode', array($this, 'encode')),
+            new \Twig_SimpleFilter('yaml_dump', array($this, 'dump')),
         );
     }
 
@@ -40,10 +37,6 @@ class YamlExtension extends AbstractExtension
 
         if (null === $dumper) {
             $dumper = new YamlDumper();
-        }
-
-        if (defined('Symfony\Component\Yaml\Yaml::DUMP_OBJECT')) {
-            return $dumper->dump($input, $inline, 0, is_bool($dumpObjects) ? Yaml::DUMP_OBJECT : 0);
         }
 
         return $dumper->dump($input, $inline, 0, false, $dumpObjects);

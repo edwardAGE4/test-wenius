@@ -27,7 +27,9 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 abstract class Extension implements ExtensionInterface, ConfigurationExtensionInterface
 {
     /**
-     * {@inheritdoc}
+     * Returns the base path for the XSD files.
+     *
+     * @return string The XSD base path
      */
     public function getXsdValidationBasePath()
     {
@@ -35,7 +37,9 @@ abstract class Extension implements ExtensionInterface, ConfigurationExtensionIn
     }
 
     /**
-     * {@inheritdoc}
+     * Returns the namespace to be used for this extension (XML namespace).
+     *
+     * @return string The XML namespace
      */
     public function getNamespace()
     {
@@ -65,7 +69,7 @@ abstract class Extension implements ExtensionInterface, ConfigurationExtensionIn
     public function getAlias()
     {
         $className = get_class($this);
-        if ('Extension' != substr($className, -9)) {
+        if (substr($className, -9) != 'Extension') {
             throw new BadMethodCallException('This extension does not follow the naming convention; you must overwrite the getAlias() method.');
         }
         $classBaseName = substr(strrchr($className, '\\'), 1, -9);
@@ -87,7 +91,9 @@ abstract class Extension implements ExtensionInterface, ConfigurationExtensionIn
             $container->addResource(new FileResource($r->getFileName()));
 
             if (!method_exists($class, '__construct')) {
-                return new $class();
+                $configuration = new $class();
+
+                return $configuration;
             }
         }
     }

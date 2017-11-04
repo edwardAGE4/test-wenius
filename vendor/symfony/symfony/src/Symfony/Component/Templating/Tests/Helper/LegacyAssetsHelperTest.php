@@ -11,13 +11,12 @@
 
 namespace Symfony\Component\Templating\Tests\Helper;
 
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\Templating\Helper\AssetsHelper;
 
 /**
  * @group legacy
  */
-class LegacyAssetsHelperTest extends TestCase
+class LegacyAssetsHelperTest extends \PHPUnit_Framework_TestCase
 {
     public function testGetVersion()
     {

@@ -15,18 +15,14 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
- * A console command for creating and sending simple emails.
+ * A console command for creating and sending simple emails
  *
  * @author Gusakov Nikita <dev@nkt.me>
  */
 class NewEmailCommand extends ContainerAwareCommand
 {
-    /** @var SymfonyStyle */
-    private $io;
-
     /**
      * {@inheritdoc}
      */
@@ -44,11 +40,11 @@ class NewEmailCommand extends ContainerAwareCommand
             ->addOption('charset', null, InputOption::VALUE_REQUIRED, 'The body charset of the message', 'UTF8')
             ->addOption('body-source', null, InputOption::VALUE_REQUIRED, 'The source where body come from [stdin|file]', 'stdin')
             ->setHelp(<<<EOF
-The <info>%command.name%</info> command creates and sends a simple email message.
+The <info>%command.name%</info> command creates and send simple email message.
 
 <info>php %command.full_name% --mailer=custom_mailer --content-type=text/xml</info>
 
-You can get body of message from a file:
+You can get body of message from file:
 <info>php %command.full_name% --body-source=file --body=/path/to/file</info>
 
 EOF
@@ -58,42 +54,30 @@ EOF
     /**
      * {@inheritdoc}
      */
-    protected function initialize(InputInterface $input, OutputInterface $output)
-    {
-        $this->io = new SymfonyStyle($input, $output);
-        $this->io->title('SwiftMailer\'s Interactive Email Sender');
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $mailerServiceName = sprintf('swiftmailer.mailer.%s', $input->getOption('mailer'));
         if (!$this->getContainer()->has($mailerServiceName)) {
-            throw new \InvalidArgumentException(sprintf('The mailer "%s" does not exist.', $input->getOption('mailer')));
+            throw new \InvalidArgumentException(sprintf('The mailer "%s" does not exist', $this->getOption('mailer')));
         }
-
         switch ($input->getOption('body-source')) {
             case 'file':
                 $filename = $input->getOption('body');
                 $content = file_get_contents($filename);
                 if ($content === false) {
-                    throw new \Exception(sprintf('Could not get contents from "%s".', $filename));
+                    throw new \Exception('Could not get contents from ' . $filename);
                 }
                 $input->setOption('body', $content);
                 break;
             case 'stdin':
                 break;
             default:
-                throw new \InvalidArgumentException('Body-input option should be "stdin" or "file".');
+                throw new \InvalidArgumentException('Body-input option should be "stdin" or "file"');
         }
 
         $message = $this->createMessage($input);
         $mailer = $this->getContainer()->get($mailerServiceName);
-        $sentMessages = $mailer->send($message);
-
-        $this->io->success(sprintf('%s emails were successfully sent.', $sentMessages));
+        $output->writeln(sprintf('<info>Sent %s emails<info>', $mailer->send($message)));
     }
 
     /**
@@ -101,9 +85,12 @@ EOF
      */
     protected function interact(InputInterface $input, OutputInterface $output)
     {
+        $dialog = $this->getHelper('dialog');
         foreach ($input->getOptions() as $option => $value) {
             if ($value === null) {
-                $input->setOption($option, $this->io->ask(sprintf('%s', ucfirst($option))));
+                $input->setOption($option, $dialog->ask($output,
+                    sprintf('<question>%s</question>: ', ucfirst($option))
+                ));
             }
         }
     }
@@ -125,7 +112,7 @@ EOF
      */
     private function createMessage(InputInterface $input)
     {
-        $message = new \Swift_Message(
+        $message = \Swift_Message::newInstance(
             $input->getOption('subject'),
             $input->getOption('body'),
             $input->getOption('content-type'),

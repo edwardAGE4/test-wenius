@@ -57,20 +57,14 @@ class RedisDefinition extends CacheDefinition
             $connParams[] = $config['timeout'];
         }
 
-        $connMethod = 'connect';
-
-        if (isset($config['persistent']) && $config['persistent']) {
-            $connMethod = 'pconnect';
-        }
-
         $connDef->setPublic(false);
-        $connDef->addMethodCall($connMethod, $connParams);
+        $connDef->addMethodCall('connect', $connParams);
 
         if (isset($config['password'])) {
             $password = $config['password'];
             $connDef->addMethodCall('auth', array($password));
         }
-
+        
         if (isset($config['database'])) {
             $database = (int) $config['database'];
             $connDef->addMethodCall('select', array($database));

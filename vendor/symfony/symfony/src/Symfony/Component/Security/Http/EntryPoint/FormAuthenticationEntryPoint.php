@@ -29,6 +29,8 @@ class FormAuthenticationEntryPoint implements AuthenticationEntryPointInterface
     private $httpUtils;
 
     /**
+     * Constructor.
+     *
      * @param HttpKernelInterface $kernel
      * @param HttpUtils           $httpUtils  An HttpUtils instance
      * @param string              $loginPath  The path to the login form

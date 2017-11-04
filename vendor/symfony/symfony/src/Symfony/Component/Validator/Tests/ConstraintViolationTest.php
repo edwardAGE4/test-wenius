@@ -11,10 +11,9 @@
 
 namespace Symfony\Component\Validator\Tests;
 
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\ConstraintViolation;
 
-class ConstraintViolationTest extends TestCase
+class ConstraintViolationTest extends \PHPUnit_Framework_TestCase
 {
     public function testToStringHandlesArrays()
     {
@@ -27,7 +26,7 @@ class ConstraintViolationTest extends TestCase
             null
         );
 
-        $expected = <<<'EOF'
+        $expected = <<<EOF
 Root.property.path:
     Array
 EOF;
@@ -46,7 +45,7 @@ EOF;
             null
         );
 
-        $expected = <<<'EOF'
+        $expected = <<<EOF
 Array.some_value:
     42 cannot be used here
 EOF;

@@ -11,10 +11,6 @@
 
 namespace Symfony\Bundle\TwigBundle\Node;
 
-use Twig\Compiler;
-use Twig\Node\Expression\AbstractExpression;
-use Twig\Node\Node;
-
 /**
  * Represents a render node.
  *
@@ -22,18 +18,23 @@ use Twig\Node\Node;
  *
  * @deprecated since version 2.2, to be removed in 3.0.
  */
-class RenderNode extends Node
+class RenderNode extends \Twig_Node
 {
-    public function __construct(AbstractExpression $expr, AbstractExpression $options, $lineno, $tag = null)
+    public function __construct(\Twig_Node_Expression $expr, \Twig_Node_Expression $options, $lineno, $tag = null)
     {
         parent::__construct(array('expr' => $expr, 'options' => $options), array(), $lineno, $tag);
     }
 
-    public function compile(Compiler $compiler)
+    /**
+     * Compiles the node to PHP.
+     *
+     * @param \Twig_Compiler $compiler A Twig_Compiler instance
+     */
+    public function compile(\Twig_Compiler $compiler)
     {
         $compiler
             ->addDebugInfo($this)
-            ->write("echo \$this->env->getExtension('Symfony\Bundle\TwigBundle\Extension\ActionsExtension')->renderUri(")
+            ->write("echo \$this->env->getExtension('actions')->renderUri(")
             ->subcompile($this->getNode('expr'))
             ->raw(', ')
             ->subcompile($this->getNode('options'))

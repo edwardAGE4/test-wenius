@@ -11,11 +11,10 @@
 
 namespace Symfony\Component\Templating\Tests\Loader;
 
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\Templating\Loader\FilesystemLoader;
 use Symfony\Component\Templating\TemplateReference;
 
-class FilesystemLoaderTest extends TestCase
+class FilesystemLoaderTest extends \PHPUnit_Framework_TestCase
 {
     protected static $fixturesPath;
 
@@ -59,7 +58,7 @@ class FilesystemLoaderTest extends TestCase
         $this->assertInstanceOf('Symfony\Component\Templating\Storage\FileStorage', $storage, '->load() returns a FileStorage if you pass a relative template that exists');
         $this->assertEquals($path.'/foo.php', (string) $storage, '->load() returns a FileStorage pointing to the absolute path of the template');
 
-        $logger = $this->getMockBuilder('Psr\Log\LoggerInterface')->getMock();
+        $logger = $this->getMock('Psr\Log\LoggerInterface');
         $logger->expects($this->exactly(2))->method('debug');
 
         $loader = new ProjectTemplateLoader2($pathPattern);

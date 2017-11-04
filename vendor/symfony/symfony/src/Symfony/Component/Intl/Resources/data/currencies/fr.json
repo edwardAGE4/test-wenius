@@ -1,5 +1,5 @@
 {
-    "Version": "2.1.32.59",
+    "Version": "2.1.8.9",
     "Names": {
         "ADP": [
             "ADP",
@@ -189,13 +189,9 @@
             "BYB",
             "nouveau rouble biélorusse (1994–1999)"
         ],
-        "BYN": [
-            "BYN",
-            "rouble biélorusse"
-        ],
         "BYR": [
             "BYR",
-            "rouble biélorusse (2000–2016)"
+            "rouble biélorusse"
         ],
         "BZD": [
             "$BZ",
@@ -347,7 +343,7 @@
         ],
         "FKP": [
             "£FK",
-            "livre des îles Malouines"
+            "livre des Falkland"
         ],
         "FRF": [
             "F",
@@ -711,11 +707,11 @@
         ],
         "PEN": [
             "PEN",
-            "sol péruvien"
+            "nouveau sol péruvien"
         ],
         "PES": [
             "PES",
-            "sol péruvien (1863–1985)"
+            "sol péruvien"
         ],
         "PGK": [
             "PGK",
@@ -862,7 +858,7 @@
             "lilangeni swazi"
         ],
         "THB": [
-            "THB",
+            "฿",
             "baht thaïlandais"
         ],
         "TJR": [

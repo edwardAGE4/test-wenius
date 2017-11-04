@@ -188,7 +188,7 @@ class Image
      */
     private function getUploadRootDir()
     {
-        return __DIR__.'/../../../web/'.$this->getUploadDir();
+        return __DIR__.'/../../../../web/'.$this->getUploadDir();
     }
 
     /**
@@ -205,10 +205,12 @@ class Image
      * Instructions exécutées avant enregistrement des infos de l'image dans la base de données
      *
      * @ORM\PrePersist()
-     * @ORM\PreUpdate()
      */
     public function preUpload()
     {
+        // Définition du répertoire du fichier
+        $this->repertoire = 'Operation'.$this->intervention->getOperation()->getIdOperation();
+
         if (null !== $this->getFile()) {
             // Génération d'un nom de fichier unique
             $filename = md5($this->idImage);
@@ -221,7 +223,6 @@ class Image
      * Instructions exécutées après enregistrement des infos de l'image dans la base de données
      *
      * @ORM\PostPersist()
-     * @ORM\PostUpdate()
      */
     public function postUpload()
     {

@@ -12,12 +12,11 @@
 namespace Symfony\Bridge\Doctrine\Tests\Form;
 
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
-use PHPUnit\Framework\TestCase;
 use Symfony\Bridge\Doctrine\Form\DoctrineOrmTypeGuesser;
 use Symfony\Component\Form\Guess\Guess;
 use Symfony\Component\Form\Guess\ValueGuess;
 
-class DoctrineOrmTypeGuesserTest extends TestCase
+class DoctrineOrmTypeGuesserTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @dataProvider requiredProvider
@@ -87,10 +86,10 @@ class DoctrineOrmTypeGuesserTest extends TestCase
 
     private function getGuesser(ClassMetadata $classMetadata)
     {
-        $em = $this->getMockBuilder('Doctrine\Common\Persistence\ObjectManager')->getMock();
+        $em = $this->getMock('Doctrine\Common\Persistence\ObjectManager');
         $em->expects($this->once())->method('getClassMetaData')->with('TestEntity')->will($this->returnValue($classMetadata));
 
-        $registry = $this->getMockBuilder('Doctrine\Common\Persistence\ManagerRegistry')->getMock();
+        $registry = $this->getMock('Doctrine\Common\Persistence\ManagerRegistry');
         $registry->expects($this->once())->method('getManagers')->will($this->returnValue(array($em)));
 
         return new DoctrineOrmTypeGuesser($registry);

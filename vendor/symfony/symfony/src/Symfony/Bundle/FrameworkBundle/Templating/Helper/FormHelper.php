@@ -223,9 +223,9 @@ class FormHelper extends Helper
     /**
      * Renders a block of the template.
      *
-     * @param FormView $view      The view for determining the used themes
-     * @param string   $blockName The name of the block to render
-     * @param array    $variables The variable to pass to the template
+     * @param FormView $view      The view for determining the used themes.
+     * @param string   $blockName The name of the block to render.
+     * @param array    $variables The variable to pass to the template.
      *
      * @return string The HTML markup
      */
@@ -257,7 +257,7 @@ class FormHelper extends Helper
      *
      * @return string A CSRF token
      *
-     * @throws \BadMethodCallException when no CSRF provider was injected in the constructor
+     * @throws \BadMethodCallException When no CSRF provider was injected in the constructor.
      */
     public function csrfToken($intention)
     {

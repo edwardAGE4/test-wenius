@@ -11,7 +11,6 @@
 
 namespace Symfony\Bridge\ProxyManager\Tests\LazyProxy\PhpDumper;
 
-use PHPUnit\Framework\TestCase;
 use Symfony\Bridge\ProxyManager\LazyProxy\PhpDumper\ProxyDumper;
 use Symfony\Component\DependencyInjection\Definition;
 
@@ -20,7 +19,7 @@ use Symfony\Component\DependencyInjection\Definition;
  *
  * @author Marco Pivetta <ocramius@gmail.com>
  */
-class ProxyDumperTest extends TestCase
+class ProxyDumperTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var ProxyDumper
@@ -70,7 +69,7 @@ class ProxyDumperTest extends TestCase
         $code = $this->dumper->getProxyFactoryCode($definition, 'foo');
 
         $this->assertStringMatchesFormat(
-            '%wif ($lazyLoad) {%w$container = $this;%wreturn $this->services[\'foo\'] =%s'
+            '%wif ($lazyLoad) {%w$container = $this;%wreturn $this->services[\'foo\'] = new '
             .'SymfonyBridgeProxyManagerTestsLazyProxyPhpDumperProxyDumperTest_%s(%wfunction '
             .'(&$wrappedInstance, \ProxyManager\Proxy\LazyLoadingInterface $proxy) use ($container) {'
             .'%w$wrappedInstance = $container->getFooService(false);%w$proxy->setProxyInitializer(null);'
@@ -87,7 +86,7 @@ class ProxyDumperTest extends TestCase
         $definitions = array(
             array(new Definition(__CLASS__), true),
             array(new Definition('stdClass'), true),
-            array(new Definition(uniqid('foo', true)), false),
+            array(new Definition('foo'.uniqid()), false),
             array(new Definition(), false),
         );
 

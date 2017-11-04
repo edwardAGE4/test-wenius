@@ -11,7 +11,6 @@
 
 namespace Symfony\Component\Locale\Tests;
 
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\Locale\Locale;
 use Symfony\Component\Intl\Util\IntlTestHelper;
 
@@ -22,7 +21,7 @@ use Symfony\Component\Intl\Util\IntlTestHelper;
  *
  * @group legacy
  */
-class LocaleTest extends TestCase
+class LocaleTest extends \PHPUnit_Framework_TestCase
 {
     protected function setUp()
     {
@@ -37,7 +36,7 @@ class LocaleTest extends TestCase
 
     public function testGetDisplayCountriesForSwitzerland()
     {
-        IntlTestHelper::requireFullIntl($this, false);
+        IntlTestHelper::requireFullIntl($this);
 
         $countries = Locale::getDisplayCountries('de_CH');
         $this->assertEquals('Schweiz', $countries['CH']);

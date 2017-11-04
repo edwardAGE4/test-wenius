@@ -1,5 +1,5 @@
 {
-    "Version": "2.1.32.59",
+    "Version": "2.1.8.9",
     "Names": {
         "ADP": [
             "ADP",
@@ -213,13 +213,9 @@
             "BYB",
             "Đồng Rúp Mới của Belarus (1994–1999)"
         ],
-        "BYN": [
-            "BYN",
-            "Rúp Belarus"
-        ],
         "BYR": [
             "BYR",
-            "Rúp Belarus (2000–2016)"
+            "Rúp Belarus"
         ],
         "BZD": [
             "BZD",
@@ -463,7 +459,7 @@
         ],
         "HUF": [
             "HUF",
-            "Forint Hungary"
+            "Forint Hungaria"
         ],
         "IDR": [
             "IDR",
@@ -575,7 +571,7 @@
         ],
         "LSL": [
             "LSL",
-            "Ioti Lesotho"
+            "Đồng loti của Lesotho"
         ],
         "LTL": [
             "LTL",
@@ -703,7 +699,7 @@
         ],
         "MZE": [
             "MZE",
-            "Escudo Mozambique"
+            "Đồng Escudo Mozambique"
         ],
         "MZM": [
             "MZM",
@@ -759,7 +755,7 @@
         ],
         "PEN": [
             "PEN",
-            "Sol Peru"
+            "Nuevo Sol Peru"
         ],
         "PES": [
             "PES",
@@ -859,7 +855,7 @@
         ],
         "SHP": [
             "SHP",
-            "Bảng St. Helena"
+            "Bảng Saint Helena"
         ],
         "SIT": [
             "SIT",
@@ -899,7 +895,7 @@
         ],
         "SVC": [
             "SVC",
-            "Colón El Salvador"
+            "Đồng Colón Salvador"
         ],
         "SYP": [
             "SYP",
@@ -1031,7 +1027,7 @@
         ],
         "XAF": [
             "FCFA",
-            "Franc CFA Trung Phi"
+            "CFA Franc BEAC"
         ],
         "XCD": [
             "EC$",
@@ -1051,7 +1047,7 @@
         ],
         "XOF": [
             "CFA",
-            "Franc CFA Tây Phi"
+            "Franc CFA BCEAO"
         ],
         "XPF": [
             "CFPF",

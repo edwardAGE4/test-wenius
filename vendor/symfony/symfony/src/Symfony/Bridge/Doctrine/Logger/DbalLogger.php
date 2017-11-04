@@ -16,6 +16,8 @@ use Symfony\Component\Stopwatch\Stopwatch;
 use Doctrine\DBAL\Logging\SQLLogger;
 
 /**
+ * DbalLogger.
+ *
  * @author Fabien Potencier <fabien@symfony.com>
  */
 class DbalLogger implements SQLLogger
@@ -27,6 +29,8 @@ class DbalLogger implements SQLLogger
     protected $stopwatch;
 
     /**
+     * Constructor.
+     *
      * @param LoggerInterface $logger    A LoggerInterface instance
      * @param Stopwatch       $stopwatch A Stopwatch instance
      */
@@ -45,8 +49,12 @@ class DbalLogger implements SQLLogger
             $this->stopwatch->start('doctrine', 'doctrine');
         }
 
+        if (is_array($params)) {
+            $params = $this->normalizeParams($params);
+        }
+
         if (null !== $this->logger) {
-            $this->log($sql, null === $params ? array() : $this->normalizeParams($params));
+            $this->log($sql, null === $params ? array() : $params);
         }
     }
 
@@ -91,8 +99,8 @@ class DbalLogger implements SQLLogger
             }
 
             // detect if the too long string must be shorten
-            if (self::MAX_STRING_LENGTH < mb_strlen($params[$index], 'UTF-8')) {
-                $params[$index] = mb_substr($params[$index], 0, self::MAX_STRING_LENGTH - 6, 'UTF-8').' [...]';
+            if (self::MAX_STRING_LENGTH < iconv_strlen($params[$index], 'UTF-8')) {
+                $params[$index] = iconv_substr($params[$index], 0, self::MAX_STRING_LENGTH - 6, 'UTF-8').' [...]';
                 continue;
             }
         }

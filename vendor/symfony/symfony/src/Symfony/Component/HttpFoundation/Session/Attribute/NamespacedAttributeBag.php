@@ -27,8 +27,10 @@ class NamespacedAttributeBag extends AttributeBag
     private $namespaceCharacter;
 
     /**
-     * @param string $storageKey         Session storage key
-     * @param string $namespaceCharacter Namespace character to use in keys
+     * Constructor.
+     *
+     * @param string $storageKey         Session storage key.
+     * @param string $namespaceCharacter Namespace character to use in keys.
      */
     public function __construct($storageKey = '_sf2_attributes', $namespaceCharacter = '/')
     {
@@ -107,7 +109,7 @@ class NamespacedAttributeBag extends AttributeBag
     protected function &resolveAttributePath($name, $writeContext = false)
     {
         $array = &$this->attributes;
-        $name = (0 === strpos($name, $this->namespaceCharacter)) ? substr($name, 1) : $name;
+        $name = (strpos($name, $this->namespaceCharacter) === 0) ? substr($name, 1) : $name;
 
         // Check if there is anything to do, else return
         if (!$name) {

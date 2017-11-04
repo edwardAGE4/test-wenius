@@ -17,9 +17,6 @@ use Symfony\Bundle\FrameworkBundle\Templating\TemplateReference;
 use Symfony\Component\Templating\TemplateNameParserInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Config\FileLocatorInterface;
-use Twig\Environment;
-use Twig\Error\Error;
-use Twig\FileExtensionEscapingStrategy;
 
 /**
  * This engine renders Twig templates.
@@ -30,7 +27,14 @@ class TwigEngine extends BaseEngine implements EngineInterface
 {
     protected $locator;
 
-    public function __construct(Environment $environment, TemplateNameParserInterface $parser, FileLocatorInterface $locator)
+    /**
+     * Constructor.
+     *
+     * @param \Twig_Environment           $environment A \Twig_Environment instance
+     * @param TemplateNameParserInterface $parser      A TemplateNameParserInterface instance
+     * @param FileLocatorInterface        $locator     A FileLocatorInterface instance
+     */
+    public function __construct(\Twig_Environment $environment, TemplateNameParserInterface $parser, FileLocatorInterface $locator)
     {
         parent::__construct($environment, $parser);
 
@@ -39,24 +43,24 @@ class TwigEngine extends BaseEngine implements EngineInterface
 
     /**
      * @deprecated since version 2.7, to be removed in 3.0.
-     *             Inject the escaping strategy on Twig instead.
+     *             Inject the escaping strategy on \Twig_Environment instead.
      */
     public function setDefaultEscapingStrategy($strategy)
     {
-        @trigger_error('The '.__METHOD__.' method is deprecated since version 2.7 and will be removed in 3.0. Inject the escaping strategy in the Twig\Environment object instead.', E_USER_DEPRECATED);
+        @trigger_error('The '.__METHOD__.' method is deprecated since version 2.7 and will be removed in 3.0. Inject the escaping strategy in the Twig_Environment object instead.', E_USER_DEPRECATED);
 
-        $this->environment->getExtension('Twig\Extension\EscaperExtension')->setDefaultStrategy($strategy);
+        $this->environment->getExtension('escaper')->setDefaultStrategy($strategy);
     }
 
     /**
      * @deprecated since version 2.7, to be removed in 3.0.
-     *             Use the 'name' strategy instead.
+     *             Use the 'filename' strategy instead.
      */
-    public function guessDefaultEscapingStrategy($name)
+    public function guessDefaultEscapingStrategy($filename)
     {
-        @trigger_error('The '.__METHOD__.' method is deprecated since version 2.7 and will be removed in 3.0. Use the Twig\FileExtensionEscapingStrategy::guess method instead.', E_USER_DEPRECATED);
+        @trigger_error('The '.__METHOD__.' method is deprecated since version 2.7 and will be removed in 3.0. Use the Twig_FileExtensionEscapingStrategy::guess method instead.', E_USER_DEPRECATED);
 
-        return FileExtensionEscapingStrategy::guess($name);
+        return \Twig_FileExtensionEscapingStrategy::guess($filename);
     }
 
     /**
@@ -66,13 +70,11 @@ class TwigEngine extends BaseEngine implements EngineInterface
     {
         try {
             return parent::render($name, $parameters);
-        } catch (Error $e) {
-            if ($name instanceof TemplateReference && !method_exists($e, 'setSourceContext')) {
+        } catch (\Twig_Error $e) {
+            if ($name instanceof TemplateReference) {
                 try {
-                    // try to get the real name of the template where the error occurred
-                    $name = $e->getTemplateName();
-                    $path = (string) $this->locator->locate($this->parser->parse($name));
-                    $e->setTemplateName($path);
+                    // try to get the real file name of the template where the error occurred
+                    $e->setTemplateFile(sprintf('%s', $this->locator->locate($this->parser->parse($e->getTemplateFile()))));
                 } catch (\Exception $e2) {
                 }
             }
@@ -84,7 +86,7 @@ class TwigEngine extends BaseEngine implements EngineInterface
     /**
      * {@inheritdoc}
      *
-     * @throws Error if something went wrong like a thrown exception while rendering the template
+     * @throws \Twig_Error if something went wrong like a thrown exception while rendering the template
      */
     public function renderResponse($view, array $parameters = array(), Response $response = null)
     {

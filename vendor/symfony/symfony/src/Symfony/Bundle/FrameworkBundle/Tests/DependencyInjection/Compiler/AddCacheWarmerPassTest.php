@@ -11,11 +11,10 @@
 
 namespace Symfony\Bundle\FrameworkBundle\Tests\DependencyInjection\Compiler;
 
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Bundle\FrameworkBundle\DependencyInjection\Compiler\AddCacheWarmerPass;
 
-class AddCacheWarmerPassTest extends TestCase
+class AddCacheWarmerPassTest extends \PHPUnit_Framework_TestCase
 {
     public function testThatCacheWarmersAreProcessedInPriorityOrder()
     {
@@ -25,8 +24,11 @@ class AddCacheWarmerPassTest extends TestCase
             'my_cache_warmer_service3' => array(),
         );
 
-        $definition = $this->getMockBuilder('Symfony\Component\DependencyInjection\Definition')->getMock();
-        $container = $this->getMockBuilder('Symfony\Component\DependencyInjection\ContainerBuilder')->setMethods(array('findTaggedServiceIds', 'getDefinition', 'hasDefinition'))->getMock();
+        $definition = $this->getMock('Symfony\Component\DependencyInjection\Definition');
+        $container = $this->getMock(
+            'Symfony\Component\DependencyInjection\ContainerBuilder',
+            array('findTaggedServiceIds', 'getDefinition', 'hasDefinition')
+        );
 
         $container->expects($this->atLeastOnce())
             ->method('findTaggedServiceIds')
@@ -54,8 +56,11 @@ class AddCacheWarmerPassTest extends TestCase
 
     public function testThatCompilerPassIsIgnoredIfThereIsNoCacheWarmerDefinition()
     {
-        $definition = $this->getMockBuilder('Symfony\Component\DependencyInjection\Definition')->getMock();
-        $container = $this->getMockBuilder('Symfony\Component\DependencyInjection\ContainerBuilder')->setMethods(array('hasDefinition', 'findTaggedServiceIds', 'getDefinition'))->getMock();
+        $definition = $this->getMock('Symfony\Component\DependencyInjection\Definition');
+        $container = $this->getMock(
+            'Symfony\Component\DependencyInjection\ContainerBuilder',
+            array('hasDefinition', 'findTaggedServiceIds', 'getDefinition')
+        );
 
         $container->expects($this->never())->method('findTaggedServiceIds');
         $container->expects($this->never())->method('getDefinition');
@@ -71,8 +76,11 @@ class AddCacheWarmerPassTest extends TestCase
 
     public function testThatCacheWarmersMightBeNotDefined()
     {
-        $definition = $this->getMockBuilder('Symfony\Component\DependencyInjection\Definition')->getMock();
-        $container = $this->getMockBuilder('Symfony\Component\DependencyInjection\ContainerBuilder')->setMethods(array('hasDefinition', 'findTaggedServiceIds', 'getDefinition'))->getMock();
+        $definition = $this->getMock('Symfony\Component\DependencyInjection\Definition');
+        $container = $this->getMock(
+            'Symfony\Component\DependencyInjection\ContainerBuilder',
+            array('hasDefinition', 'findTaggedServiceIds', 'getDefinition')
+        );
 
         $container->expects($this->atLeastOnce())
             ->method('findTaggedServiceIds')

@@ -19,13 +19,6 @@ use Symfony\Bundle\TwigBundle\Tests\TestCase;
  */
 class LegacyAssetsExtensionTest extends TestCase
 {
-    protected function setUp()
-    {
-        if (!class_exists('Symfony\Component\Templating\Helper\CoreAssetsHelper')) {
-            $this->markTestSkipped('The CoreAssetsHelper class does only exist with symfony/templating < 3.0 installed.');
-        }
-    }
-
     /**
      * @dataProvider provideGetAssetUrlArguments
      */
@@ -91,7 +84,7 @@ class LegacyAssetsExtensionTest extends TestCase
 
     private function createContainerMock($helper)
     {
-        $container = $this->getMockBuilder('Symfony\Component\DependencyInjection\ContainerInterface')->getMock();
+        $container = $this->getMock('Symfony\Component\DependencyInjection\ContainerInterface');
         $container->expects($this->any())
             ->method('get')
             ->with('templating.helper.assets')

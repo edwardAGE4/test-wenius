@@ -40,6 +40,8 @@ class ResponseHeaderBag extends HeaderBag
     protected $headerNames = array();
 
     /**
+     * Constructor.
+     *
      * @param array $headers An array of HTTP headers
      */
     public function __construct(array $headers = array())
@@ -97,7 +99,7 @@ class ResponseHeaderBag extends HeaderBag
     {
         parent::set($key, $values, $replace);
 
-        $uniqueKey = str_replace('_', '-', strtolower($key));
+        $uniqueKey = strtr(strtolower($key), '_', '-');
         $this->headerNames[$uniqueKey] = $key;
 
         // ensure the cache-control header has sensible defaults
@@ -116,7 +118,7 @@ class ResponseHeaderBag extends HeaderBag
     {
         parent::remove($key);
 
-        $uniqueKey = str_replace('_', '-', strtolower($key));
+        $uniqueKey = strtr(strtolower($key), '_', '-');
         unset($this->headerNames[$uniqueKey]);
 
         if ('cache-control' === $uniqueKey) {
@@ -179,9 +181,9 @@ class ResponseHeaderBag extends HeaderBag
      *
      * @param string $format
      *
-     * @return array
-     *
      * @throws \InvalidArgumentException When the $format is invalid
+     *
+     * @return array
      */
     public function getCookies($format = self::COOKIES_FLAT)
     {
@@ -228,7 +230,7 @@ class ResponseHeaderBag extends HeaderBag
      *                                 is semantically equivalent to $filename. If the filename is already ASCII,
      *                                 it can be omitted, or just copied from $filename
      *
-     * @return string A string suitable for use as a Content-Disposition field-value
+     * @return string A string suitable for use as a Content-Disposition field-value.
      *
      * @throws \InvalidArgumentException
      *

@@ -22,7 +22,7 @@ use Symfony\Component\Console\Output\ConsoleOutputInterface;
  *
  * @author Kévin Dunglas <dunglas@gmail.com>
  *
- * @see http://www.php-fig.org/psr/psr-3/
+ * @link http://www.php-fig.org/psr/psr-3/
  */
 class ConsoleLogger extends AbstractLogger
 {
@@ -82,7 +82,7 @@ class ConsoleLogger extends AbstractLogger
         }
 
         // Write to the error output if necessary and available
-        if (self::ERROR === $this->formatLevelMap[$level] && $this->output instanceof ConsoleOutputInterface) {
+        if ($this->formatLevelMap[$level] === self::ERROR && $this->output instanceof ConsoleOutputInterface) {
             $output = $this->output->getErrorOutput();
         } else {
             $output = $this->output;

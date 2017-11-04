@@ -11,25 +11,21 @@
 
 namespace Symfony\Bridge\Twig\Tests\Extension;
 
-use PHPUnit\Framework\TestCase;
 use Symfony\Bridge\Twig\Extension\RoutingExtension;
-use Twig\Environment;
-use Twig\Node\Expression\FilterExpression;
-use Twig\Source;
 
-class RoutingExtensionTest extends TestCase
+class RoutingExtensionTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @dataProvider getEscapingTemplates
      */
     public function testEscaping($template, $mustBeEscaped)
     {
-        $twig = new Environment($this->getMockBuilder('Twig\Loader\LoaderInterface')->getMock(), array('debug' => true, 'cache' => false, 'autoescape' => 'html', 'optimizations' => 0));
-        $twig->addExtension(new RoutingExtension($this->getMockBuilder('Symfony\Component\Routing\Generator\UrlGeneratorInterface')->getMock()));
+        $twig = new \Twig_Environment($this->getMock('Twig_LoaderInterface'), array('debug' => true, 'cache' => false, 'autoescape' => 'html', 'optimizations' => 0));
+        $twig->addExtension(new RoutingExtension($this->getMock('Symfony\Component\Routing\Generator\UrlGeneratorInterface')));
 
-        $nodes = $twig->parse($twig->tokenize(new Source($template, '')));
+        $nodes = $twig->parse($twig->tokenize($template));
 
-        $this->assertSame($mustBeEscaped, $nodes->getNode('body')->getNode(0)->getNode('expr') instanceof FilterExpression);
+        $this->assertSame($mustBeEscaped, $nodes->getNode('body')->getNode(0)->getNode('expr') instanceof \Twig_Node_Expression_Filter);
     }
 
     public function getEscapingTemplates()

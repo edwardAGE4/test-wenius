@@ -37,6 +37,8 @@ class Shell
     private $processIsolation = false;
 
     /**
+     * Constructor.
+     *
      * If there is no readline support for the current PHP executable
      * a \RuntimeException exception is thrown.
      *
@@ -70,7 +72,7 @@ class Shell
         if ($this->processIsolation) {
             $finder = new PhpExecutableFinder();
             $php = $finder->find();
-            $this->output->writeln(<<<'EOF'
+            $this->output->writeln(<<<EOF
 <info>Running with process isolation, you should consider this:</info>
   * each command is executed as separate process,
   * commands don't support interactivity, all params must be passed explicitly,

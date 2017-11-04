@@ -24,7 +24,6 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationSuccessHandlerI
 use Symfony\Component\Security\Core\Authentication\AuthenticationManagerInterface;
 use Symfony\Component\Security\Core\Authentication\SimpleFormAuthenticatorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Http\HttpUtils;
 use Symfony\Component\Security\Http\ParameterBagUtils;
@@ -40,19 +39,21 @@ class SimpleFormAuthenticationListener extends AbstractAuthenticationListener
     private $csrfTokenManager;
 
     /**
+     * Constructor.
+     *
      * @param TokenStorageInterface                  $tokenStorage          A TokenStorageInterface instance
      * @param AuthenticationManagerInterface         $authenticationManager An AuthenticationManagerInterface instance
      * @param SessionAuthenticationStrategyInterface $sessionStrategy
-     * @param HttpUtils                              $httpUtils             An HttpUtils instance
+     * @param HttpUtils                              $httpUtils             An HttpUtilsInterface instance
      * @param string                                 $providerKey
      * @param AuthenticationSuccessHandlerInterface  $successHandler
      * @param AuthenticationFailureHandlerInterface  $failureHandler
      * @param array                                  $options               An array of options for the processing of a
      *                                                                      successful, or failed authentication attempt
-     * @param LoggerInterface|null                   $logger                A LoggerInterface instance
-     * @param EventDispatcherInterface|null          $dispatcher            An EventDispatcherInterface instance
-     * @param CsrfTokenManagerInterface|null         $csrfTokenManager      A CsrfTokenManagerInterface instance
-     * @param SimpleFormAuthenticatorInterface|null  $simpleAuthenticator   A SimpleFormAuthenticatorInterface instance
+     * @param LoggerInterface                        $logger                A LoggerInterface instance
+     * @param EventDispatcherInterface               $dispatcher            An EventDispatcherInterface instance
+     * @param CsrfTokenManagerInterface              $csrfTokenManager      A CsrfTokenManagerInterface instance
+     * @param SimpleFormAuthenticatorInterface       $simpleAuthenticator   A SimpleFormAuthenticatorInterface instance
      *
      * @throws \InvalidArgumentException In case no simple authenticator is provided
      * @throws InvalidArgumentException  In case an invalid CSRF token manager is passed
@@ -124,10 +125,6 @@ class SimpleFormAuthenticationListener extends AbstractAuthenticationListener
         } else {
             $username = trim(ParameterBagUtils::getRequestParameterValue($request, $this->options['username_parameter']));
             $password = ParameterBagUtils::getRequestParameterValue($request, $this->options['password_parameter']);
-        }
-
-        if (strlen($username) > Security::MAX_USERNAME_LENGTH) {
-            throw new BadCredentialsException('Invalid username.');
         }
 
         $request->getSession()->set(Security::LAST_USERNAME, $username);

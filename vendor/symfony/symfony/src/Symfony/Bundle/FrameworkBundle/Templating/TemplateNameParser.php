@@ -28,6 +28,8 @@ class TemplateNameParser extends BaseTemplateNameParser
     protected $cache = array();
 
     /**
+     * Constructor.
+     *
      * @param KernelInterface $kernel A KernelInterface instance
      */
     public function __construct(KernelInterface $kernel)
@@ -53,7 +55,7 @@ class TemplateNameParser extends BaseTemplateNameParser
             throw new \RuntimeException(sprintf('Template name "%s" contains invalid characters.', $name));
         }
 
-        if (!preg_match('/^(?:([^:]*):([^:]*):)?(.+)\.([^\.]+)\.([^\.]+)$/', $name, $matches) || $this->isAbsolutePath($name) || 0 === strpos($name, '@')) {
+        if (!preg_match('/^([^:]*):([^:]*):(.+)\.([^\.]+)\.([^\.]+)$/', $name, $matches)) {
             return parent::parse($name);
         }
 
@@ -68,10 +70,5 @@ class TemplateNameParser extends BaseTemplateNameParser
         }
 
         return $this->cache[$name] = $template;
-    }
-
-    private function isAbsolutePath($file)
-    {
-        return (bool) preg_match('#^(?:/|[a-zA-Z]:)#', $file);
     }
 }

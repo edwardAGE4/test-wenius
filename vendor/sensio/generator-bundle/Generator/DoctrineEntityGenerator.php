@@ -63,7 +63,7 @@ class DoctrineEntityGenerator extends Generator
             throw new \RuntimeException(sprintf('Entity "%s" already exists.', $entityClass));
         }
 
-        $class = new ClassMetadataInfo($entityClass, $config->getNamingStrategy());
+        $class = new ClassMetadataInfo($entityClass);
         $class->customRepositoryClassName = str_replace('\\Entity\\', '\\Repository\\', $entityClass).'Repository';
         $class->mapField(array('fieldName' => 'id', 'type' => 'integer', 'id' => true));
         $class->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
@@ -74,7 +74,7 @@ class DoctrineEntityGenerator extends Generator
         $entityGenerator = $this->getEntityGenerator();
         if ('annotation' === $format) {
             $entityGenerator->setGenerateAnnotations(true);
-            $class->setPrimaryTable(array('name' => Inflector::tableize(str_replace('\\', '', $entity))));
+            $class->setPrimaryTable(array('name' => Inflector::tableize($entity)));
             $entityCode = $entityGenerator->generateEntityClass($class);
             $mappingPath = $mappingCode = false;
         } else {
@@ -96,12 +96,12 @@ class DoctrineEntityGenerator extends Generator
             $entityCode
         );
 
-        self::mkdir(dirname($entityPath));
-        self::dump($entityPath, $entityCode);
+        $this->filesystem->mkdir(dirname($entityPath));
+        file_put_contents($entityPath, $entityCode);
 
         if ($mappingPath) {
-            self::mkdir(dirname($mappingPath));
-            self::dump($mappingPath, $mappingCode);
+            $this->filesystem->mkdir(dirname($mappingPath));
+            file_put_contents($mappingPath, $mappingCode);
         }
 
         $path = $bundle->getPath().str_repeat('/..', substr_count(get_class($bundle), '\\'));

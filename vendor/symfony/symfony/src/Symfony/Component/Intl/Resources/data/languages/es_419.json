@@ -1,27 +1,13 @@
 {
-    "Version": "2.1.31.33",
+    "Version": "2.1.8.19",
     "Names": {
-        "ace": "achenés",
-        "ady": "adigeo",
-        "arp": "arapajó",
+        "arn": "mapuche",
+        "az": "azerbaiyano",
+        "ba": "baskir",
         "eu": "vasco",
-        "grc": "griego clásico",
-        "gu": "gujarati",
-        "hsb": "sorbio alto",
-        "ht": "haitiano",
-        "kea": "Criollo (Cabo Verde)",
-        "lo": "laosiano",
+        "gsw": "alemán (Suiza)",
         "luo": "luo",
-        "prg": "prusiano antiguo",
-        "rm": "retorrománico",
-        "shu": "árabe (Chad)",
-        "sw": "swahili",
-        "sw_CD": "swahili (Congo)",
-        "tzm": "tamazight del Marruecos Central",
-        "vai": "vai",
-        "wal": "walamo",
-        "wuu": "wu",
-        "yi": "yídish",
-        "zun": "zuni"
+        "mr": "maratí",
+        "vai": "vai"
     }
 }

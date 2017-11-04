@@ -1,7 +1,7 @@
 
     /**
 {% block phpdoc_method_header %}
-     * Creates a new {{ entity_singularized }} entity.
+     * Creates a new {{ entity }} entity.
 {% endblock phpdoc_method_header %}
      *
 {% block phpdoc_method_annotations %}
@@ -16,12 +16,8 @@
 {% endblock method_definition %}
     {
 {% block method_body %}
-        ${{ entity_singularized }} = new {{ entity_singularized|capitalize }}();
-        {% if use_form_type_instance -%}
-            $form = $this->createForm(new {{ entity_singularized|capitalize }}Type(), ${{ entity_singularized }});
-        {% else -%}
-            $form = $this->createForm('{{ namespace }}\Form\{{ entity }}Type', ${{ entity_singularized }});
-        {% endif -%}
+        ${{ entity_singularized }} = new {{ entity_class }}();
+        $form = $this->createForm('{{ namespace }}\Form\{{ entity_class }}Type', ${{ entity_singularized }});
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -30,7 +26,7 @@
             $em->flush();
 
             {% if 'show' in actions -%}
-                return $this->redirectToRoute('{{ route_name_prefix }}_show', array('{{ identifier }}' => ${{ entity_singularized }}->get{{ identifier|capitalize }}()));
+                return $this->redirectToRoute('{{ route_name_prefix }}_show', array('id' => ${{ entity_class|lower }}->getId()));
             {%- else -%}
                 return $this->redirectToRoute('{{ route_name_prefix }}_index'));
             {%- endif %}

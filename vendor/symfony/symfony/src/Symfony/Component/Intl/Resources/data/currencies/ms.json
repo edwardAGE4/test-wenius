@@ -1,5 +1,5 @@
 {
-    "Version": "2.1.32.59",
+    "Version": "2.1.8.9",
     "Names": {
         "AED": [
             "AED",
@@ -93,13 +93,9 @@
             "BWP",
             "Pula Botswana"
         ],
-        "BYN": [
-            "BYN",
-            "Rubel Belarus"
-        ],
         "BYR": [
             "BYR",
-            "Rubel Belarus (2000–2016)"
+            "Ruble Belarus"
         ],
         "BZD": [
             "BZD",
@@ -191,7 +187,7 @@
         ],
         "GBP": [
             "£",
-            "Paun British"
+            "Paun Sterling British"
         ],
         "GEL": [
             "GEL",
@@ -435,7 +431,7 @@
         ],
         "PEN": [
             "PEN",
-            "Sol Peru"
+            "Nuevo Sol Peru"
         ],
         "PGK": [
             "PGK",
@@ -471,7 +467,7 @@
         ],
         "RUB": [
             "RUB",
-            "Rubel Rusia"
+            "Ruble Rusia"
         ],
         "RWF": [
             "RWF",
@@ -534,7 +530,7 @@
             "Lilangeni Swazi"
         ],
         "THB": [
-            "THB",
+            "฿",
             "Baht Thai"
         ],
         "TJS": [

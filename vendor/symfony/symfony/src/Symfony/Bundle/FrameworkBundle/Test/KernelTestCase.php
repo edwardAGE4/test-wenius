@@ -11,7 +11,6 @@
 
 namespace Symfony\Bundle\FrameworkBundle\Test;
 
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ResettableContainerInterface;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpKernel\KernelInterface;
@@ -21,7 +20,7 @@ use Symfony\Component\HttpKernel\KernelInterface;
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-abstract class KernelTestCase extends TestCase
+abstract class KernelTestCase extends \PHPUnit_Framework_TestCase
 {
     protected static $class;
 
@@ -78,15 +77,11 @@ abstract class KernelTestCase extends TestCase
         $dir = null;
         $reversedArgs = array_reverse($_SERVER['argv']);
         foreach ($reversedArgs as $argIndex => $testArg) {
-            if (preg_match('/^-[^ \-]*c$/', $testArg) || '--configuration' === $testArg) {
+            if (preg_match('/^-[^ \-]*c$/', $testArg) || $testArg === '--configuration') {
                 $dir = realpath($reversedArgs[$argIndex - 1]);
                 break;
-            } elseif (0 === strpos($testArg, '--configuration=')) {
+            } elseif (strpos($testArg, '--configuration=') === 0) {
                 $argPath = substr($testArg, strlen('--configuration='));
-                $dir = realpath($argPath);
-                break;
-            } elseif (0 === strpos($testArg, '-c')) {
-                $argPath = substr($testArg, strlen('-c'));
                 $dir = realpath($argPath);
                 break;
             }
@@ -106,8 +101,8 @@ abstract class KernelTestCase extends TestCase
      */
     protected static function getKernelClass()
     {
-        if (isset($_SERVER['KERNEL_DIR']) || isset($_ENV['KERNEL_DIR'])) {
-            $dir = isset($_SERVER['KERNEL_DIR']) ? $_SERVER['KERNEL_DIR'] : $_ENV['KERNEL_DIR'];
+        if (isset($_SERVER['KERNEL_DIR'])) {
+            $dir = $_SERVER['KERNEL_DIR'];
 
             if (!is_dir($dir)) {
                 $phpUnitDir = static::getPhpUnitXmlDir();

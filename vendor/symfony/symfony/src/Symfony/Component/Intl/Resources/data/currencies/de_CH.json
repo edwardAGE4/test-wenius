@@ -1,13 +1,13 @@
 {
-    "Version": "2.1.31.33",
+    "Version": "2.1.8.21",
     "Names": {
-        "BYN": [
-            "BYN",
-            "Weissrussischer Rubel"
-        ],
         "BYR": [
             "BYR",
-            "Weissrussischer Rubel (2000–2016)"
+            "Weissrussischer Rubel"
+        ],
+        "CHF": [
+            "CHF",
+            "Schweizer Franken"
         ]
     }
 }

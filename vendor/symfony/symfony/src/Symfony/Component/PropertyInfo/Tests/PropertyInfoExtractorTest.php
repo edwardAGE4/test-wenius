@@ -11,7 +11,6 @@
 
 namespace Symfony\Component\PropertyInfo\Tests;
 
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\PropertyInfo\PropertyInfoExtractor;
 use Symfony\Component\PropertyInfo\Tests\Fixtures\DummyExtractor;
 use Symfony\Component\PropertyInfo\Tests\Fixtures\NullExtractor;
@@ -20,14 +19,14 @@ use Symfony\Component\PropertyInfo\Type;
 /**
  * @author Kévin Dunglas <dunglas@gmail.com>
  */
-class PropertyInfoExtractorTest extends TestCase
+class PropertyInfoExtractorTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var PropertyInfoExtractor
      */
     private $propertyInfo;
 
-    protected function setUp()
+    public function setUp()
     {
         $extractors = array(new NullExtractor(), new DummyExtractor());
         $this->propertyInfo = new PropertyInfoExtractor($extractors, $extractors, $extractors, $extractors);

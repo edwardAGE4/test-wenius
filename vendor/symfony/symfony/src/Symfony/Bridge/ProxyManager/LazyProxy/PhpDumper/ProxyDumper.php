@@ -13,6 +13,7 @@ namespace Symfony\Bridge\ProxyManager\LazyProxy\PhpDumper;
 
 use ProxyManager\Generator\ClassGenerator;
 use ProxyManager\GeneratorStrategy\BaseGeneratorStrategy;
+use ProxyManager\ProxyGenerator\LazyLoadingValueHolderGenerator;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Definition;
@@ -41,6 +42,8 @@ class ProxyDumper implements DumperInterface
     private $classGenerator;
 
     /**
+     * Constructor.
+     *
      * @param string $salt
      */
     public function __construct($salt = '')
@@ -71,22 +74,16 @@ class ProxyDumper implements DumperInterface
             if (defined('Symfony\Component\DependencyInjection\ContainerInterface::SCOPE_CONTAINER') && ContainerInterface::SCOPE_CONTAINER !== $scope = $definition->getScope(false)) {
                 $instantiation .= " \$this->scopedServices['$scope']['$id'] =";
             }
-        }
+    }
 
         $methodName = 'get'.Container::camelize($id).'Service';
         $proxyClass = $this->getProxyClassName($definition);
-
-        $generatedClass = $this->generateProxyClass($definition);
-
-        $constructorCall = $generatedClass->hasMethod('staticProxyConstructor')
-            ? $proxyClass.'::staticProxyConstructor'
-            : 'new '.$proxyClass;
 
         return <<<EOF
         if (\$lazyLoad) {
             \$container = \$this;
 
-            $instantiation $constructorCall(
+            $instantiation new $proxyClass(
                 function (&\$wrappedInstance, \ProxyManager\Proxy\LazyLoadingInterface \$proxy) use (\$container) {
                     \$wrappedInstance = \$container->$methodName(false);
 
@@ -106,7 +103,11 @@ EOF;
      */
     public function getProxyCode(Definition $definition)
     {
-        return $this->classGenerator->generate($this->generateProxyClass($definition));
+        $generatedClass = new ClassGenerator($this->getProxyClassName($definition));
+
+        $this->proxyGenerator->generate(new \ReflectionClass($definition->getClass()), $generatedClass);
+
+        return $this->classGenerator->generate($generatedClass);
     }
 
     /**
@@ -119,19 +120,5 @@ EOF;
     private function getProxyClassName(Definition $definition)
     {
         return str_replace('\\', '', $definition->getClass()).'_'.spl_object_hash($definition).$this->salt;
-    }
-
-    /**
-     * @param Definition $definition
-     *
-     * @return ClassGenerator
-     */
-    private function generateProxyClass(Definition $definition)
-    {
-        $generatedClass = new ClassGenerator($this->getProxyClassName($definition));
-
-        $this->proxyGenerator->generate(new \ReflectionClass($definition->getClass()), $generatedClass);
-
-        return $generatedClass;
     }
 }

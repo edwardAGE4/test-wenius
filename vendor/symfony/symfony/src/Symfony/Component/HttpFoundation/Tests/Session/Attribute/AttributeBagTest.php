@@ -11,7 +11,6 @@
 
 namespace Symfony\Component\HttpFoundation\Tests\Session\Attribute;
 
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Session\Attribute\AttributeBag;
 
 /**
@@ -19,7 +18,7 @@ use Symfony\Component\HttpFoundation\Session\Attribute\AttributeBag;
  *
  * @author Drak <drak@zikula.org>
  */
-class AttributeBagTest extends TestCase
+class AttributeBagTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var array
@@ -44,9 +43,8 @@ class AttributeBagTest extends TestCase
             'category' => array(
                 'fishing' => array(
                     'first' => 'cod',
-                    'second' => 'sole',
+                    'second' => 'sole',),
                 ),
-            ),
         );
         $this->bag = new AttributeBag('_sf2');
         $this->bag->initialize($this->array);

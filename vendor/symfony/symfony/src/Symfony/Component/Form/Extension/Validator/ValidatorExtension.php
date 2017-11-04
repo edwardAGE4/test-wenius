@@ -60,7 +60,7 @@ class ValidatorExtension extends AbstractExtension
 
     public function loadTypeGuesser()
     {
-        // 2.5 API
+        // 2.5 API
         if ($this->validator instanceof ValidatorInterface) {
             return new ValidatorTypeGuesser($this->validator);
         }

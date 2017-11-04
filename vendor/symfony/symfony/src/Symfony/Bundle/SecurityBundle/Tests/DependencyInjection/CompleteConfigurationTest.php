@@ -11,20 +11,15 @@
 
 namespace Symfony\Bundle\SecurityBundle\Tests\DependencyInjection;
 
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\DependencyInjection\Parameter;
 use Symfony\Bundle\SecurityBundle\SecurityBundle;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\SecurityExtension;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
-abstract class CompleteConfigurationTest extends TestCase
+abstract class CompleteConfigurationTest extends \PHPUnit_Framework_TestCase
 {
-    private static $containerCache = array();
-
-    abstract protected function getLoader(ContainerBuilder $container);
-
-    abstract protected function getFileExtension();
+    abstract protected function loadFromFile(ContainerBuilder $container, $file);
 
     public function testRolesHierarchy()
     {
@@ -73,7 +68,7 @@ abstract class CompleteConfigurationTest extends TestCase
         foreach (array_keys($arguments[1]) as $contextId) {
             $contextDef = $container->getDefinition($contextId);
             $arguments = $contextDef->getArguments();
-            $listeners[] = array_map('strval', $arguments['index_0']);
+            $listeners[] = array_map(function ($ref) { return (string) $ref; }, $arguments['index_0']);
         }
 
         $this->assertEquals(array(
@@ -140,7 +135,7 @@ abstract class CompleteConfigurationTest extends TestCase
 
         $rules = array();
         foreach ($container->getDefinition('security.access_map')->getMethodCalls() as $call) {
-            if ('add' == $call[0]) {
+            if ($call[0] == 'add') {
                 $rules[] = array((string) $call[1][0], $call[1][1], $call[1][2]);
             }
         }
@@ -170,7 +165,7 @@ abstract class CompleteConfigurationTest extends TestCase
                 );
             } elseif (3 === $i) {
                 $this->assertEquals('IS_AUTHENTICATED_ANONYMOUSLY', $attributes[0]);
-                $expression = $container->getDefinition((string) $attributes[1])->getArgument(0);
+                $expression = $container->getDefinition($attributes[1])->getArgument(0);
                 $this->assertEquals("token.getUsername() matches '/^admin/'", $expression);
             }
         }
@@ -262,23 +257,18 @@ abstract class CompleteConfigurationTest extends TestCase
 
     protected function getContainer($file)
     {
-        $file = $file.'.'.$this->getFileExtension();
-
-        if (isset(self::$containerCache[$file])) {
-            return self::$containerCache[$file];
-        }
         $container = new ContainerBuilder();
         $security = new SecurityExtension();
         $container->registerExtension($security);
 
         $bundle = new SecurityBundle();
         $bundle->build($container); // Attach all default factories
-        $this->getLoader($container)->load($file);
+        $this->loadFromFile($container, $file);
 
         $container->getCompilerPassConfig()->setOptimizationPasses(array());
         $container->getCompilerPassConfig()->setRemovingPasses(array());
         $container->compile();
 
-        return self::$containerCache[$file] = $container;
+        return $container;
     }
 }

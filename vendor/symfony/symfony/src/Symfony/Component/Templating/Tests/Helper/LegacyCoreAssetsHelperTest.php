@@ -11,19 +11,18 @@
 
 namespace Symfony\Component\Templating\Tests\Helper;
 
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\Templating\Helper\CoreAssetsHelper;
 
 /**
  * @group legacy
  */
-class LegacyCoreAssetsHelperTest extends TestCase
+class LegacyCoreAssetsHelperTest extends \PHPUnit_Framework_TestCase
 {
     protected $package;
 
     protected function setUp()
     {
-        $this->package = $this->getMockBuilder('Symfony\Component\Templating\Asset\PackageInterface')->getMock();
+        $this->package = $this->getMock('Symfony\Component\Templating\Asset\PackageInterface');
     }
 
     protected function tearDown()
@@ -44,7 +43,7 @@ class LegacyCoreAssetsHelperTest extends TestCase
     {
         $helper = new CoreAssetsHelper($this->package);
 
-        $this->{method_exists($this, $_ = 'expectException') ? $_ : 'setExpectedException'}('\InvalidArgumentException');
+        $this->setExpectedException('\InvalidArgumentException');
 
         $helper->getPackage('foo');
     }

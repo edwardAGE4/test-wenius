@@ -51,18 +51,8 @@ class FunctionalTestCase extends TestCase
 
         $container->registerExtension($loader);
         $this->loadFromFile($container, $file);
-        $this->overrideContainer($container);
         $container->compile();
 
         return $container;
-    }
-
-    /**
-     * Override this hook in your functional TestCase to customize the container
-     *
-     * @param ContainerBuilder $container
-     */
-    protected function overrideContainer(ContainerBuilder $container)
-    {
     }
 }

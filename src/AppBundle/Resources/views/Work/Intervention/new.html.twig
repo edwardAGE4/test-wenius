@@ -24,7 +24,7 @@
             var $container = $('div#app_intervention_images');
             var index = $container.children('div.row').length;
             $('#add_image').click(function(e) {
-                addImage($container);
+                appImage($container);
                 e.preventDefault();
                 return false;
             });
@@ -33,7 +33,10 @@
             }
 
             function addImage($container) {
-                var template = $container.attr('data-prototype');
+                var template = $container.attr('data-prototype')
+                                .replace(/__name__label__/g, 'Image ' + (index+1))
+                                .replace(/__name__/g,        index)
+                        ;
                 var $prototype = $(template);
                 $container.append($prototype);
                 index++;

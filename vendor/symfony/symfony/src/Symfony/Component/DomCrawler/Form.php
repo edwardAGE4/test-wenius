@@ -37,6 +37,8 @@ class Form extends Link implements \ArrayAccess
     private $baseHref;
 
     /**
+     * Constructor.
+     *
      * @param \DOMElement $node       A \DOMElement instance
      * @param string      $currentUri The URI of the page where the form is embedded
      * @param string      $method     The method to use for the link (if null, it defaults to the method defined by the form)
@@ -67,7 +69,7 @@ class Form extends Link implements \ArrayAccess
      *
      * @param array $values An array of field values
      *
-     * @return $this
+     * @return Form
      */
     public function setValues(array $values)
     {
@@ -83,7 +85,7 @@ class Form extends Link implements \ArrayAccess
      *
      * The returned array does not include file fields (@see getFiles).
      *
-     * @return array An array of field values
+     * @return array An array of field values.
      */
     public function getValues()
     {
@@ -104,7 +106,7 @@ class Form extends Link implements \ArrayAccess
     /**
      * Gets the file field values.
      *
-     * @return array An array of file field values
+     * @return array An array of file field values.
      */
     public function getFiles()
     {
@@ -133,7 +135,7 @@ class Form extends Link implements \ArrayAccess
      * This method converts fields with the array notation
      * (like foo[bar] to arrays) like PHP does.
      *
-     * @return array An array of field values
+     * @return array An array of field values.
      */
     public function getPhpValues()
     {
@@ -155,12 +157,8 @@ class Form extends Link implements \ArrayAccess
      *
      * This method converts fields with the array notation
      * (like foo[bar] to arrays) like PHP does.
-     * The returned array is consistent with the array for field values
-     * (@see getPhpValues), rather than uploaded files found in $_FILES.
-     * For a compound file field foo[bar] it will create foo[bar][name],
-     * instead of foo[name][bar] which would be found in $_FILES.
      *
-     * @return array An array of file field values
+     * @return array An array of field values.
      */
     public function getPhpFiles()
     {
@@ -170,18 +168,6 @@ class Form extends Link implements \ArrayAccess
             if (!empty($qs)) {
                 parse_str($qs, $expandedValue);
                 $varName = substr($name, 0, strlen(key($expandedValue)));
-
-                array_walk_recursive(
-                    $expandedValue,
-                    function (&$value, $key) {
-                        if (ctype_digit($value) && ('size' === $key || 'error' === $key)) {
-                            $value = (int) $value;
-                        }
-                    }
-                );
-
-                reset($expandedValue);
-
                 $values = array_replace_recursive($values, array($varName => current($expandedValue)));
             }
         }
@@ -256,6 +242,8 @@ class Form extends Link implements \ArrayAccess
      * Removes a field from the form.
      *
      * @param string $name The field name
+     *
+     * @throws \InvalidArgumentException when the name is malformed
      */
     public function remove($name)
     {
@@ -289,7 +277,7 @@ class Form extends Link implements \ArrayAccess
     /**
      * Gets all fields.
      *
-     * @return FormField[]
+     * @return FormField[] An array of fields
      */
     public function all()
     {

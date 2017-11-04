@@ -41,11 +41,13 @@ class LogoutListener implements ListenerInterface
     private $csrfTokenManager;
 
     /**
-     * @param TokenStorageInterface          $tokenStorage
-     * @param HttpUtils                      $httpUtils        An HttpUtils instance
-     * @param LogoutSuccessHandlerInterface  $successHandler   A LogoutSuccessHandlerInterface instance
-     * @param array                          $options          An array of options to process a logout attempt
-     * @param CsrfTokenManagerInterface|null $csrfTokenManager A CsrfTokenManagerInterface instance
+     * Constructor.
+     *
+     * @param TokenStorageInterface         $tokenStorage
+     * @param HttpUtils                     $httpUtils        An HttpUtilsInterface instance
+     * @param LogoutSuccessHandlerInterface $successHandler   A LogoutSuccessHandlerInterface instance
+     * @param array                         $options          An array of options to process a logout attempt
+     * @param CsrfTokenManagerInterface     $csrfTokenManager A CsrfTokenManagerInterface instance
      */
     public function __construct(TokenStorageInterface $tokenStorage, HttpUtils $httpUtils, LogoutSuccessHandlerInterface $successHandler, array $options = array(), $csrfTokenManager = null)
     {
@@ -144,6 +146,6 @@ class LogoutListener implements ListenerInterface
      */
     protected function requiresLogout(Request $request)
     {
-        return isset($this->options['logout_path']) && $this->httpUtils->checkRequestPath($request, $this->options['logout_path']);
+        return $this->httpUtils->checkRequestPath($request, $this->options['logout_path']);
     }
 }

@@ -11,14 +11,13 @@
 
 namespace Symfony\Component\Security\Csrf\Tests;
 
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManager;
 
 /**
  * @author Bernhard Schussek <bschussek@gmail.com>
  */
-class CsrfTokenManagerTest extends TestCase
+class CsrfTokenManagerTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var \PHPUnit_Framework_MockObject_MockObject
@@ -37,8 +36,8 @@ class CsrfTokenManagerTest extends TestCase
 
     protected function setUp()
     {
-        $this->generator = $this->getMockBuilder('Symfony\Component\Security\Csrf\TokenGenerator\TokenGeneratorInterface')->getMock();
-        $this->storage = $this->getMockBuilder('Symfony\Component\Security\Csrf\TokenStorage\TokenStorageInterface')->getMock();
+        $this->generator = $this->getMock('Symfony\Component\Security\Csrf\TokenGenerator\TokenGeneratorInterface');
+        $this->storage = $this->getMock('Symfony\Component\Security\Csrf\TokenStorage\TokenStorageInterface');
         $this->manager = new CsrfTokenManager($this->generator, $this->storage);
     }
 

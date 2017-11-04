@@ -30,6 +30,8 @@ class CacheLoader extends Loader
     protected $dir;
 
     /**
+     * Constructor.
+     *
      * @param LoaderInterface $loader A Loader instance
      * @param string          $dir    The directory where to store the cache files
      */
@@ -70,8 +72,8 @@ class CacheLoader extends Loader
 
         $content = $storage->getContent();
 
-        if (!is_dir($dir) && !@mkdir($dir, 0777, true) && !is_dir($dir)) {
-            throw new \RuntimeException(sprintf('Cache Loader was not able to create directory "%s"', $dir));
+        if (!is_dir($dir)) {
+            mkdir($dir, 0777, true);
         }
 
         file_put_contents($path, $content);

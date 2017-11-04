@@ -17,6 +17,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 
 /**
+ * ControllerResolver.
+ *
  * @author Fabien Potencier <fabien@symfony.com>
  */
 class ControllerResolver extends BaseControllerResolver
@@ -25,6 +27,8 @@ class ControllerResolver extends BaseControllerResolver
     protected $parser;
 
     /**
+     * Constructor.
+     *
      * @param ContainerInterface   $container A ContainerInterface instance
      * @param ControllerNameParser $parser    A ControllerNameParser instance
      * @param LoggerInterface      $logger    A LoggerInterface instance
@@ -74,10 +78,6 @@ class ControllerResolver extends BaseControllerResolver
      */
     protected function instantiateController($class)
     {
-        if ($this->container->has($class)) {
-            return $this->container->get($class);
-        }
-
         $controller = parent::instantiateController($class);
 
         if ($controller instanceof ContainerAwareInterface) {

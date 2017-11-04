@@ -189,7 +189,7 @@ class PhpDocExtractor implements PropertyDescriptionExtractorInterface, Property
                 break;
 
             default:
-                $data = array(null, null, null);
+                $data = array(null, null);
         }
 
         return $this->docBlocks[$propertyHash] = $data;
@@ -208,7 +208,7 @@ class PhpDocExtractor implements PropertyDescriptionExtractorInterface, Property
         // Use a ReflectionProperty instead of $class to get the parent class if applicable
         try {
             $reflectionProperty = new \ReflectionProperty($class, $property);
-        } catch (\ReflectionException $e) {
+        } catch (\ReflectionException $reflectionException) {
             return;
         }
 
@@ -242,20 +242,17 @@ class PhpDocExtractor implements PropertyDescriptionExtractorInterface, Property
      * @param string $ucFirstProperty
      * @param int    $type
      *
-     * @return array|null
+     * @return DocBlock|null
      */
     private function getDocBlockFromMethod($class, $ucFirstProperty, $type)
     {
-        $prefixes = self::ACCESSOR === $type ? ReflectionExtractor::$accessorPrefixes : ReflectionExtractor::$mutatorPrefixes;
+        $prefixes = $type === self::ACCESSOR ? ReflectionExtractor::$accessorPrefixes : ReflectionExtractor::$mutatorPrefixes;
 
         foreach ($prefixes as $prefix) {
             $methodName = $prefix.$ucFirstProperty;
 
             try {
                 $reflectionMethod = new \ReflectionMethod($class, $methodName);
-                if ($reflectionMethod->isStatic()) {
-                    continue;
-                }
 
                 if (
                     (self::ACCESSOR === $type && 0 === $reflectionMethod->getNumberOfRequiredParameters()) ||
@@ -263,7 +260,7 @@ class PhpDocExtractor implements PropertyDescriptionExtractorInterface, Property
                 ) {
                     break;
                 }
-            } catch (\ReflectionException $e) {
+            } catch (\ReflectionException $reflectionException) {
                 // Try the next prefix if the method doesn't exist
             }
         }
@@ -337,10 +334,10 @@ class PhpDocExtractor implements PropertyDescriptionExtractorInterface, Property
                 $collectionValueType = null;
             } else {
                 $collectionKeyType = new Type(Type::BUILTIN_TYPE_INT);
-                $collectionValueType = new Type($phpType, $nullable, $class);
+                $collectionValueType = new Type($phpType, false, $class);
             }
 
-            return new Type(Type::BUILTIN_TYPE_ARRAY, $nullable, null, true, $collectionKeyType, $collectionValueType);
+            return new Type(Type::BUILTIN_TYPE_ARRAY, false, null, true, $collectionKeyType, $collectionValueType);
         }
 
         return new Type($phpType, $nullable, $class);

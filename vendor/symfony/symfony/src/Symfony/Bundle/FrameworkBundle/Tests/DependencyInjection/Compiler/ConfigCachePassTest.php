@@ -11,11 +11,10 @@
 
 namespace Symfony\Bundle\FrameworkBundle\Tests\DependencyInjection\Compiler;
 
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Bundle\FrameworkBundle\DependencyInjection\Compiler\ConfigCachePass;
 
-class ConfigCachePassTest extends TestCase
+class ConfigCachePassTest extends \PHPUnit_Framework_TestCase
 {
     public function testThatCheckersAreProcessedInPriorityOrder()
     {
@@ -25,8 +24,11 @@ class ConfigCachePassTest extends TestCase
             'checker_3' => array(),
         );
 
-        $definition = $this->getMockBuilder('Symfony\Component\DependencyInjection\Definition')->getMock();
-        $container = $this->getMockBuilder('Symfony\Component\DependencyInjection\ContainerBuilder')->setMethods(array('findTaggedServiceIds', 'getDefinition', 'hasDefinition'))->getMock();
+        $definition = $this->getMock('Symfony\Component\DependencyInjection\Definition');
+        $container = $this->getMock(
+            'Symfony\Component\DependencyInjection\ContainerBuilder',
+            array('findTaggedServiceIds', 'getDefinition', 'hasDefinition')
+        );
 
         $container->expects($this->atLeastOnce())
             ->method('findTaggedServiceIds')
@@ -50,8 +52,11 @@ class ConfigCachePassTest extends TestCase
 
     public function testThatCheckersCanBeMissing()
     {
-        $definition = $this->getMockBuilder('Symfony\Component\DependencyInjection\Definition')->getMock();
-        $container = $this->getMockBuilder('Symfony\Component\DependencyInjection\ContainerBuilder')->setMethods(array('findTaggedServiceIds'))->getMock();
+        $definition = $this->getMock('Symfony\Component\DependencyInjection\Definition');
+        $container = $this->getMock(
+            'Symfony\Component\DependencyInjection\ContainerBuilder',
+            array('findTaggedServiceIds')
+        );
 
         $container->expects($this->atLeastOnce())
             ->method('findTaggedServiceIds')

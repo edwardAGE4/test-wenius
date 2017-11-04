@@ -205,7 +205,6 @@ class Intervention
     public function addImage(\AppBundle\Entity\Media\Image $images)
     {
         $images->setIntervention($this);
-        $images->setRepertoire('Operation'.$this->operation->getIdOperation().'/Intervention'.$this->idIntervention);
         $this->images[] = $images;
 
         return $this;

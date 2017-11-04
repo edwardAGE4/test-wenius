@@ -36,8 +36,10 @@ class DoctrineCrudGenerator extends Generator
     protected $actions;
 
     /**
-     * @param Filesystem $filesystem
-     * @param string     $rootDir
+     * Constructor.
+     *
+     * @param Filesystem $filesystem A Filesystem instance
+     * @param string     $rootDir    The root dir
      */
     public function __construct(Filesystem $filesystem, $rootDir)
     {
@@ -53,8 +55,7 @@ class DoctrineCrudGenerator extends Generator
      * @param ClassMetadataInfo $metadata         The entity class metadata
      * @param string            $format           The configuration format (xml, yaml, annotation)
      * @param string            $routePrefix      The route name prefix
-     * @param bool              $needWriteActions Whether or not to generate write actions
-     * @param bool              $forceOverwrite   Whether or not to overwrite the controller
+     * @param array             $needWriteActions Whether or not to generate write actions
      *
      * @throws \RuntimeException
      */
@@ -69,21 +70,18 @@ class DoctrineCrudGenerator extends Generator
         }
 
         $this->entity = $entity;
-        $entity = str_replace('\\', '/', $entity);
-        $entityParts = explode('/', $entity);
-        $entityName = end($entityParts);
-        $this->entitySingularized = lcfirst(Inflector::singularize($entityName));
-        $this->entityPluralized = lcfirst(Inflector::pluralize($entityName));
+        $this->entitySingularized = lcfirst(Inflector::singularize($entity));
+        $this->entityPluralized = lcfirst(Inflector::pluralize($entity));
         $this->bundle = $bundle;
         $this->metadata = $metadata;
         $this->setFormat($format);
 
         $this->generateControllerClass($forceOverwrite);
 
-        $dir = sprintf('%s/Resources/views/%s', $this->rootDir, strtolower($entity));
+        $dir = sprintf('%s/Resources/views/%s', $this->rootDir, str_replace('\\', '/', strtolower($this->entity)));
 
         if (!file_exists($dir)) {
-            self::mkdir($dir);
+            $this->filesystem->mkdir($dir, 0777);
         }
 
         $this->generateIndexView($dir);
@@ -146,7 +144,6 @@ class DoctrineCrudGenerator extends Generator
             'route_name_prefix' => $this->routeNamePrefix,
             'bundle' => $this->bundle->getName(),
             'entity' => $this->entity,
-            'identifier' => $this->metadata->identifier[0],
         ));
     }
 
@@ -180,13 +177,10 @@ class DoctrineCrudGenerator extends Generator
             'entity' => $this->entity,
             'entity_singularized' => $this->entitySingularized,
             'entity_pluralized' => $this->entityPluralized,
-            'identifier' => $this->metadata->identifier[0],
             'entity_class' => $entityClass,
             'namespace' => $this->bundle->getNamespace(),
             'entity_namespace' => $entityNamespace,
             'format' => $this->format,
-            // BC with Symfony 2.7
-            'use_form_type_instance' => !method_exists('Symfony\Component\Form\AbstractType', 'getBlockPrefix'),
         ));
     }
 

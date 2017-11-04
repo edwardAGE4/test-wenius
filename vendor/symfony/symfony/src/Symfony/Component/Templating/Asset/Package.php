@@ -26,6 +26,8 @@ class Package implements PackageInterface
     private $format;
 
     /**
+     * Constructor.
+     *
      * @param string $version The package version
      * @param string $format  The format used to apply the version
      */

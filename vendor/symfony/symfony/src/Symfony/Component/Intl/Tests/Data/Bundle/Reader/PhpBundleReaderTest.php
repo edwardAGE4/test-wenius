@@ -11,13 +11,12 @@
 
 namespace Symfony\Component\Intl\Tests\Data\Bundle\Reader;
 
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\Intl\Data\Bundle\Reader\PhpBundleReader;
 
 /**
  * @author Bernhard Schussek <bschussek@gmail.com>
  */
-class PhpBundleReaderTest extends TestCase
+class PhpBundleReaderTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var PhpBundleReader
@@ -33,7 +32,7 @@ class PhpBundleReaderTest extends TestCase
     {
         $data = $this->reader->read(__DIR__.'/Fixtures/php', 'en');
 
-        $this->assertInternalType('array', $data);
+        $this->assertTrue(is_array($data));
         $this->assertSame('Bar', $data['Foo']);
         $this->assertFalse(isset($data['ExistsNot']));
     }

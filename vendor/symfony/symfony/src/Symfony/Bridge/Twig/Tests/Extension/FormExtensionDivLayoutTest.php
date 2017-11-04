@@ -20,7 +20,6 @@ use Symfony\Bridge\Twig\Tests\Extension\Fixtures\StubFilesystemLoader;
 use Symfony\Component\Form\ChoiceList\View\ChoiceView;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\Form\Tests\AbstractDivLayoutTest;
-use Twig\Environment;
 
 class FormExtensionDivLayoutTest extends AbstractDivLayoutTest
 {
@@ -41,7 +40,7 @@ class FormExtensionDivLayoutTest extends AbstractDivLayoutTest
             'form_div_layout.html.twig',
             'custom_widgets.html.twig',
         ));
-        $renderer = new TwigRenderer($rendererEngine, $this->getMockBuilder('Symfony\Component\Security\Csrf\CsrfTokenManagerInterface')->getMock());
+        $renderer = new TwigRenderer($rendererEngine, $this->getMock('Symfony\Component\Security\Csrf\CsrfTokenManagerInterface'));
 
         $this->extension = new FormExtension($renderer);
 
@@ -50,7 +49,7 @@ class FormExtensionDivLayoutTest extends AbstractDivLayoutTest
             __DIR__.'/Fixtures/templates/form',
         ));
 
-        $environment = new Environment($loader, array('strict_variables' => true));
+        $environment = new \Twig_Environment($loader, array('strict_variables' => true));
         $environment->addExtension(new TranslationExtension(new StubTranslator()));
         $environment->addGlobal('global', '');
         // the value can be any template that exists
@@ -106,11 +105,7 @@ class FormExtensionDivLayoutTest extends AbstractDivLayoutTest
 
         $renderer = $this->extension->renderer;
         $renderer->setTheme($view, array('page_dynamic_extends.html.twig'));
-
-        $this->assertMatchesXpath(
-            $renderer->searchAndRenderBlock($view, 'row'),
-            '/div/label[text()="child"]'
-        );
+        $renderer->searchAndRenderBlock($view, 'row');
     }
 
     public function isSelectedChoiceProvider()
@@ -182,7 +177,7 @@ class FormExtensionDivLayoutTest extends AbstractDivLayoutTest
 
     protected function renderLabel(FormView $view, $label = null, array $vars = array())
     {
-        if (null !== $label) {
+        if ($label !== null) {
             $vars += array('label' => $label);
         }
 

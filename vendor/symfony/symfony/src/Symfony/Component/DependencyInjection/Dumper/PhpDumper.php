@@ -26,7 +26,6 @@ use Symfony\Component\DependencyInjection\LazyProxy\PhpDumper\NullDumper;
 use Symfony\Component\DependencyInjection\ExpressionLanguage;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\ExpressionLanguage\ExpressionFunctionProviderInterface;
-use Symfony\Component\HttpKernel\Kernel;
 
 /**
  * PhpDumper dumps a service container as a PHP class.
@@ -58,7 +57,6 @@ class PhpDumper extends Dumper
     private $expressionLanguage;
     private $targetDirRegex;
     private $targetDirMaxMatches;
-    private $docStar;
 
     /**
      * @var ExpressionFunctionProviderInterface[]
@@ -110,9 +108,7 @@ class PhpDumper extends Dumper
             'class' => 'ProjectServiceContainer',
             'base_class' => 'Container',
             'namespace' => '',
-            'debug' => true,
         ), $options);
-        $this->docStar = $options['debug'] ? '*' : '';
 
         if (!empty($options['file']) && is_dir($dir = dirname($options['file']))) {
             // Build a regexp where the first root dirs are mandatory,
@@ -144,7 +140,6 @@ class PhpDumper extends Dumper
         if ($this->container->isFrozen()) {
             $code .= $this->addFrozenConstructor();
             $code .= $this->addFrozenCompile();
-            $code .= $this->addIsFrozenMethod();
         } else {
             $code .= $this->addConstructor();
         }
@@ -238,15 +233,9 @@ class PhpDumper extends Dumper
             array($this->getProxyDumper(), 'isProxyCandidate')
         );
         $code = '';
-        $strip = '' === $this->docStar && method_exists('Symfony\Component\HttpKernel\Kernel', 'stripComments');
 
         foreach ($definitions as $definition) {
-            $proxyCode = "\n".$this->getProxyDumper()->getProxyCode($definition);
-            if ($strip) {
-                $proxyCode = "<?php\n".$proxyCode;
-                $proxyCode = substr(Kernel::stripComments($proxyCode), 5);
-            }
-            $code .= $proxyCode;
+            $code .= "\n".$this->getProxyDumper()->getProxyCode($definition);
         }
 
         return $code;
@@ -255,11 +244,12 @@ class PhpDumper extends Dumper
     /**
      * Generates the require_once statement for service includes.
      *
+     * @param string     $id         The service id
      * @param Definition $definition
      *
      * @return string
      */
-    private function addServiceInclude($definition)
+    private function addServiceInclude($id, $definition)
     {
         $template = "        require_once %s;\n";
         $code = '';
@@ -334,9 +324,9 @@ class PhpDumper extends Dumper
                 $code .= $this->addNewInstance($id, $sDefinition, '$'.$name, ' = ');
 
                 if (!$this->hasReference($id, $sDefinition->getMethodCalls(), true) && !$this->hasReference($id, $sDefinition->getProperties(), true)) {
-                    $code .= $this->addServiceProperties($sDefinition, $name);
-                    $code .= $this->addServiceMethodCalls($sDefinition, $name);
-                    $code .= $this->addServiceConfigurator($sDefinition, $name);
+                    $code .= $this->addServiceMethodCalls(null, $sDefinition, $name);
+                    $code .= $this->addServiceProperties(null, $sDefinition, $name);
+                    $code .= $this->addServiceConfigurator(null, $sDefinition, $name);
                 }
 
                 $code .= "\n";
@@ -374,11 +364,17 @@ class PhpDumper extends Dumper
      * @throws InvalidArgumentException
      * @throws RuntimeException
      */
-    private function addServiceInstance($id, Definition $definition)
+    private function addServiceInstance($id, $definition)
     {
-        $class = $this->dumpValue($definition->getClass());
+        $class = $definition->getClass();
 
-        if (0 === strpos($class, "'") && !preg_match('/^\'(?:\\\{2})?[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*(?:\\\{2}[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)*\'$/', $class)) {
+        if ('\\' === substr($class, 0, 1)) {
+            $class = substr($class, 1);
+        }
+
+        $class = $this->dumpValue($class);
+
+        if (0 === strpos($class, "'") && !preg_match('/^\'[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*(\\\{2}[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)*\'$/', $class)) {
             throw new InvalidArgumentException(sprintf('"%s" is not a valid class name for the "%s" service.', $class, $id));
         }
 
@@ -418,7 +414,7 @@ class PhpDumper extends Dumper
      *
      * @return bool
      */
-    private function isSimpleInstance($id, Definition $definition)
+    private function isSimpleInstance($id, $definition)
     {
         foreach (array_merge(array($definition), $this->getInlinedDefinitions($definition)) as $sDefinition) {
             if ($definition !== $sDefinition && !$this->hasReference($id, $sDefinition->getMethodCalls())) {
@@ -436,12 +432,13 @@ class PhpDumper extends Dumper
     /**
      * Adds method calls to a service definition.
      *
+     * @param string     $id
      * @param Definition $definition
      * @param string     $variableName
      *
      * @return string
      */
-    private function addServiceMethodCalls(Definition $definition, $variableName = 'instance')
+    private function addServiceMethodCalls($id, $definition, $variableName = 'instance')
     {
         $calls = '';
         foreach ($definition->getMethodCalls() as $call) {
@@ -456,7 +453,7 @@ class PhpDumper extends Dumper
         return $calls;
     }
 
-    private function addServiceProperties(Definition $definition, $variableName = 'instance')
+    private function addServiceProperties($id, $definition, $variableName = 'instance')
     {
         $code = '';
         foreach ($definition->getProperties() as $name => $value) {
@@ -476,7 +473,7 @@ class PhpDumper extends Dumper
      *
      * @throws ServiceCircularReferenceException when the container contains a circular reference
      */
-    private function addServiceInlinedDefinitionsSetup($id, Definition $definition)
+    private function addServiceInlinedDefinitionsSetup($id, $definition)
     {
         $this->referenceVariables[$id] = new Variable('instance');
 
@@ -499,9 +496,9 @@ class PhpDumper extends Dumper
             }
 
             $name = (string) $this->definitionVariables->offsetGet($iDefinition);
-            $code .= $this->addServiceProperties($iDefinition, $name);
-            $code .= $this->addServiceMethodCalls($iDefinition, $name);
-            $code .= $this->addServiceConfigurator($iDefinition, $name);
+            $code .= $this->addServiceMethodCalls(null, $iDefinition, $name);
+            $code .= $this->addServiceProperties(null, $iDefinition, $name);
+            $code .= $this->addServiceConfigurator(null, $iDefinition, $name);
         }
 
         if ('' !== $code) {
@@ -514,12 +511,13 @@ class PhpDumper extends Dumper
     /**
      * Adds configurator definition.
      *
+     * @param string     $id
      * @param Definition $definition
      * @param string     $variableName
      *
      * @return string
      */
-    private function addServiceConfigurator(Definition $definition, $variableName = 'instance')
+    private function addServiceConfigurator($id, $definition, $variableName = 'instance')
     {
         if (!$callable = $definition->getConfigurator()) {
             return '';
@@ -533,7 +531,7 @@ class PhpDumper extends Dumper
 
             $class = $this->dumpValue($callable[0]);
             // If the class is a string we can optimize call_user_func away
-            if (0 === strpos($class, "'")) {
+            if (strpos($class, "'") === 0) {
                 return sprintf("        %s::%s(\$%s);\n", $this->dumpLiteralClass($class), $callable[1], $variableName);
             }
 
@@ -551,7 +549,7 @@ class PhpDumper extends Dumper
      *
      * @return string
      */
-    private function addService($id, Definition $definition)
+    private function addService($id, $definition)
     {
         $this->definitionVariables = new \SplObjectStorage();
         $this->referenceVariables = array();
@@ -562,22 +560,22 @@ class PhpDumper extends Dumper
         if ($definition->isSynthetic()) {
             $return[] = '@throws RuntimeException always since this service is expected to be injected dynamically';
         } elseif ($class = $definition->getClass()) {
-            $return[] = sprintf(0 === strpos($class, '%') ? '@return object A %1$s instance' : '@return \%s', ltrim($class, '\\'));
+            $return[] = sprintf('@return %s A %s instance.', 0 === strpos($class, '%') ? 'object' : '\\'.ltrim($class, '\\'), ltrim($class, '\\'));
         } elseif ($definition->getFactory()) {
             $factory = $definition->getFactory();
             if (is_string($factory)) {
-                $return[] = sprintf('@return object An instance returned by %s()', $factory);
+                $return[] = sprintf('@return object An instance returned by %s().', $factory);
             } elseif (is_array($factory) && (is_string($factory[0]) || $factory[0] instanceof Definition || $factory[0] instanceof Reference)) {
                 if (is_string($factory[0]) || $factory[0] instanceof Reference) {
-                    $return[] = sprintf('@return object An instance returned by %s::%s()', (string) $factory[0], $factory[1]);
+                    $return[] = sprintf('@return object An instance returned by %s::%s().', (string) $factory[0], $factory[1]);
                 } elseif ($factory[0] instanceof Definition) {
-                    $return[] = sprintf('@return object An instance returned by %s::%s()', $factory[0]->getClass(), $factory[1]);
+                    $return[] = sprintf('@return object An instance returned by %s::%s().', $factory[0]->getClass(), $factory[1]);
                 }
             }
         } elseif ($definition->getFactoryClass(false)) {
-            $return[] = sprintf('@return object An instance returned by %s::%s()', $definition->getFactoryClass(false), $definition->getFactoryMethod(false));
+            $return[] = sprintf('@return object An instance returned by %s::%s().', $definition->getFactoryClass(false), $definition->getFactoryMethod(false));
         } elseif ($definition->getFactoryService(false)) {
-            $return[] = sprintf('@return object An instance returned by %s::%s()', $definition->getFactoryService(false), $definition->getFactoryMethod(false));
+            $return[] = sprintf('@return object An instance returned by %s::%s().', $definition->getFactoryService(false), $definition->getFactoryMethod(false));
         }
 
         $scope = $definition->getScope(false);
@@ -598,14 +596,41 @@ class PhpDumper extends Dumper
 
         $return = str_replace("\n     * \n", "\n     *\n", implode("\n     * ", $return));
 
-        $shared = $definition->isShared() && ContainerInterface::SCOPE_PROTOTYPE !== $scope ? ' shared' : '';
-        $public = $definition->isPublic() ? 'public' : 'private';
-        $autowired = $definition->isAutowired() ? ' autowired' : '';
+        $doc = '';
+        if ($definition->isShared() && ContainerInterface::SCOPE_PROTOTYPE !== $scope) {
+            $doc .= <<<EOF
+
+     *
+     * This service is shared.
+     * This method always returns the same instance of the service.
+EOF;
+        }
+
+        if (!$definition->isPublic()) {
+            $doc .= <<<EOF
+
+     *
+     * This service is private.
+     * If you want to be able to request this service from the container directly,
+     * make it public, otherwise you might end up with broken code.
+EOF;
+        }
+
+        if ($definition->isAutowired()) {
+            $doc = <<<EOF
+
+     *
+     * This service is autowired.
+EOF;
+
+        }
 
         if ($definition->isLazy()) {
             $lazyInitialization = '$lazyLoad = true';
+            $lazyInitializationDoc = "\n     * @param bool    \$lazyLoad whether to try lazy-loading the service with a proxy\n     *";
         } else {
             $lazyInitialization = '';
+            $lazyInitializationDoc = '';
         }
 
         // with proxies, for 5.3.3 compatibility, the getter must be public to be accessible to the initializer
@@ -613,9 +638,9 @@ class PhpDumper extends Dumper
         $visibility = $isProxyCandidate ? 'public' : 'protected';
         $code = <<<EOF
 
-    /*{$this->docStar}
-     * Gets the $public '$id'$shared$autowired service.
-     *
+    /**
+     * Gets the '$id' service.$doc
+     *$lazyInitializationDoc
      * $return
      */
     {$visibility} function get{$this->camelize($id)}Service($lazyInitialization)
@@ -643,14 +668,14 @@ EOF;
             }
 
             $code .=
-                $this->addServiceInclude($definition).
+                $this->addServiceInclude($id, $definition).
                 $this->addServiceLocalTempVariables($id, $definition).
                 $this->addServiceInlinedDefinitions($id, $definition).
                 $this->addServiceInstance($id, $definition).
                 $this->addServiceInlinedDefinitionsSetup($id, $definition).
-                $this->addServiceProperties($definition).
-                $this->addServiceMethodCalls($definition).
-                $this->addServiceConfigurator($definition).
+                $this->addServiceMethodCalls($id, $definition).
+                $this->addServiceProperties($id, $definition).
+                $this->addServiceConfigurator($id, $definition).
                 $this->addServiceReturn($id, $definition)
             ;
         }
@@ -733,7 +758,7 @@ EOF;
 
         return <<<EOF
 
-    /*{$this->docStar}
+    /**
      * Updates the '$id' service.
      */
     protected function synchronize{$this->camelize($id)}Service()
@@ -766,7 +791,7 @@ EOF;
 
                 $class = $this->dumpValue($callable[0]);
                 // If the class is a string we can optimize call_user_func away
-                if (0 === strpos($class, "'")) {
+                if (strpos($class, "'") === 0) {
                     return sprintf("        $return{$instantiation}%s::%s(%s);\n", $this->dumpLiteralClass($class), $callable[1], $arguments ? implode(', ', $arguments) : '');
                 }
 
@@ -779,7 +804,7 @@ EOF;
                 $class = $this->dumpValue($definition->getFactoryClass(false));
 
                 // If the class is a string we can optimize call_user_func away
-                if (0 === strpos($class, "'")) {
+                if (strpos($class, "'") === 0) {
                     return sprintf("        $return{$instantiation}%s::%s(%s);\n", $this->dumpLiteralClass($class), $definition->getFactoryMethod(false), $arguments ? implode(', ', $arguments) : '');
                 }
 
@@ -812,7 +837,7 @@ EOF;
     private function startClass($class, $baseClass, $namespace)
     {
         $bagClass = $this->container->isFrozen() ? 'use Symfony\Component\DependencyInjection\ParameterBag\FrozenParameterBag;' : 'use Symfony\Component\DependencyInjection\ParameterBag\\ParameterBag;';
-        $namespaceLine = $namespace ? "\nnamespace $namespace;\n" : '';
+        $namespaceLine = $namespace ? "namespace $namespace;\n" : '';
 
         return <<<EOF
 <?php
@@ -825,7 +850,9 @@ use Symfony\Component\DependencyInjection\Exception\LogicException;
 use Symfony\Component\DependencyInjection\Exception\RuntimeException;
 $bagClass
 
-/*{$this->docStar}
+/**
+ * $class.
+ *
  * This class has been auto-generated
  * by the Symfony Dependency Injection Component.
  */
@@ -849,6 +876,9 @@ EOF;
 
         $code = <<<EOF
 
+    /**
+     * Constructor.
+     */
     public function __construct()
     {{$targetDirs}
         parent::__construct($arguments);
@@ -864,7 +894,7 @@ EOF;
         $code .= $this->addMethodMap();
         $code .= $this->addAliases();
 
-        $code .= <<<'EOF'
+        $code .= <<<EOF
     }
 
 EOF;
@@ -883,6 +913,9 @@ EOF;
 
         $code = <<<EOF
 
+    /**
+     * Constructor.
+     */
     public function __construct()
     {{$targetDirs}
 EOF;
@@ -891,11 +924,11 @@ EOF;
             $code .= "\n        \$this->parameters = \$this->getDefaultParameters();\n";
         }
 
-        $code .= <<<'EOF'
+        $code .= <<<EOF
 
-        $this->services =
-        $this->scopedServices =
-        $this->scopeStacks = array();
+        \$this->services =
+        \$this->scopedServices =
+        \$this->scopeStacks = array();
 EOF;
 
         $code .= "\n";
@@ -910,7 +943,7 @@ EOF;
         $code .= $this->addMethodMap();
         $code .= $this->addAliases();
 
-        $code .= <<<'EOF'
+        $code .= <<<EOF
     }
 
 EOF;
@@ -927,32 +960,12 @@ EOF;
     {
         return <<<EOF
 
-    /*{$this->docStar}
+    /**
      * {@inheritdoc}
      */
     public function compile()
     {
         throw new LogicException('You cannot compile a dumped frozen container.');
-    }
-
-EOF;
-    }
-
-    /**
-     * Adds the isFrozen method for a frozen container.
-     *
-     * @return string
-     */
-    private function addIsFrozenMethod()
-    {
-        return <<<EOF
-
-    /*{$this->docStar}
-     * {@inheritdoc}
-     */
-    public function isFrozen()
-    {
-        return true;
     }
 
 EOF;
@@ -986,7 +999,11 @@ EOF;
     private function addAliases()
     {
         if (!$aliases = $this->container->getAliases()) {
-            return $this->container->isFrozen() ? "\n        \$this->aliases = array();\n" : '';
+            if ($this->container->isFrozen()) {
+                return "\n        \$this->aliases = array();\n";
+            } else {
+                return '';
+            }
         }
 
         $code = "        \$this->aliases = array(\n";
@@ -1017,36 +1034,36 @@ EOF;
 
         $code = '';
         if ($this->container->isFrozen()) {
-            $code .= <<<'EOF'
+            $code .= <<<EOF
 
     /**
      * {@inheritdoc}
      */
-    public function getParameter($name)
+    public function getParameter(\$name)
     {
-        $name = strtolower($name);
+        \$name = strtolower(\$name);
 
-        if (!(isset($this->parameters[$name]) || array_key_exists($name, $this->parameters))) {
-            throw new InvalidArgumentException(sprintf('The parameter "%s" must be defined.', $name));
+        if (!(isset(\$this->parameters[\$name]) || array_key_exists(\$name, \$this->parameters))) {
+            throw new InvalidArgumentException(sprintf('The parameter "%s" must be defined.', \$name));
         }
 
-        return $this->parameters[$name];
+        return \$this->parameters[\$name];
     }
 
     /**
      * {@inheritdoc}
      */
-    public function hasParameter($name)
+    public function hasParameter(\$name)
     {
-        $name = strtolower($name);
+        \$name = strtolower(\$name);
 
-        return isset($this->parameters[$name]) || array_key_exists($name, $this->parameters);
+        return isset(\$this->parameters[\$name]) || array_key_exists(\$name, \$this->parameters);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setParameter($name, $value)
+    public function setParameter(\$name, \$value)
     {
         throw new LogicException('Impossible to call set() on a frozen ParameterBag.');
     }
@@ -1056,22 +1073,19 @@ EOF;
      */
     public function getParameterBag()
     {
-        if (null === $this->parameterBag) {
-            $this->parameterBag = new FrozenParameterBag($this->parameters);
+        if (null === \$this->parameterBag) {
+            \$this->parameterBag = new FrozenParameterBag(\$this->parameters);
         }
 
-        return $this->parameterBag;
+        return \$this->parameterBag;
     }
 
 EOF;
-            if ('' === $this->docStar) {
-                $code = str_replace('/**', '/*', $code);
-            }
         }
 
         $code .= <<<EOF
 
-    /*{$this->docStar}
+    /**
      * Gets the default parameters.
      *
      * @return array An array of the default parameters
@@ -1097,7 +1111,7 @@ EOF;
      *
      * @throws InvalidArgumentException
      */
-    private function exportParameters(array $parameters, $path = '', $indent = 12)
+    private function exportParameters($parameters, $path = '', $indent = 12)
     {
         $php = array();
         foreach ($parameters as $key => $value) {
@@ -1128,7 +1142,7 @@ EOF;
      */
     private function endClass()
     {
-        return <<<'EOF'
+        return <<<EOF
 }
 
 EOF;
@@ -1262,17 +1276,10 @@ EOF;
                     return true;
                 }
 
-                if ($deep && !isset($visited[$argumentId]) && 'service_container' !== $argumentId) {
+                if ($deep && !isset($visited[$argumentId])) {
                     $visited[$argumentId] = true;
 
                     $service = $this->container->getDefinition($argumentId);
-
-                    // if the proxy manager is enabled, disable searching for references in lazy services,
-                    // as these services will be instantiated lazily and don't have direct related references.
-                    if ($service->isLazy() && !$this->getProxyDumper() instanceof NullDumper) {
-                        continue;
-                    }
-
                     $arguments = array_merge($service->getMethodCalls(), $service->getArguments(), $service->getProperties());
 
                     if ($this->hasReference($id, $arguments, $deep, $visited)) {
@@ -1308,11 +1315,8 @@ EOF;
             if (null !== $this->definitionVariables && $this->definitionVariables->contains($value)) {
                 return $this->dumpValue($this->definitionVariables->offsetGet($value), $interpolate);
             }
-            if ($value->getMethodCalls()) {
+            if (count($value->getMethodCalls()) > 0) {
                 throw new RuntimeException('Cannot dump definitions which have method calls.');
-            }
-            if ($value->getProperties()) {
-                throw new RuntimeException('Cannot dump definitions which have properties.');
             }
             if (null !== $value->getConfigurator()) {
                 throw new RuntimeException('Cannot dump definitions which have a configurator.');
@@ -1358,9 +1362,9 @@ EOF;
                     $service = $this->dumpValue($value->getFactoryService(false));
 
                     return sprintf('%s->%s(%s)', 0 === strpos($service, '$') ? sprintf('$this->get(%s)', $service) : $this->getServiceCall($value->getFactoryService(false)), $value->getFactoryMethod(false), implode(', ', $arguments));
+                } else {
+                    throw new RuntimeException('Cannot dump definitions which have factory method without factory service or factory class.');
                 }
-
-                throw new RuntimeException('Cannot dump definitions which have factory method without factory service or factory class.');
             }
 
             $class = $value->getClass();
@@ -1398,9 +1402,9 @@ EOF;
             }
         } elseif (is_object($value) || is_resource($value)) {
             throw new RuntimeException('Unable to dump a service container if a parameter is an object or a resource.');
+        } else {
+            return $this->export($value);
         }
-
-        return $this->export($value);
     }
 
     /**
@@ -1417,13 +1421,11 @@ EOF;
         if (false !== strpos($class, '$')) {
             throw new RuntimeException('Cannot dump definitions which have a variable class name.');
         }
-        if (0 !== strpos($class, "'") || !preg_match('/^\'(?:\\\{2})?[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*(?:\\\{2}[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)*\'$/', $class)) {
+        if (0 !== strpos($class, "'") || !preg_match('/^\'[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*(\\\{2}[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)*\'$/', $class)) {
             throw new RuntimeException(sprintf('Cannot dump definition because of invalid class name (%s)', $class ?: 'n/a'));
         }
 
-        $class = substr(str_replace('\\\\', '\\', $class), 1, -1);
-
-        return 0 === strpos($class, '\\') ? $class : '\\'.$class;
+        return '\\'.substr(str_replace('\\\\', '\\', $class), 1, -1);
     }
 
     /**
@@ -1465,19 +1467,19 @@ EOF;
      */
     private function getServiceCall($id, Reference $reference = null)
     {
-        while ($this->container->hasAlias($id)) {
-            $id = (string) $this->container->getAlias($id);
-        }
-
         if ('service_container' === $id) {
             return '$this';
         }
 
         if (null !== $reference && ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE !== $reference->getInvalidBehavior()) {
             return sprintf('$this->get(\'%s\', ContainerInterface::NULL_ON_INVALID_REFERENCE)', $id);
-        }
+        } else {
+            if ($this->container->hasAlias($id)) {
+                $id = (string) $this->container->getAlias($id);
+            }
 
-        return sprintf('$this->get(\'%s\')', $id);
+            return sprintf('$this->get(\'%s\')', $id);
+        }
     }
 
     /**

@@ -14,8 +14,6 @@ namespace Symfony\Bundle\SecurityBundle\Twig\Extension;
 @trigger_error('The '.__NAMESPACE__.'\LogoutUrlExtension class is deprecated since version 2.7 and will be removed in 3.0. Use Symfony\Bridge\Twig\Extension\LogoutUrlExtension instead.', E_USER_DEPRECATED);
 
 use Symfony\Bundle\SecurityBundle\Templating\Helper\LogoutUrlHelper;
-use Twig\Extension\AbstractExtension;
-use Twig\TwigFunction;
 
 /**
  * LogoutUrlHelper provides generator functions for the logout URL to Twig.
@@ -24,7 +22,7 @@ use Twig\TwigFunction;
  *
  * @deprecated since version 2.7, to be removed in 3.0. Use Symfony\Bridge\Twig\Extension\LogoutUrlExtension instead.
  */
-class LogoutUrlExtension extends AbstractExtension
+class LogoutUrlExtension extends \Twig_Extension
 {
     private $helper;
 
@@ -39,8 +37,8 @@ class LogoutUrlExtension extends AbstractExtension
     public function getFunctions()
     {
         return array(
-            new TwigFunction('logout_url', array($this, 'getLogoutUrl')),
-            new TwigFunction('logout_path', array($this, 'getLogoutPath')),
+            new \Twig_SimpleFunction('logout_url', array($this, 'getLogoutUrl')),
+            new \Twig_SimpleFunction('logout_path', array($this, 'getLogoutPath')),
         );
     }
 

@@ -109,7 +109,7 @@ class GuardAuthenticationFactory implements SecurityFactoryInterface
         }
 
         $authenticatorIds = $config['authenticators'];
-        if (1 == count($authenticatorIds)) {
+        if (count($authenticatorIds) == 1) {
             // if there is only one authenticator, use that as the entry point
             return array_shift($authenticatorIds);
         }

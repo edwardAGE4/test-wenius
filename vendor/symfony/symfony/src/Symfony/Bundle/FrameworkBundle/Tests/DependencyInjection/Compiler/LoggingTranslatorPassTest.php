@@ -11,16 +11,15 @@
 
 namespace Symfony\Bundle\FrameworkBundle\Tests\DependencyInjection\Compiler;
 
-use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\FrameworkBundle\DependencyInjection\Compiler\LoggingTranslatorPass;
 
-class LoggingTranslatorPassTest extends TestCase
+class LoggingTranslatorPassTest extends \PHPUnit_Framework_TestCase
 {
     public function testProcess()
     {
-        $definition = $this->getMockBuilder('Symfony\Component\DependencyInjection\Definition')->getMock();
-        $container = $this->getMockBuilder('Symfony\Component\DependencyInjection\ContainerBuilder')->getMock();
-        $parameterBag = $this->getMockBuilder('Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface')->getMock();
+        $definition = $this->getMock('Symfony\Component\DependencyInjection\Definition');
+        $container = $this->getMock('Symfony\Component\DependencyInjection\ContainerBuilder');
+        $parameterBag = $this->getMock('Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface');
 
         $container->expects($this->exactly(2))
             ->method('hasAlias')
@@ -61,7 +60,7 @@ class LoggingTranslatorPassTest extends TestCase
 
     public function testThatCompilerPassIsIgnoredIfThereIsNotLoggerDefinition()
     {
-        $container = $this->getMockBuilder('Symfony\Component\DependencyInjection\ContainerBuilder')->getMock();
+        $container = $this->getMock('Symfony\Component\DependencyInjection\ContainerBuilder');
         $container->expects($this->once())
             ->method('hasAlias')
             ->will($this->returnValue(false));
@@ -72,7 +71,7 @@ class LoggingTranslatorPassTest extends TestCase
 
     public function testThatCompilerPassIsIgnoredIfThereIsNotTranslatorDefinition()
     {
-        $container = $this->getMockBuilder('Symfony\Component\DependencyInjection\ContainerBuilder')->getMock();
+        $container = $this->getMock('Symfony\Component\DependencyInjection\ContainerBuilder');
         $container->expects($this->at(0))
             ->method('hasAlias')
             ->will($this->returnValue(true));

@@ -11,11 +11,10 @@
 
 namespace Symfony\Bundle\FrameworkBundle\Tests\DependencyInjection;
 
-use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\FrameworkBundle\DependencyInjection\Configuration;
 use Symfony\Component\Config\Definition\Processor;
 
-class ConfigurationTest extends TestCase
+class ConfigurationTest extends \PHPUnit_Framework_TestCase
 {
     public function testDefaultConfig()
     {
@@ -67,7 +66,6 @@ class ConfigurationTest extends TestCase
             array(array(), array()),
             array(array('10.0.0.0/8'), array('10.0.0.0/8')),
             array(array('::ffff:0:0/96'), array('::ffff:0:0/96')),
-            array(array('0.0.0.0/0'), array('0.0.0.0/0')),
         );
     }
 
@@ -171,7 +169,7 @@ class ConfigurationTest extends TestCase
             'annotations' => array(
                 'cache' => 'file',
                 'file_cache_dir' => '%kernel.cache_dir%/annotations',
-                'debug' => true,
+                'debug' => '%kernel.debug%',
             ),
             'serializer' => array(
                 'enabled' => false,

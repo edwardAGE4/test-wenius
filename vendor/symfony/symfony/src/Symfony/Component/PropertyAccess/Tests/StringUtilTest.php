@@ -11,10 +11,9 @@
 
 namespace Symfony\Component\PropertyAccess\Tests;
 
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\PropertyAccess\StringUtil;
 
-class StringUtilTest extends TestCase
+class StringUtilTest extends \PHPUnit_Framework_TestCase
 {
     public function singularifyProvider()
     {
@@ -54,7 +53,6 @@ class StringUtilTest extends TestCase
             array('children', 'child'),
             array('circuses', array('circus', 'circuse', 'circusis')),
             array('cliffs', 'cliff'),
-            array('committee', 'committee'),
             array('crises', array('cris', 'crise', 'crisis')),
             array('criteria', array('criterion', 'criterium')),
             array('cups', 'cup'),
@@ -104,13 +102,10 @@ class StringUtilTest extends TestCase
             array('movies', 'movie'),
             array('nebulae', 'nebula'),
             array('neuroses', array('neuros', 'neurose', 'neurosis')),
-            array('news', 'news'),
             array('oases', array('oas', 'oase', 'oasis')),
             array('objectives', 'objective'),
             array('oxen', 'ox'),
             array('parties', 'party'),
-            array('people', 'person'),
-            array('persons', 'person'),
             array('phenomena', array('phenomenon', 'phenomenum')),
             array('photos', 'photo'),
             array('pianos', 'piano'),
@@ -125,8 +120,6 @@ class StringUtilTest extends TestCase
             array('scarves', array('scarf', 'scarve', 'scarff')),
             array('schemas', 'schema'), //schemata
             array('selfies', 'selfie'),
-            array('series', 'series'),
-            array('services', 'service'),
             array('sheriffs', 'sheriff'),
             array('shoes', array('sho', 'shoe')),
             array('spies', 'spy'),

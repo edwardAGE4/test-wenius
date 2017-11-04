@@ -17,22 +17,18 @@ use Symfony\Bridge\Twig\TokenParser\TransDefaultDomainTokenParser;
 use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Bridge\Twig\NodeVisitor\TranslationNodeVisitor;
 use Symfony\Bridge\Twig\NodeVisitor\TranslationDefaultDomainNodeVisitor;
-use Twig\Extension\AbstractExtension;
-use Twig\NodeVisitor\NodeVisitorInterface;
-use Twig\TokenParser\AbstractTokenParser;
-use Twig\TwigFilter;
 
 /**
  * Provides integration of the Translation component with Twig.
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class TranslationExtension extends AbstractExtension
+class TranslationExtension extends \Twig_Extension
 {
     private $translator;
     private $translationNodeVisitor;
 
-    public function __construct(TranslatorInterface $translator, NodeVisitorInterface $translationNodeVisitor = null)
+    public function __construct(TranslatorInterface $translator, \Twig_NodeVisitorInterface $translationNodeVisitor = null)
     {
         if (!$translationNodeVisitor) {
             $translationNodeVisitor = new TranslationNodeVisitor();
@@ -53,15 +49,15 @@ class TranslationExtension extends AbstractExtension
     public function getFilters()
     {
         return array(
-            new TwigFilter('trans', array($this, 'trans')),
-            new TwigFilter('transchoice', array($this, 'transchoice')),
+            new \Twig_SimpleFilter('trans', array($this, 'trans')),
+            new \Twig_SimpleFilter('transchoice', array($this, 'transchoice')),
         );
     }
 
     /**
      * Returns the token parser instance to add to the existing list.
      *
-     * @return AbstractTokenParser[]
+     * @return array An array of Twig_TokenParser instances
      */
     public function getTokenParsers()
     {

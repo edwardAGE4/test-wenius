@@ -36,6 +36,8 @@ class PercentToLocalizedStringTransformer implements DataTransformerInterface
     private $scale;
 
     /**
+     * Constructor.
+     *
      * @see self::$types for a list of supported types
      *
      * @param int    $scale The scale
@@ -68,8 +70,8 @@ class PercentToLocalizedStringTransformer implements DataTransformerInterface
      *
      * @return string Percentage value
      *
-     * @throws TransformationFailedException if the given value is not numeric or
-     *                                       if the value could not be transformed
+     * @throws TransformationFailedException If the given value is not numeric or
+     *                                       if the value could not be transformed.
      */
     public function transform($value)
     {
@@ -99,12 +101,12 @@ class PercentToLocalizedStringTransformer implements DataTransformerInterface
     /**
      * Transforms between a percentage value into a normalized format (integer or float).
      *
-     * @param string $value Percentage value
+     * @param string $value Percentage value.
      *
-     * @return int|float Normalized value
+     * @return int|float Normalized value.
      *
-     * @throws TransformationFailedException if the given value is not a string or
-     *                                       if the value could not be transformed
+     * @throws TransformationFailedException If the given value is not a string or
+     *                                       if the value could not be transformed.
      */
     public function reverseTransform($value)
     {
@@ -117,20 +119,8 @@ class PercentToLocalizedStringTransformer implements DataTransformerInterface
         }
 
         $formatter = $this->getNumberFormatter();
-        $groupSep = $formatter->getSymbol(\NumberFormatter::GROUPING_SEPARATOR_SYMBOL);
-        $decSep = $formatter->getSymbol(\NumberFormatter::DECIMAL_SEPARATOR_SYMBOL);
-        $grouping = $formatter->getAttribute(\NumberFormatter::GROUPING_USED);
-
-        if ('.' !== $decSep && (!$grouping || '.' !== $groupSep)) {
-            $value = str_replace('.', $decSep, $value);
-        }
-
-        if (',' !== $decSep && (!$grouping || ',' !== $groupSep)) {
-            $value = str_replace(',', $decSep, $value);
-        }
-
         // replace normal spaces so that the formatter can read them
-        $value = $formatter->parse(str_replace(' ', "\xc2\xa0", $value));
+        $value = $formatter->parse(str_replace(' ', ' ', $value));
 
         if (intl_is_failure($formatter->getErrorCode())) {
             throw new TransformationFailedException($formatter->getErrorMessage());

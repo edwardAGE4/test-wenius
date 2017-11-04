@@ -38,7 +38,7 @@ class QuestionHelper extends Helper
      * @param OutputInterface $output   An OutputInterface instance
      * @param Question        $question The question to ask
      *
-     * @return mixed The user answer
+     * @return string The user answer
      *
      * @throws RuntimeException If there is no data to read in the input stream
      */
@@ -111,7 +111,8 @@ class QuestionHelper extends Helper
      *
      * @return bool|mixed|null|string
      *
-     * @throws RuntimeException In case the fallback is deactivated and the response cannot be hidden
+     * @throws \Exception
+     * @throws \RuntimeException
      */
     public function doAsk(OutputInterface $output, Question $question)
     {
@@ -125,7 +126,7 @@ class QuestionHelper extends Helper
             if ($question->isHidden()) {
                 try {
                     $ret = trim($this->getHiddenResponse($output, $inputStream));
-                } catch (RuntimeException $e) {
+                } catch (\RuntimeException $e) {
                     if (!$question->isHiddenFallback()) {
                         throw $e;
                     }
@@ -133,11 +134,7 @@ class QuestionHelper extends Helper
             }
 
             if (false === $ret) {
-                $ret = fgets($inputStream, 4096);
-                if (false === $ret) {
-                    throw new RuntimeException('Aborted');
-                }
-                $ret = trim($ret);
+                $ret = $this->readFromInput($inputStream);
             }
         } else {
             $ret = trim($this->autocomplete($output, $question, $inputStream));
@@ -163,12 +160,11 @@ class QuestionHelper extends Helper
         $message = $question->getQuestion();
 
         if ($question instanceof ChoiceQuestion) {
-            $maxWidth = max(array_map(array($this, 'strlen'), array_keys($question->getChoices())));
+            $width = max(array_map('strlen', array_keys($question->getChoices())));
 
             $messages = (array) $question->getQuestion();
             foreach ($question->getChoices() as $key => $value) {
-                $width = $maxWidth - $this->strlen($key);
-                $messages[] = '  [<info>'.$key.str_repeat(' ', $width).'</info>] '.$value;
+                $messages[] = sprintf("  [<info>%-${width}s</info>] %s", $key, $value);
             }
 
             $output->writeln($messages);
@@ -201,7 +197,6 @@ class QuestionHelper extends Helper
      *
      * @param OutputInterface $output
      * @param Question        $question
-     * @param resource        $inputStream
      *
      * @return string
      */
@@ -235,7 +230,7 @@ class QuestionHelper extends Helper
                     $output->write("\033[1D");
                 }
 
-                if (0 === $i) {
+                if ($i === 0) {
                     $ofs = -1;
                     $matches = $autocomplete;
                     $numMatches = count($matches);
@@ -318,8 +313,7 @@ class QuestionHelper extends Helper
     /**
      * Gets a hidden response from user.
      *
-     * @param OutputInterface $output      An Output instance
-     * @param resource        $inputStream The handler resource
+     * @param OutputInterface $output An Output instance
      *
      * @return string The answer
      *
@@ -365,7 +359,7 @@ class QuestionHelper extends Helper
         }
 
         if (false !== $shell = $this->getShell()) {
-            $readCmd = 'csh' === $shell ? 'set mypassword = $<' : 'read -r mypassword';
+            $readCmd = $shell === 'csh' ? 'set mypassword = $<' : 'read -r mypassword';
             $command = sprintf("/usr/bin/env %s -c 'stty -echo; %s; stty echo; echo \$mypassword'", $shell, $readCmd);
             $value = rtrim(shell_exec($command));
             $output->writeln('');
@@ -383,7 +377,7 @@ class QuestionHelper extends Helper
      * @param OutputInterface $output      An Output instance
      * @param Question        $question    A Question instance
      *
-     * @return mixed The validated response
+     * @return string The validated response
      *
      * @throws \Exception In case the max number of attempts has been reached and no valid response has been given
      */
@@ -398,8 +392,6 @@ class QuestionHelper extends Helper
 
             try {
                 return call_user_func($question->getValidator(), $interviewer());
-            } catch (RuntimeException $e) {
-                throw $e;
             } catch (\Exception $error) {
             }
         }
@@ -435,6 +427,30 @@ class QuestionHelper extends Helper
     }
 
     /**
+     * Reads user input.
+     *
+     * @param resource $stream The input stream
+     *
+     * @return string User input
+     *
+     * @throws RuntimeException
+     */
+    private function readFromInput($stream)
+    {
+        if (STDIN === $stream && function_exists('readline')) {
+            $ret = readline();
+        } else {
+            $ret = fgets($stream, 4096);
+        }
+
+        if (false === $ret) {
+            throw new RuntimeException('Aborted');
+        }
+
+        return trim($ret);
+    }
+
+    /**
      * Returns whether Stty is available or not.
      *
      * @return bool
@@ -447,6 +463,6 @@ class QuestionHelper extends Helper
 
         exec('stty 2>&1', $output, $exitcode);
 
-        return self::$stty = 0 === $exitcode;
+        return self::$stty = $exitcode === 0;
     }
 }

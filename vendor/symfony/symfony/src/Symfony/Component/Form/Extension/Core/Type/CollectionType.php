@@ -30,7 +30,7 @@ class CollectionType extends AbstractType
             $prototypeOptions = array_replace(array(
                 'required' => $options['required'],
                 'label' => $options['prototype_name'].'label__',
-            ), $options['entry_options']);
+            ), $options['options']);
 
             if (null !== $options['prototype_data']) {
                 $prototypeOptions['data'] = $options['prototype_data'];
@@ -62,8 +62,7 @@ class CollectionType extends AbstractType
         ));
 
         if ($form->getConfig()->hasAttribute('prototype')) {
-            $prototype = $form->getConfig()->getAttribute('prototype');
-            $view->vars['prototype'] = $prototype->setParent($form)->createView($view);
+            $view->vars['prototype'] = $form->getConfig()->getAttribute('prototype')->createView($view);
         }
     }
 

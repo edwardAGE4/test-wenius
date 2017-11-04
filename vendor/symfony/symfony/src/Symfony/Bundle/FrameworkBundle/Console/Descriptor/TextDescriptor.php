@@ -234,6 +234,7 @@ class TextDescriptor extends Descriptor
                 $alias = $definition;
                 $tableRows[] = array_merge(array($serviceId, sprintf('alias for "%s"', $alias)), $tagsCount ? array_fill(0, $tagsCount, '') : array());
             } else {
+                // we have no information (happens with "service_container")
                 $tableRows[] = array_merge(array($serviceId, get_class($definition)), $tagsCount ? array_fill(0, $tagsCount, '') : array());
             }
         }
@@ -255,7 +256,8 @@ class TextDescriptor extends Descriptor
         $tableRows[] = array('Service ID', isset($options['id']) ? $options['id'] : '-');
         $tableRows[] = array('Class', $definition->getClass() ?: '-');
 
-        if ($tags = $definition->getTags()) {
+        $tags = $definition->getTags();
+        if (count($tags)) {
             $tagInformation = '';
             foreach ($tags as $tagName => $tagData) {
                 foreach ($tagData as $tagParameters) {
@@ -280,12 +282,24 @@ class TextDescriptor extends Descriptor
         $tableRows[] = array('Public', $definition->isPublic() ? 'yes' : 'no');
         $tableRows[] = array('Synthetic', $definition->isSynthetic() ? 'yes' : 'no');
         $tableRows[] = array('Lazy', $definition->isLazy() ? 'yes' : 'no');
-        $tableRows[] = array('Synchronized', $definition->isSynchronized(false) ? 'yes' : 'no');
-        $tableRows[] = array('Abstract', $definition->isAbstract() ? 'yes' : 'no');
-        $tableRows[] = array('Autowired', $definition->isAutowired() ? 'yes' : 'no');
 
-        $autowiringTypes = $definition->getAutowiringTypes();
-        $tableRows[] = array('Autowiring Types', $autowiringTypes ? implode(', ', $autowiringTypes) : '-');
+        if (method_exists($definition, 'isSynchronized')) {
+            $tableRows[] = array('Synchronized', $definition->isSynchronized(false) ? 'yes' : 'no');
+        }
+        $tableRows[] = array('Abstract', $definition->isAbstract() ? 'yes' : 'no');
+
+        if (method_exists($definition, 'isAutowired')) {
+            $tableRows[] = array('Autowired', $definition->isAutowired() ? 'yes' : 'no');
+
+            $autowiringTypes = $definition->getAutowiringTypes();
+            if (count($autowiringTypes)) {
+                $autowiringTypesInformation = implode(', ', $autowiringTypes);
+            } else {
+                $autowiringTypesInformation = '-';
+            }
+
+            $tableRows[] = array('Autowiring Types', $autowiringTypesInformation);
+        }
 
         if ($definition->getFile()) {
             $tableRows[] = array('Required File', $definition->getFile() ? $definition->getFile() : '-');
@@ -326,7 +340,7 @@ class TextDescriptor extends Descriptor
      */
     protected function describeContainerAlias(Alias $alias, array $options = array())
     {
-        $options['output']->comment(sprintf('This service is an alias for the service <info>%s</info>', (string) $alias));
+        $options['output']->comment(sprintf("This service is an alias for the service <info>%s</info>\n", (string) $alias));
     }
 
     /**
@@ -412,6 +426,17 @@ class TextDescriptor extends Descriptor
         }
 
         return trim($configAsString);
+    }
+
+    /**
+     * @param string $section
+     * @param string $message
+     *
+     * @return string
+     */
+    private function formatSection($section, $message)
+    {
+        return sprintf('<info>[%s]</info> %s', $section, $message);
     }
 
     /**

@@ -56,9 +56,9 @@ abstract class DoctrineType extends AbstractType
      *
      * For backwards compatibility, objects are cast to strings by default.
      *
-     * @param object $choice The object
+     * @param object $choice The object.
      *
-     * @return string The string representation of the object
+     * @return string The string representation of the object.
      *
      * @internal This method is public to be usable as callback. It should not
      *           be used in user code.
@@ -75,12 +75,12 @@ abstract class DoctrineType extends AbstractType
      * a single-column integer ID. In that case, the value of the field is
      * the ID of the object. That ID is also used as field name.
      *
-     * @param object     $choice The object
-     * @param int|string $key    The choice key
+     * @param object     $choice The object.
+     * @param int|string $key    The choice key.
      * @param string     $value  The choice value. Corresponds to the object's
      *                           ID here.
      *
-     * @return string The field name
+     * @return string The field name.
      *
      * @internal This method is public to be usable as callback. It should not
      *           be used in user code.
@@ -111,12 +111,7 @@ abstract class DoctrineType extends AbstractType
     public function __construct(ManagerRegistry $registry, PropertyAccessorInterface $propertyAccessor = null, ChoiceListFactoryInterface $choiceListFactory = null)
     {
         $this->registry = $registry;
-        $this->choiceListFactory = $choiceListFactory ?: new CachingFactoryDecorator(
-            new PropertyAccessDecorator(
-                new DefaultChoiceListFactory(),
-                $propertyAccessor
-            )
-        );
+        $this->choiceListFactory = $choiceListFactory ?: new PropertyAccessDecorator(new DefaultChoiceListFactory(), $propertyAccessor);
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -138,6 +133,7 @@ abstract class DoctrineType extends AbstractType
         $type = $this;
 
         $choiceLoader = function (Options $options) use ($choiceListFactory, &$choiceLoaders, $type) {
+
             // Unless the choices are given explicitly, load them on demand
             if (null === $options['choices']) {
                 $hash = null;
@@ -176,7 +172,7 @@ abstract class DoctrineType extends AbstractType
                     $entityLoader
                 );
 
-                if (null !== $hash) {
+                if ($hash !== null) {
                     $choiceLoaders[$hash] = $doctrineChoiceLoader;
                 }
 

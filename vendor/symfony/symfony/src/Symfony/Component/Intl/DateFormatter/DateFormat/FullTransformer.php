@@ -37,6 +37,8 @@ class FullTransformer
     private $timezone;
 
     /**
+     * Constructor.
+     *
      * @param string $pattern  The pattern to be used to format and/or parse values
      * @param string $timezone The timezone to perform the date/time calculations
      */
@@ -133,7 +135,7 @@ class FullTransformer
      * @param \DateTime $dateTime A configured DateTime object to use to perform the date calculation
      * @param string    $value    String to convert to a time value
      *
-     * @return int|false The corresponding Unix timestamp
+     * @return int The corresponding Unix timestamp
      *
      * @throws \InvalidArgumentException When the value can not be matched with pattern
      */

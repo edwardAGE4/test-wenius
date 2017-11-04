@@ -64,7 +64,7 @@ class ResolveParameterPlaceHoldersPass implements CompilerPassInterface
 
         $aliases = array();
         foreach ($container->getAliases() as $name => $target) {
-            $aliases[$parameterBag->resolveValue($name)] = $target;
+            $aliases[$parameterBag->resolveValue($name)] = $parameterBag->resolveValue($target);
         }
         $container->setAliases($aliases);
 

@@ -1,5 +1,5 @@
 {
-    "Version": "2.1.32.59",
+    "Version": "2.1.8.9",
     "Names": {
         "ADP": [
             "ADP",
@@ -217,13 +217,9 @@
             "BYB",
             "Baltarusijos naujasis rublis (1994–1999)"
         ],
-        "BYN": [
-            "BYN",
-            "Baltarusijos rublis"
-        ],
         "BYR": [
             "BYR",
-            "Baltarusijos rublis (2000–2016)"
+            "Baltarusijos rublis"
         ],
         "BZD": [
             "BZD",
@@ -370,7 +366,7 @@
             "Etiopijos biras"
         ],
         "EUR": [
-            "€",
+            "EUR",
             "Euras"
         ],
         "FIM": [
@@ -391,7 +387,7 @@
         ],
         "GBP": [
             "GBP",
-            "Didžiosios Britanijos svaras"
+            "Didžiosios Britanijos svaras sterlingų"
         ],
         "GEK": [
             "GEK",
@@ -779,7 +775,7 @@
         ],
         "PEN": [
             "PEN",
-            "Peru solis"
+            "Peru naujasis solis"
         ],
         "PES": [
             "PES",

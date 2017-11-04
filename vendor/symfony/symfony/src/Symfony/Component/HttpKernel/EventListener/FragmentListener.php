@@ -35,6 +35,8 @@ class FragmentListener implements EventSubscriberInterface
     private $fragmentPath;
 
     /**
+     * Constructor.
+     *
      * @param UriSigner $signer       A UriSigner instance
      * @param string    $fragmentPath The path that triggers this listener
      */
@@ -49,20 +51,13 @@ class FragmentListener implements EventSubscriberInterface
      *
      * @param GetResponseEvent $event A GetResponseEvent instance
      *
-     * @throws AccessDeniedHttpException if the request does not come from a trusted IP
+     * @throws AccessDeniedHttpException if the request does not come from a trusted IP.
      */
     public function onKernelRequest(GetResponseEvent $event)
     {
         $request = $event->getRequest();
 
-        if ($this->fragmentPath !== rawurldecode($request->getPathInfo())) {
-            return;
-        }
-
-        if ($request->attributes->has('_controller')) {
-            // Is a sub-request: no need to parse _path but it should still be removed from query parameters as below.
-            $request->query->remove('_path');
-
+        if ($request->attributes->has('_controller') || $this->fragmentPath !== rawurldecode($request->getPathInfo())) {
             return;
         }
 
@@ -79,7 +74,7 @@ class FragmentListener implements EventSubscriberInterface
     protected function validateRequest(Request $request)
     {
         // is the Request safe?
-        if (!$request->isMethodSafe(false)) {
+        if (!$request->isMethodSafe()) {
             throw new AccessDeniedHttpException();
         }
 

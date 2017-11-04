@@ -11,43 +11,37 @@
 
 namespace Symfony\Bridge\Twig\Node;
 
-use Twig\Compiler;
-use Twig\Node\Node;
-
 /**
  * @author Julien Galenski <julien.galenski@gmail.com>
  */
-class DumpNode extends Node
+class DumpNode extends \Twig_Node
 {
     private $varPrefix;
 
-    public function __construct($varPrefix, Node $values = null, $lineno, $tag = null)
+    public function __construct($varPrefix, \Twig_Node $values = null, $lineno, $tag = null)
     {
-        $nodes = array();
-        if (null !== $values) {
-            $nodes['values'] = $values;
-        }
-
-        parent::__construct($nodes, array(), $lineno, $tag);
+        parent::__construct(array('values' => $values), array(), $lineno, $tag);
         $this->varPrefix = $varPrefix;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function compile(Compiler $compiler)
+    public function compile(\Twig_Compiler $compiler)
     {
         $compiler
             ->write("if (\$this->env->isDebug()) {\n")
             ->indent();
 
-        if (!$this->hasNode('values')) {
+        $values = $this->getNode('values');
+
+        if (null === $values) {
             // remove embedded templates (macros) from the context
             $compiler
                 ->write(sprintf('$%svars = array();'."\n", $this->varPrefix))
                 ->write(sprintf('foreach ($context as $%1$skey => $%1$sval) {'."\n", $this->varPrefix))
                 ->indent()
-                ->write(sprintf('if (!$%sval instanceof \Twig\Template) {'."\n", $this->varPrefix))
+                ->write(sprintf('if (!$%sval instanceof \Twig_Template) {'."\n", $this->varPrefix))
                 ->indent()
                 ->write(sprintf('$%1$svars[$%1$skey] = $%1$sval;'."\n", $this->varPrefix))
                 ->outdent()
@@ -56,7 +50,7 @@ class DumpNode extends Node
                 ->write("}\n")
                 ->addDebugInfo($this)
                 ->write(sprintf('\Symfony\Component\VarDumper\VarDumper::dump($%svars);'."\n", $this->varPrefix));
-        } elseif (($values = $this->getNode('values')) && 1 === $values->count()) {
+        } elseif (1 === $values->count()) {
             $compiler
                 ->addDebugInfo($this)
                 ->write('\Symfony\Component\VarDumper\VarDumper::dump(')
@@ -68,7 +62,7 @@ class DumpNode extends Node
                 ->write('\Symfony\Component\VarDumper\VarDumper::dump(array('."\n")
                 ->indent();
             foreach ($values as $node) {
-                $compiler->write('');
+                $compiler->addIndentation();
                 if ($node->hasAttribute('name')) {
                     $compiler
                         ->string($node->getAttribute('name'))

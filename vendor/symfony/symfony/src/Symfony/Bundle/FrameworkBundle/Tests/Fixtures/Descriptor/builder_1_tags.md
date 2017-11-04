@@ -4,7 +4,8 @@ Container tags
 tag1
 ----
 
-### definition_2
+definition_2
+~~~~~~~~~~~~
 
 - Class: `Full\Qualified\Class2`
 - Scope: `container`
@@ -23,7 +24,8 @@ tag1
 tag2
 ----
 
-### definition_2
+definition_2
+~~~~~~~~~~~~
 
 - Class: `Full\Qualified\Class2`
 - Scope: `container`

@@ -68,12 +68,9 @@ class LockHandler
             return true;
         }
 
-        $error = null;
-
-        // Silence error reporting
-        set_error_handler(function ($errno, $msg) use (&$error) {
-            $error = $msg;
-        });
+        // Silence both userland and native PHP error handlers
+        $errorLevel = error_reporting(0);
+        set_error_handler('var_dump', 0);
 
         if (!$this->handle = fopen($this->file, 'r')) {
             if ($this->handle = fopen($this->file, 'x')) {
@@ -84,9 +81,11 @@ class LockHandler
             }
         }
         restore_error_handler();
+        error_reporting($errorLevel);
 
         if (!$this->handle) {
-            throw new IOException($error, 0, null, $this->file);
+            $error = error_get_last();
+            throw new IOException($error['message'], 0, null, $this->file);
         }
 
         // On Windows, even if PHP doc says the contrary, LOCK_NB works, see

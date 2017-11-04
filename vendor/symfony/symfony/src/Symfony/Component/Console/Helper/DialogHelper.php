@@ -13,7 +13,6 @@ namespace Symfony\Component\Console\Helper;
 
 use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Exception\RuntimeException;
-use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 
@@ -55,15 +54,11 @@ class DialogHelper extends InputAwareHelper
      */
     public function select(OutputInterface $output, $question, $choices, $default = null, $attempts = false, $errorMessage = 'Value "%s" is invalid', $multiselect = false)
     {
-        if ($output instanceof ConsoleOutputInterface) {
-            $output = $output->getErrorOutput();
-        }
-
         $width = max(array_map('strlen', array_keys($choices)));
 
         $messages = (array) $question;
         foreach ($choices as $key => $value) {
-            $messages[] = sprintf("  [<info>%-{$width}s</info>] %s", $key, $value);
+            $messages[] = sprintf("  [<info>%-${width}s</info>] %s", $key, $value);
         }
 
         $output->writeln($messages);
@@ -119,10 +114,6 @@ class DialogHelper extends InputAwareHelper
             return $default;
         }
 
-        if ($output instanceof ConsoleOutputInterface) {
-            $output = $output->getErrorOutput();
-        }
-
         $output->write($question);
 
         $inputStream = $this->inputStream ?: STDIN;
@@ -161,7 +152,7 @@ class DialogHelper extends InputAwareHelper
                         $output->write("\033[1D");
                     }
 
-                    if (0 === $i) {
+                    if ($i === 0) {
                         $ofs = -1;
                         $matches = $autocomplete;
                         $numMatches = count($matches);
@@ -280,10 +271,6 @@ class DialogHelper extends InputAwareHelper
      */
     public function askHiddenResponse(OutputInterface $output, $question, $fallback = true)
     {
-        if ($output instanceof ConsoleOutputInterface) {
-            $output = $output->getErrorOutput();
-        }
-
         if ('\\' === DIRECTORY_SEPARATOR) {
             $exe = __DIR__.'/../Resources/bin/hiddeninput.exe';
 
@@ -326,7 +313,7 @@ class DialogHelper extends InputAwareHelper
 
         if (false !== $shell = $this->getShell()) {
             $output->write($question);
-            $readCmd = 'csh' === $shell ? 'set mypassword = $<' : 'read -r mypassword';
+            $readCmd = $shell === 'csh' ? 'set mypassword = $<' : 'read -r mypassword';
             $command = sprintf("/usr/bin/env %s -c 'stty -echo; %s; stty echo; echo \$mypassword'", $shell, $readCmd);
             $value = rtrim(shell_exec($command));
             $output->writeln('');
@@ -464,7 +451,7 @@ class DialogHelper extends InputAwareHelper
 
         exec('stty 2>&1', $output, $exitcode);
 
-        return self::$stty = 0 === $exitcode;
+        return self::$stty = $exitcode === 0;
     }
 
     /**
@@ -473,7 +460,7 @@ class DialogHelper extends InputAwareHelper
      * @param callable        $interviewer A callable that will ask for a question and return the result
      * @param OutputInterface $output      An Output instance
      * @param callable        $validator   A PHP callback
-     * @param int|false       $attempts    Max number of times to ask before giving up; false will ask infinitely
+     * @param int|false       $attempts    Max number of times to ask before giving up ; false will ask infinitely
      *
      * @return string The validated response
      *
@@ -481,10 +468,6 @@ class DialogHelper extends InputAwareHelper
      */
     private function validateAttempts($interviewer, OutputInterface $output, $validator, $attempts)
     {
-        if ($output instanceof ConsoleOutputInterface) {
-            $output = $output->getErrorOutput();
-        }
-
         $e = null;
         while (false === $attempts || $attempts--) {
             if (null !== $e) {

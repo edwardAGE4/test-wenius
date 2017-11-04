@@ -34,6 +34,8 @@ class TraceableEventDispatcher implements TraceableEventDispatcherInterface
     private $wrappedListeners;
 
     /**
+     * Constructor.
+     *
      * @param EventDispatcherInterface $dispatcher An EventDispatcherInterface instance
      * @param Stopwatch                $stopwatch  A Stopwatch instance
      * @param LoggerInterface          $logger     A LoggerInterface instance
@@ -102,10 +104,6 @@ class TraceableEventDispatcher implements TraceableEventDispatcherInterface
      */
     public function getListenerPriority($eventName, $listener)
     {
-        if (!method_exists($this->dispatcher, 'getListenerPriority')) {
-            return 0;
-        }
-
         return $this->dispatcher->getListenerPriority($eventName, $listener);
     }
 
@@ -124,10 +122,6 @@ class TraceableEventDispatcher implements TraceableEventDispatcherInterface
     {
         if (null === $event) {
             $event = new Event();
-        }
-
-        if (null !== $this->logger && $event->isPropagationStopped()) {
-            $this->logger->debug(sprintf('The "%s" event is already stopped. No listeners have been called.', $eventName));
         }
 
         $this->preProcess($eventName);
@@ -241,12 +235,12 @@ class TraceableEventDispatcher implements TraceableEventDispatcherInterface
     private function preProcess($eventName)
     {
         foreach ($this->dispatcher->getListeners($eventName) as $listener) {
+            $this->dispatcher->removeListener($eventName, $listener);
             $info = $this->getListenerInfo($listener, $eventName);
             $name = isset($info['class']) ? $info['class'] : $info['type'];
             $wrappedListener = new WrappedListener($listener, $name, $this->stopwatch, $this);
             $this->wrappedListeners[$eventName][] = $wrappedListener;
-            $this->dispatcher->removeListener($eventName, $listener);
-            $this->dispatcher->addListener($eventName, $wrappedListener, $info['priority']);
+            $this->dispatcher->addListener($eventName, $wrappedListener);
         }
     }
 
@@ -259,9 +253,8 @@ class TraceableEventDispatcher implements TraceableEventDispatcherInterface
                 continue;
             }
             // Unwrap listener
-            $priority = $this->getListenerPriority($eventName, $listener);
             $this->dispatcher->removeListener($eventName, $listener);
-            $this->dispatcher->addListener($eventName, $listener->getWrappedListener(), $priority);
+            $this->dispatcher->addListener($eventName, $listener->getWrappedListener());
 
             $info = $this->getListenerInfo($listener->getWrappedListener(), $eventName);
             if ($listener->wasCalled()) {
@@ -304,12 +297,6 @@ class TraceableEventDispatcher implements TraceableEventDispatcherInterface
             'event' => $eventName,
             'priority' => $this->getListenerPriority($eventName, $listener),
         );
-
-        // unwrap for correct listener info
-        if ($listener instanceof WrappedListener) {
-            $listener = $listener->getWrappedListener();
-        }
-
         if ($listener instanceof \Closure) {
             $info += array(
                 'type' => 'Closure',

@@ -11,15 +11,13 @@
 
 namespace Symfony\Component\Form\Tests\ChoiceList;
 
-use PHPUnit\Framework\TestCase;
-
 /**
  * @author Bernhard Schussek <bschussek@gmail.com>
  */
-abstract class AbstractChoiceListTest extends TestCase
+abstract class AbstractChoiceListTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var \Symfony\Component\Form\ChoiceList\ChoiceListInterface
+     * @var \Symfony\Component\Form\Extension\Core\ChoiceList\ChoiceListInterface
      */
     protected $list;
 
@@ -211,15 +209,8 @@ abstract class AbstractChoiceListTest extends TestCase
         $this->assertSame(array(), $this->list->getValuesForChoices(array()));
     }
 
-    public function testGetChoicesForValuesWithNull()
-    {
-        $values = $this->list->getValuesForChoices(array(null));
-
-        $this->assertNotEmpty($this->list->getChoicesForValues($values));
-    }
-
     /**
-     * @return \Symfony\Component\Form\ChoiceList\ChoiceListInterface
+     * @return \Symfony\Component\Form\Extension\Core\ChoiceList\ChoiceListInterface
      */
     abstract protected function createChoiceList();
 

@@ -25,6 +25,8 @@ class UrlPackage extends Package
     private $baseUrls;
 
     /**
+     * Constructor.
+     *
      * @param string|array $baseUrls Base asset URLs
      * @param string       $version  The package version
      * @param string       $format   The format used to apply the version

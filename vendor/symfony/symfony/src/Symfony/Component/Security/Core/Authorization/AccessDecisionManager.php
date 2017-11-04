@@ -32,6 +32,8 @@ class AccessDecisionManager implements AccessDecisionManagerInterface
     private $allowIfEqualGrantedDeniedDecisions;
 
     /**
+     * Constructor.
+     *
      * @param VoterInterface[] $voters                             An array of VoterInterface instances
      * @param string           $strategy                           The vote strategy
      * @param bool             $allowIfAllAbstainDecisions         Whether to grant access if all voters abstained or not

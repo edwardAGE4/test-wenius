@@ -48,7 +48,7 @@ class CurlCrawler extends BaseCrawler
         curl_setopt($curl, CURLOPT_FAILONERROR, false);
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 1);
         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 2);
-        curl_setopt($curl, CURLOPT_USERAGENT, 'SecurityChecker-CLI/3 CURL PHP');
+        curl_setopt($curl, CURLOPT_CAINFO, $certFile);
 
         $response = curl_exec($curl);
 

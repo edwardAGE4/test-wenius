@@ -11,7 +11,6 @@
 
 namespace Symfony\Component\Locale\Tests\Stub;
 
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\Locale\Stub\StubLocale;
 
 /**
@@ -19,7 +18,7 @@ use Symfony\Component\Locale\Stub\StubLocale;
  *
  * @group legacy
  */
-class StubLocaleTest extends TestCase
+class StubLocaleTest extends \PHPUnit_Framework_TestCase
 {
     public function testGetCurrenciesData()
     {

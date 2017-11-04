@@ -41,11 +41,6 @@ class DoctrineDummy
     public $bar;
 
     /**
-     * @ManyToMany(targetEntity="DoctrineRelation", indexBy="rguid")
-     */
-    protected $indexedBar;
-
-    /**
      * @Column(type="guid")
      */
     protected $guid;
@@ -66,16 +61,6 @@ class DoctrineDummy
     private $simpleArray;
 
     /**
-     * @Column(type="float")
-     */
-    private $float;
-
-    /**
-     * @Column(type="decimal", precision=10, scale=2)
-     */
-    private $decimal;
-
-    /**
      * @Column(type="boolean")
      */
     private $bool;
@@ -84,16 +69,6 @@ class DoctrineDummy
      * @Column(type="binary")
      */
     private $binary;
-
-    /**
-     * @Column(type="custom_foo")
-     */
-    private $customFoo;
-
-    /**
-     * @Column(type="bigint")
-     */
-    private $bigint;
 
     public $notMapped;
 }
