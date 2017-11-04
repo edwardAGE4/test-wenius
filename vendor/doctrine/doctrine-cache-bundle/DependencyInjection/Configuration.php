@@ -74,7 +74,6 @@ class Configuration implements ConfigurationInterface
     public function getProviderNames(NodeInterface $tree)
     {
         foreach ($tree->getChildren() as $providers) {
-
             if ($providers->getName() !== 'providers') {
                 continue;
             }
@@ -117,6 +116,7 @@ class Configuration implements ConfigurationInterface
                 $options = reset($params);
                 $conf    = array(
                     'type'            => 'custom_provider',
+                    'namespace' => isset($conf['namespace']) ? $conf['namespace'] : null ,
                     'custom_provider' => array(
                         'type'      => $conf['type'],
                         'options'   => $options ?: null,
@@ -176,6 +176,7 @@ class Configuration implements ConfigurationInterface
                             ->scalarNode('namespace')->defaultNull()->end()
                             ->scalarNode('type')->defaultNull()->end()
                             ->append($this->addBasicProviderNode('apc'))
+                            ->append($this->addBasicProviderNode('apcu'))
                             ->append($this->addBasicProviderNode('array'))
                             ->append($this->addBasicProviderNode('void'))
                             ->append($this->addBasicProviderNode('wincache'))
@@ -190,6 +191,7 @@ class Configuration implements ConfigurationInterface
                             ->append($this->addPhpFileNode())
                             ->append($this->addMongoNode())
                             ->append($this->addRedisNode())
+                            ->append($this->addPredisNode())
                             ->append($this->addRiakNode())
                             ->append($this->addSqlite3Node())
                         ->end()
@@ -284,6 +286,7 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('connection_id')->defaultNull()->end()
                 ->arrayNode('servers')
                 ->useAttributeAsKey('host')
+                ->normalizeKeys(false)
                     ->prototype('array')
                         ->beforeNormalization()
                             ->ifTrue(function ($v) {
@@ -326,8 +329,10 @@ class Configuration implements ConfigurationInterface
             ->fixXmlConfig('server')
             ->children()
                 ->scalarNode('connection_id')->defaultNull()->end()
+                ->scalarNode('persistent_id')->defaultNull()->end()
                 ->arrayNode('servers')
                 ->useAttributeAsKey('host')
+                ->normalizeKeys(false)
                     ->prototype('array')
                         ->beforeNormalization()
                             ->ifTrue(function ($v) {
@@ -372,6 +377,37 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('password')->defaultNull()->end()
                 ->scalarNode('timeout')->defaultNull()->end()
                 ->scalarNode('database')->defaultNull()->end()
+                ->booleanNode('persistent')->defaultFalse()->end()
+            ->end()
+        ;
+
+        return $node;
+    }
+
+    /**
+     * Build predis node configuration definition
+     *
+     * @return \Symfony\Component\Config\Definition\Builder\TreeBuilder
+     */
+    private function addPredisNode()
+    {
+        $builder = new TreeBuilder();
+        $node    = $builder->root('predis');
+
+        $node
+            ->addDefaultsIfNotSet()
+            ->children()
+                ->scalarNode('client_id')->defaultNull()->end()
+                ->scalarNode('scheme')->defaultValue('tcp')->end()
+                ->scalarNode('host')->defaultValue('%doctrine_cache.redis.host%')->end()
+                ->scalarNode('port')->defaultValue('%doctrine_cache.redis.port%')->end()
+                ->scalarNode('password')->defaultNull()->end()
+                ->scalarNode('timeout')->defaultNull()->end()
+                ->scalarNode('database')->defaultNull()->end()
+                ->arrayNode('options')
+                  ->useAttributeAsKey('name')
+                  ->prototype('scalar')->end()
+                ->end()
             ->end()
         ;
 
