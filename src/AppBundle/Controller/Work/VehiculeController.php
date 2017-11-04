@@ -8,6 +8,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Controller pour les véhicules.
@@ -48,18 +49,21 @@ class VehiculeController extends Controller
     public function newAction(Request $request)
     {
         $vehicule = new Vehicule();
+        
         $form = $this->createForm('AppBundle\Form\Work\VehiculeType', $vehicule);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
+        if ($form->isSubmitted()) {
             // Enregistrement du créateur
             $vehicule->setCreateur($this->getUser());
             
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($vehicule);
-            $em->flush();
+            if ($form->isValid()) {
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($vehicule);
+                $em->flush();
 
-            return $this->redirectToRoute('cars_show', array('id' => $vehicule->getId()));
+                return $this->redirectToRoute('cars_show', array('idVehicule' => $vehicule->getIdVehicule()));
+            }
         }
 
         return $this->render('AppBundle:Work/Vehicule:new.html.twig', array(
@@ -71,13 +75,15 @@ class VehiculeController extends Controller
     /**
      * Affiche les détails d'un véhicule.
      *
-     * @Route("/{id}", name="cars_show")
+     * @Route("/{idVehicule}", name="cars_show")
      * @Method("GET")
      * @param Vehicule $vehicule
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function showAction(Vehicule $vehicule)
     {
+        $this->verifyVehicule($vehicule);
+
         $deleteForm = $this->createDeleteForm($vehicule);
 
         return $this->render('AppBundle:Work/Vehicule:show.html.twig', array(
@@ -89,7 +95,7 @@ class VehiculeController extends Controller
     /**
      * Supprime un véhicule
      *
-     * @Route("/{id}", name="cars_delete")
+     * @Route("/{idVehicule}", name="cars_delete")
      * @Method("DELETE")
      * @Security("has_role('ROLE_MANAGER')")
      * @param Request $request
@@ -118,10 +124,23 @@ class VehiculeController extends Controller
      */
     private function createDeleteForm(Vehicule $vehicule)
     {
+        $this->verifyVehicule($vehicule);
+        
         return $this->createFormBuilder()
-            ->setAction($this->generateUrl('cars_delete', array('id' => $vehicule->getId())))
+            ->setAction($this->generateUrl('cars_delete', array('idVehicule' => $vehicule->getIdVehicule())))
             ->setMethod('DELETE')
             ->getForm()
         ;
+    }
+
+    /**
+     * Vérifie la validité du véhicule sur lesquel on effectue les traitements
+     *
+     * @param Vehicule $vehicule
+     */
+    private function verifyVehicule(Vehicule $vehicule)
+    {
+        if ($vehicule->getDeletedAt())
+            throw new NotFoundHttpException();
     }
 }

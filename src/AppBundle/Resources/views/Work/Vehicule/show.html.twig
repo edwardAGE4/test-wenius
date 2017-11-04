@@ -34,6 +34,12 @@
 
     <ul>
         <li>
+            <a href="{{ path('problems_index', { 'idVehicule': vehicule.idVehicule }) }}">Problemes</a>
+        </li>
+        <li>
+            <a href="{{ path('operations_index', { 'idVehicule': vehicule.idVehicule }) }}">Opérations</a>
+        </li>
+        <li>
             <a href="{{ path('cars_index') }}">Back to the list</a>
         </li>
         <li>

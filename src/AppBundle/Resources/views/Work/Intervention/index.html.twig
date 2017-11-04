@@ -1,0 +1,38 @@
+{% extends 'AppBundle:Work/Intervention:layout.html.twig' %}
+
+{% block content %}
+    <h1>Interventions list</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Date intervention</th>
+                <th>Notes</th>
+                <th>Created at</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for intervention in interventions %}
+            <tr>
+                <td>{{ intervention.dateIntervention|date('Y-m-d') }}</td>
+                <td>{{ intervention.notes }}</td>
+                <td>{{ intervention.createdAt|date('d/m/Y H:i') }}</td>
+                <td>
+                    <ul>
+                        <li>
+                            <a href="{{ path('interventions_show', { 'idOperation': operation.idOperation, 'idIntervention': intervention.idIntervention }) }}">show</a>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <ul>
+        <li>
+            <a href="{{ path('interventions_new', { 'idOperation': operation.idOperation }) }}">Create a new intervention</a>
+        </li>
+    </ul>
+{% endblock %}

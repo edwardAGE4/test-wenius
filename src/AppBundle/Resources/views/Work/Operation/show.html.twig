@@ -1,0 +1,60 @@
+{% extends 'AppBundle:Work/Operation:layout.html.twig' %}
+
+{% block content %}
+    <h1>Operation</h1>
+
+    <table>
+        <tbody>
+            <tr>
+                <th>Sujet</th>
+                <td>{{ operation.sujet }}</td>
+            </tr>
+            <tr>
+                <th>Description</th>
+                <td>{{ operation.description }}</td>
+            </tr>
+            <tr>
+                <th>Date debut</th>
+                <td>{{ operation.dateDebut|date('d/m/Y') }}</td>
+            </tr>
+            <tr>
+                <th>Date fin prevue</th>
+                <td>{{ operation.dateFinPrevue|date('d/m/Y') }}</td>
+            </tr>
+            <tr>
+                <th>Date fin effective</th>
+                <td>{% if operation.dateFinEffective %}{{ operation.dateFinEffective|date('d/m/Y') }}{% endif %}</td>
+            </tr>
+            <tr>
+                <th>Pièces</th>
+                {% if operation.pieces.count > 0 %}
+                    {% for piece in operation.pieces %}
+                        <td>{{ piece.nom ~ ' : ' ~ piece.description }}</td>
+                    {% endfor %}
+                {% else %}
+                    <td>Aucune pièce</td>
+                {% endif %}
+            </tr>
+            <tr>
+                <th>Created at</th>
+                <td>{{ operation.createdAt|date('d/m/Y H:i') }}</td>
+            </tr>
+            <tr>
+                <th>Updated at</th>
+                <td>{% if operation.updatedAt %}{{ operation.updatedAt|date('d/m/Y H:i') }}{% endif %}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <ul>
+        <li>
+            <a href="{{ path('interventions_index', { 'idOperation': operation.idOperation }) }}">Interventions</a>
+        </li>
+        <li>
+            <a href="{{ path('operations_index', { 'idVehicule': vehicule.idVehicule }) }}">Back to the list</a>
+        </li>
+        <li>
+            <a href="{{ path('operations_edit', { 'idVehicule': vehicule.idVehicule, 'idOperation': operation.idOperation }) }}">Edit</a>
+        </li>
+    </ul>
+{% endblock %}

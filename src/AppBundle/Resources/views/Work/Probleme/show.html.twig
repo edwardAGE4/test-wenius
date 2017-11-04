@@ -1,0 +1,32 @@
+{% extends 'AppBundle:Work/Probleme:layout.html.twig' %}
+
+{% block content %}
+    <h1>Probleme</h1>
+
+    <table>
+        <tbody>
+            <tr>
+                <th>Resume</th>
+                <td>{{ probleme.resume }}</td>
+            </tr>
+            <tr>
+                <th>Description</th>
+                <td>{{ probleme.description }}</td>
+            </tr>
+            <tr>
+                <th>Date detection</th>
+                <td>{{ probleme.dateDetection|date('Y-m-d') }}</td>
+            </tr>
+            <tr>
+                <th>Created at</th>
+                <td>{{ probleme.createdAt|date('Y-m-d H:i:s') }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <ul>
+        <li>
+            <a href="{{ path('problems_index', {'idVehicule': vehicule.idVehicule }) }}">Back to the list</a>
+        </li>
+    </ul>
+{% endblock %}

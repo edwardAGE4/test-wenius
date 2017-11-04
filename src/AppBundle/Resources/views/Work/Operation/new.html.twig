@@ -1,0 +1,47 @@
+{% extends 'AppBundle:Work/Operation:layout.html.twig' %}
+
+{% block content %}
+    <h1>Operation creation</h1>
+
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <a href="#" id="add_piece" class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Ajouter une pièce"><i class="glyphicon glyphicon-plus"></i></a>
+        <br>
+        <input type="submit" value="Create" />
+    {{ form_end(form) }}
+
+    <ul>
+        <li>
+            <a href="{{ path('operations_index', { 'idVehicule': vehicule.idVehicule }) }}">Back to the list</a>
+        </li>
+    </ul>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function() {
+            var $container = $('div#app_operation_pieces');
+            var index = $container.children('div.row').length;
+            $('#add_piece').click(function(e) {
+                addPiece($container);
+                e.preventDefault();
+                return false;
+            });
+            if (index == 0) {
+                addPiece($container);
+            }
+
+            function addPiece($container) {
+                var template = $container.attr('data-prototype')
+                                .replace(/__name__label__/g, 'Pièce ' + (index+1))
+                                .replace(/__name__/g,        index)
+                        ;
+                var $prototype = $(template);
+                $container.append($prototype);
+                index++;
+            }
+        });
+        $('#add_piece').tooltip();
+    </script>
+{% endblock %}

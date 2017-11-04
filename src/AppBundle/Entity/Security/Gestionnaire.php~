@@ -19,14 +19,4 @@ class Gestionnaire extends AutreUtilisateur
     {
         return ['ROLE_MANAGER'];
     }
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
 }

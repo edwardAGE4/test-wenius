@@ -3,7 +3,6 @@
 namespace AppBundle\Form\Security;
 
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -16,7 +15,7 @@ class AutreUtilisateurType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('type', ChoiceType::class, array(
+            ->add('type', 'Symfony\Component\Form\Extension\Core\Type\ChoiceType', array(
                 'choices_as_values' => true,
                 'choices' => array(
                     'Gestionnaire' => 'gestionnaire',

@@ -18,7 +18,7 @@
         <tbody>
         {% for vehicule in vehicules %}
             <tr>
-                <td><a href="{{ path('cars_show', { 'id': vehicule.id}) }}">{{ vehicule.immatriculation }}</a></td>
+                <td><a href="{{ path('cars_show', { 'idVehicule': vehicule.idVehicule}) }}">{{ vehicule.immatriculation }}</a></td>
                 <td>{{ vehicule.marque }}</td>
                 <td>{{ vehicule.modele }}</td>
                 <td>{{ vehicule.type }}</td>
@@ -27,7 +27,7 @@
                 <td>
                     <ul>
                         <li>
-                            <a href="{{ path('cars_show', { 'id': vehicule.id }) }}">show</a>
+                            <a href="{{ path('cars_show', { 'idVehicule': vehicule.idVehicule }) }}">show</a>
                         </li>
                     </ul>
                 </td>

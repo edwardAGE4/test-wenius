@@ -19,14 +19,4 @@ class Technicien  extends AutreUtilisateur
     {
         return ['ROLE_TECHNICIAN'];
     }
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
 }

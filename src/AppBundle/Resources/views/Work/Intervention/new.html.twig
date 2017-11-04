@@ -1,0 +1,44 @@
+{% extends 'AppBundle:Work/Intervention:layout.html.twig' %}
+
+{% block content %}
+    <h1>Intervention creation</h1>
+
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <a href="#" id="add_image" class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Ajouter une image"><i class="glyphicon glyphicon-plus"></i></a>
+        <br>
+        <input type="submit" value="Create" />
+    {{ form_end(form) }}
+
+    <ul>
+        <li>
+            <a href="{{ path('interventions_index', { 'idOperation': operation.idOperation }) }}">Back to the list</a>
+        </li>
+    </ul>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function() {
+            var $container = $('div#app_intervention_images');
+            var index = $container.children('div.row').length;
+            $('#add_image').click(function(e) {
+                addImage($container);
+                e.preventDefault();
+                return false;
+            });
+            if (index == 0) {
+                addImage($container);
+            }
+
+            function addImage($container) {
+                var template = $container.attr('data-prototype');
+                var $prototype = $(template);
+                $container.append($prototype);
+                index++;
+            }
+        });
+        $('#add_image').tooltip();
+    </script>
+{% endblock %}

@@ -16,14 +16,14 @@
         <tbody>
         {% for user in users %}
             <tr>
-                <td><a href="{{ path('users_show', { 'id': user.id }) }}">{{ user.identifiant }}</a></td>
+                <td><a href="{{ path('users_show', { 'idUtilisateur': user.idUtilisateur }) }}">{{ user.identifiant }}</a></td>
                 <td>{{ user.nom }}</td>
                 <td>{{ user.prenom }}</td>
                 <td>{{ user.createdAt|date('d/m/Y H:i') }}</td>
                 <td>
                     <ul>
                         <li>
-                            <a href="{{ path('users_show', { 'id': user.id }) }}">show</a>
+                            <a href="{{ path('users_show', { 'idUtilisateur': user.idUtilisateur }) }}">show</a>
                         </li>
                     </ul>
                 </td>

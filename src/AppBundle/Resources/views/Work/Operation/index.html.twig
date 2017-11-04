@@ -1,0 +1,47 @@
+{% extends 'AppBundle:Work/Operation:layout.html.twig' %}
+
+{% block content %}
+    <h1>Operations list</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Sujet</th>
+                <th>Date debut</th>
+                <th>Date fin prevue</th>
+                <th>Date fin effective</th>
+                <th>Created at</th>
+                <th>Updated at</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for operation in operations %}
+            <tr>
+                <td>{{ operation.sujet }}</td>
+                <td>{{ operation.dateDebut|date('Y-m-d') }}</td>
+                <td>{{ operation.dateFinPrevue|date('d/m/Y') }}</td>
+                <td>{% if operation.dateFinEffective %}{{ operation.dateFinEffective|date('d/m/Y') }}{% endif %}</td>
+                <td>{{ operation.createdAt|date('d/m/Y H:i') }}</td>
+                <td>{% if operation.updatedAt %}{{ operation.updatedAt|date('d/m/Y H:i') }}{% endif %}</td>
+                <td>
+                    <ul>
+                        <li>
+                            <a href="{{ path('operations_show', { 'idVehicule': vehicule.idVehicule, 'idOperation': operation.idOperation }) }}">show</a>
+                        </li>
+                        <li>
+                            <a href="{{ path('operations_edit', { 'idVehicule': vehicule.idVehicule, 'idOperation': operation.idOperation }) }}">edit</a>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <ul>
+        <li>
+            <a href="{{ path('operations_new', { 'idVehicule': vehicule.idVehicule }) }}">Create a new operation</a>
+        </li>
+    </ul>
+{% endblock %}

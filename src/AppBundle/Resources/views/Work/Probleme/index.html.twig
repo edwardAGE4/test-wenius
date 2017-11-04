@@ -1,0 +1,38 @@
+{% extends 'AppBundle:Work/Probleme:layout.html.twig' %}
+
+{% block content %}
+    <h1>Problemes list</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Resume</th>
+                <th>Date detection</th>
+                <th>Created at</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for probleme in problemes %}
+            <tr>
+                <td>{{ probleme.resume }}</td>
+                <td>{{ probleme.dateDetection|date('d/m/Y') }}</td>
+                <td>{{ probleme.createdAt|date('d/m/Y H:i') }}</td>
+                <td>
+                    <ul>
+                        <li>
+                            <a href="{{ path('problems_show', { 'idVehicule': vehicule.idVehicule, 'idProbleme': probleme.idProbleme }) }}">show</a>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <ul>
+        <li>
+            <a href="{{ path('problems_new', { 'idVehicule': vehicule.idVehicule }) }}">Create a new probleme</a>
+        </li>
+    </ul>
+{% endblock %}

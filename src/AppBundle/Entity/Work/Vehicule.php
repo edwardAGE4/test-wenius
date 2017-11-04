@@ -5,7 +5,7 @@ namespace AppBundle\Entity\Work;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Vehicule
+ * Véhicule
  *
  * @ORM\Table(name="vehicule")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\Work\VehiculeRepository")
@@ -16,13 +16,13 @@ class Vehicule
     /**
      * Id auto incrément des véhicules
      *
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="id", type="integer", nullable=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private $idVehicule;
     
     /**
      * @var \AppBundle\Entity\Security\Gestionnaire
@@ -85,13 +85,13 @@ class Vehicule
 
 
     /**
-     * Get id
+     * Get idVehicule
      *
      * @return integer
      */
-    public function getId()
+    public function getIdVehicule()
     {
-        return $this->id;
+        return $this->idVehicule;
     }
     
     /**

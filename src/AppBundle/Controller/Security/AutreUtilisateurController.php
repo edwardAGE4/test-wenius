@@ -10,6 +10,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Controller pour les autres utilisateurs.
@@ -50,34 +51,38 @@ class AutreUtilisateurController extends Controller
     public function newAction(Request $request)
     {
         $user = new AutreUtilisateur();
+        
         $form = $this->createForm('AppBundle\Form\Security\AutreUtilisateurType', $user);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
+        if ($form->isSubmitted()) {
             // Enregistrement du créateur
             $user->setCreateur($this->getUser());
-
-            // Cryptage du mot de passe clair dans mot de passe
-            $encoder = $this->get('security.password_encoder');
-            $user->setMotDePasse($encoder->encodePassword($user, $user->getMotDePasseClair()));
-
-            // Création de l'objet utilisateur à persister en base en fonction du type
-            $object = null;
-            if ($user->getType() == 'gestionnaire') {
-                $object = new Gestionnaire();
-            }
-            elseif ($user->getType() == 'technicien') {
-                $object = new Technicien();
-            }
-            // Recopie des informations entrées
-            $object->copy($user);
-
-            // Enregistrement de l'objet utilisateur
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($object);
-            $em->flush();
             
-            return $this->redirectToRoute('users_show', array('id' => $object->getId()));
+            if ($form->isValid()) {
+
+                // Cryptage du mot de passe clair dans mot de passe
+                $encoder = $this->get('security.password_encoder');
+                $user->setMotDePasse($encoder->encodePassword($user, $user->getMotDePasseClair()));
+
+                // Création de l'objet utilisateur à persister en base en fonction du type
+                $object = null;
+                if ($user->getType() == 'gestionnaire') {
+                    $object = new Gestionnaire();
+                }
+                elseif ($user->getType() == 'technicien') {
+                    $object = new Technicien();
+                }
+                // Recopie des informations entrées
+                $object->copy($user);
+
+                // Enregistrement de l'objet utilisateur
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($object);
+                $em->flush();
+
+                return $this->redirectToRoute('users_show', array('idUtilisateur' => $object->getIdUtilisateur()));
+            }
         }
 
         return $this->render('AppBundle:Security/User:new.html.twig', array(
@@ -89,13 +94,15 @@ class AutreUtilisateurController extends Controller
     /**
      * Affiche les détails d'un utilisateur.
      *
-     * @Route("/{id}", name="users_show")
+     * @Route("/{idUtilisateur}", name="users_show")
      * @Method("GET")
      * @param AutreUtilisateur $user
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function showAction(AutreUtilisateur $user)
     {
+        $this->verifyUtilisateur($user);
+        
         $deleteForm = $this->createDeleteForm($user);
 
         return $this->render('AppBundle:Security/User:show.html.twig', array(
@@ -107,7 +114,7 @@ class AutreUtilisateurController extends Controller
     /**
      * Supprime un utilisateur.
      *
-     * @Route("/{identifiant}", name="users_delete")
+     * @Route("/{idUtilisateur}", name="users_delete")
      * @Method("DELETE")
      * @param Request $request
      * @param AutreUtilisateur $user
@@ -135,10 +142,23 @@ class AutreUtilisateurController extends Controller
      */
     private function createDeleteForm(AutreUtilisateur $user)
     {
+        $this->verifyUtilisateur($user);
+        
         return $this->createFormBuilder()
-            ->setAction($this->generateUrl('users_delete', array('identifiant' => $user->getIdentifiant())))
+            ->setAction($this->generateUrl('users_delete', array('idUtilisateur' => $user->getIdUtilisateur())))
             ->setMethod('DELETE')
             ->getForm()
         ;
+    }
+
+    /**
+     * Vérifie la validité de l'utilisateur sur lesquel on effectue les traitements
+     *
+     * @param AutreUtilisateur $utilisateur
+     */
+    private function verifyUtilisateur(AutreUtilisateur $utilisateur)
+    {
+        if ($utilisateur->getDeletedAt())
+            throw new NotFoundHttpException();
     }
 }

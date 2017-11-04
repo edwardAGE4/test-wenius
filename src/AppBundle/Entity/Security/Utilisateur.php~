@@ -18,13 +18,13 @@ class Utilisateur implements AdvancedUserInterface
     /**
      * Id auto incrément des utilisateurs
      *
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="id", type="integer", nullable=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    protected $id;
+    protected $idUtilisateur;
 
     /**
      * @var string
@@ -65,13 +65,13 @@ class Utilisateur implements AdvancedUserInterface
 
     
     /**
-     * Get id
+     * Get idUtilisateur
      *
      * @return integer
      */
-    public function getId()
+    public function getIdUtilisateur()
     {
-        return $this->id;
+        return $this->idUtilisateur;
     }
 
     /**
