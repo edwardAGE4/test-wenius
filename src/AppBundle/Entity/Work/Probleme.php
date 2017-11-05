@@ -3,6 +3,7 @@
 namespace AppBundle\Entity\Work;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Problème
@@ -29,6 +30,7 @@ class Probleme
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="created_by", referencedColumnName="id", nullable=false)
      * })
+     * @Assert\NotNull()
      */
     private $createur;
 
@@ -39,6 +41,7 @@ class Probleme
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="vehicule_concerne", referencedColumnName="id", nullable=false)
      * })
+     * @Assert\NotNull()
      */
     private $vehiculeConcerne;
 
@@ -46,6 +49,11 @@ class Probleme
      * @var string
      *
      * @ORM\Column(name="resume", type="string", length=50)
+     * @Assert\NotBlank()
+     * @Assert\Length(
+     *      min = 3,
+     *      max = 50
+     * )
      */
     private $resume;
 
@@ -53,6 +61,7 @@ class Probleme
      * @var string
      *
      * @ORM\Column(name="description", type="text")
+     * @Assert\NotBlank()
      */
     private $description;
 
@@ -60,6 +69,7 @@ class Probleme
      * @var \DateTime
      *
      * @ORM\Column(name="date_detection", type="date")
+     * @Assert\NotBlank()
      */
     private $dateDetection;
 
@@ -227,5 +237,27 @@ class Probleme
     public function prePersist()
     {
         $this->createdAt = new \DateTime();
+    }
+
+    /**
+     * Vérifie la validité du véhicule affecté.
+     *
+     * @return bool
+     * @Assert\IsTrue(message = "Ce véhicule n'existe pas")
+     */
+    public function isVehiculeValid()
+    {
+        return $this->vehiculeConcerne ? ($this->vehiculeConcerne->getDeletedAt() ? false : true) : false;
+    }
+
+    /**
+     * Vérifie la validité de l'utilisateur affecté.
+     *
+     * @return bool
+     * @Assert\IsTrue(message = "Ce compte n'existe pas")
+     */
+    public function isCreateurValid()
+    {
+        return $this->createur ? ($this->createur->getDeletedAt() ? false : true) : false;
     }
 }

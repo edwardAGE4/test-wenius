@@ -3,6 +3,7 @@
 namespace AppBundle\Entity\Work;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Intervention
@@ -29,6 +30,8 @@ class Intervention
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="operation", referencedColumnName="id", nullable=false)
      * })
+     * @Assert\NotNull()
+     * @Assert\Valid()
      */
     private $operation;
 
@@ -39,6 +42,7 @@ class Intervention
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="created_by", referencedColumnName="id", nullable=false)
      * })
+     * @Assert\NotNull()
      */
     private $createur;
 
@@ -46,6 +50,7 @@ class Intervention
      * @var \DateTime
      *
      * @ORM\Column(name="date_intervention", type="date")
+     * @Assert\NotBlank()
      */
     private $dateIntervention;
 
@@ -53,6 +58,7 @@ class Intervention
      * @var string
      *
      * @ORM\Column(name="notes", type="text")
+     * @Assert\NotBlank()
      */
     private $notes;
 
@@ -60,6 +66,7 @@ class Intervention
      * @var \AppBundle\Entity\Media\Image[]|\Doctrine\Common\Collections\ArrayCollection
      *
      * @ORM\OneToMany(targetEntity="\AppBundle\Entity\Media\Image", mappedBy="intervention", cascade={"persist"})
+     * @Assert\Valid()
      */
     private $images;
 
@@ -245,5 +252,37 @@ class Intervention
     public function __construct()
     {
         $this->images = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Vérifie la validité de l'utilisateur affecté.
+     *
+     * @return bool
+     * @Assert\IsTrue(message = "Ce compte n'existe pas")
+     */
+    public function isCreateurValid()
+    {
+        return $this->createur ? ($this->createur->getDeletedAt() ? false : true) : false;
+    }
+
+    /**
+     * Vérifie la validité de la date de l'intervention.
+     *
+     * @return bool
+     * @Assert\IsTrue(message = "La date de l'intervention n'est pas valide. Une intervention ne peut être effectuée hors de la période de l'opération à laquelle elle est liée")
+     */
+    public function isDateInterventionValid()
+    {
+        if ($this->dateIntervention >= $this->getOperation()->getDateDebut()) {
+            if ($this->getOperation()->getDateFinEffective() != null) {
+                return $this->dateIntervention <= $this->getOperation()->getDateFinEffective();
+            }
+            else {
+                return true;
+            }
+        }
+        else {
+            return false;
+        }
     }
 }

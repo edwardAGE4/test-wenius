@@ -21,7 +21,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class InterventionController extends Controller
 {
     /**
-     * Lists all intervention entities.
+     * Liste toutes les interventions d'une opération.
      *
      * @Route("/", name="interventions_index")
      * @Method("GET")
@@ -45,7 +45,7 @@ class InterventionController extends Controller
     }
 
     /**
-     * Creates a new intervention entity.
+     * Crée une intervention d'une opération.
      *
      * @Route("/new", name="interventions_new")
      * @Method({"GET", "POST"})
@@ -59,26 +59,24 @@ class InterventionController extends Controller
         $this->verifyOperation($operation);
 
         $intervention = new Intervention();
+        // Enregistrement du créateur
+        $intervention->setCreateur($this->getUser());
+
+        // Enregistrement de l'opération concernée
+        $intervention->setOperation($operation);
+
         $form = $this->createForm('AppBundle\Form\Work\InterventionType', $intervention);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted()) {
-            // Enregistrement du créateur
-            $intervention->setCreateur($this->getUser());
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($intervention);
+            $em->flush();
 
-            // Enregistrement de l'opération concernée
-            $intervention->setOperation($operation);
-
-            if ($form->isValid()) {
-                $em = $this->getDoctrine()->getManager();
-                $em->persist($intervention);
-                $em->flush();
-
-                return $this->redirectToRoute('interventions_show', array(
-                    'idIntervention' => $intervention->getIdIntervention(),
-                    'idOperation' => $operation->getIdOperation(),
-                ));
-            }
+            return $this->redirectToRoute('interventions_show', array(
+                'idIntervention' => $intervention->getIdIntervention(),
+                'idOperation' => $operation->getIdOperation(),
+            ));
         }
 
         return $this->render('@App/Work/Intervention/new.html.twig', array(
@@ -89,7 +87,7 @@ class InterventionController extends Controller
     }
 
     /**
-     * Finds and displays a intervention entity.
+     * Affiche une intervention d'une opération.
      *
      * @Route("/{idIntervention}", name="interventions_show")
      * @Method("GET")

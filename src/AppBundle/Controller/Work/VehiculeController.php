@@ -49,21 +49,18 @@ class VehiculeController extends Controller
     public function newAction(Request $request)
     {
         $vehicule = new Vehicule();
+        // Enregistrement du créateur
+        $vehicule->setCreateur($this->getUser());
         
         $form = $this->createForm('AppBundle\Form\Work\VehiculeType', $vehicule);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted()) {
-            // Enregistrement du créateur
-            $vehicule->setCreateur($this->getUser());
-            
-            if ($form->isValid()) {
-                $em = $this->getDoctrine()->getManager();
-                $em->persist($vehicule);
-                $em->flush();
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($vehicule);
+            $em->flush();
 
-                return $this->redirectToRoute('cars_show', array('idVehicule' => $vehicule->getIdVehicule()));
-            }
+            return $this->redirectToRoute('cars_show', array('idVehicule' => $vehicule->getIdVehicule()));
         }
 
         return $this->render('AppBundle:Work/Vehicule:new.html.twig', array(

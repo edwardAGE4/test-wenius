@@ -3,6 +3,7 @@
 namespace AppBundle\Entity\Security;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * AutreUtilisateur
@@ -20,6 +21,7 @@ class AutreUtilisateur extends Utilisateur
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="created_by", referencedColumnName="id", nullable=false)
      * })
+     * @Assert\NotNull()
      */
     protected $createur;
 
@@ -27,6 +29,7 @@ class AutreUtilisateur extends Utilisateur
      * Type de l'utilisateur à enregistrer
      *
      * @var string
+     * @Assert\Choice({"gestionnaire", "technicien"})
      */
     protected $type;
 

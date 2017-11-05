@@ -57,26 +57,23 @@ class OperationController extends Controller
         $this->verifyVehicule($vehicule);
 
         $operation = new Operation();
+        // Enregistrement du créateur
+        $operation->setCreateur($this->getUser());
+        // Enregistrement du véhicule concerné
+        $operation->setVehiculeConcerne($vehicule);
+
         $form = $this->createForm('AppBundle\Form\Work\OperationType', $operation);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted()) {
-            // Enregistrement du créateur
-            $operation->setCreateur($this->getUser());
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($operation);
+            $em->flush();
 
-            // Enregistrement du véhicule concerné
-            $operation->setVehiculeConcerne($vehicule);
-
-            if ($form->isValid()) {
-                $em = $this->getDoctrine()->getManager();
-                $em->persist($operation);
-                $em->flush();
-
-                return $this->redirectToRoute('operations_show', array(
-                    'idVehicule' => $vehicule->getIdVehicule(),
-                    'idOperation' => $operation->getIdOperation()
-                ));
-            }
+            return $this->redirectToRoute('operations_show', array(
+                'idVehicule' => $vehicule->getIdVehicule(),
+                'idOperation' => $operation->getIdOperation()
+            ));
         }
 
         return $this->render('AppBundle:Work/Operation:new.html.twig', array(

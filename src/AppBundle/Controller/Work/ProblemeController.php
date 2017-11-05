@@ -59,26 +59,24 @@ class ProblemeController extends Controller
         $this->verifyVehicule($vehicule);
         
         $probleme = new Probleme();
+        // Enregistrement du créateur
+        $probleme->setCreateur($this->getUser());
+
+        // Enregistrement du véhicule concerné
+        $probleme->setVehiculeConcerne($vehicule);
+        
         $form = $this->createForm('AppBundle\Form\Work\ProblemeType', $probleme);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted()) {
-            // Enregistrement du créateur
-            $probleme->setCreateur($this->getUser());
-            
-            // Enregistrement du véhicule concerné
-            $probleme->setVehiculeConcerne($vehicule);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($probleme);
+            $em->flush();
 
-            if ($form->isValid()) {
-                $em = $this->getDoctrine()->getManager();
-                $em->persist($probleme);
-                $em->flush();
-
-                return $this->redirectToRoute('problems_show', array(
-                        'idVehicule' => $vehicule->getIdVehicule(),
-                        'idProbleme' => $probleme->getIdProbleme()
-                ));
-            }
+            return $this->redirectToRoute('problems_show', array(
+                    'idVehicule' => $vehicule->getIdVehicule(),
+                    'idProbleme' => $probleme->getIdProbleme()
+            ));
         }
 
         return $this->render('AppBundle:Work/Probleme:new.html.twig', array(

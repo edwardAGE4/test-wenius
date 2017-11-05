@@ -4,6 +4,8 @@ namespace AppBundle\Entity\Security;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\AdvancedUserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * Utilisateur
@@ -12,6 +14,8 @@ use Symfony\Component\Security\Core\User\AdvancedUserInterface;
  * @ORM\Entity(repositoryClass="AppBundle\Repository\Security\UtilisateurRepository")
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="type", type="string")
+ * @UniqueEntity("identifiant")
+ * @UniqueEntity(fields={"nom", "prenom"})
  */
 class Utilisateur implements AdvancedUserInterface
 {
@@ -30,6 +34,11 @@ class Utilisateur implements AdvancedUserInterface
      * @var string
      *
      * @ORM\Column(name="identifiant", type="string", length=25, unique=true)
+     * @Assert\NotBlank()
+     * @Assert\Length(
+     *      min = 4,
+     *      max = 25
+     * )
      */
     protected $identifiant;
 
@@ -46,6 +55,11 @@ class Utilisateur implements AdvancedUserInterface
      * @var string
      *
      * @ORM\Column(name="nom", type="string", length=25)
+     * @Assert\NotBlank()
+     * @Assert\Length(
+     *      min = 2,
+     *      max = 25
+     * )
      */
     protected $nom;
 
@@ -53,6 +67,11 @@ class Utilisateur implements AdvancedUserInterface
      * @var string
      *
      * @ORM\Column(name="prenom", type="string", length=25)
+     * @Assert\NotBlank()
+     * @Assert\Length(
+     *      min = 2,
+     *      max = 25
+     * )
      */
     protected $prenom;
 
@@ -60,6 +79,11 @@ class Utilisateur implements AdvancedUserInterface
      * Mot de passe avant cryptage
      *
      * @var string
+     * @Assert\NotBlank()
+     * @Assert\Length(
+     *      min = 5,
+     *      max = 15
+     * )
      */
     protected $motDePasseClair;
 

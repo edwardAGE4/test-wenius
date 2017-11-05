@@ -3,6 +3,7 @@
 namespace AppBundle\Entity\Work;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Opération
@@ -29,6 +30,7 @@ class Operation
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="created_by", referencedColumnName="id", nullable=false)
      * })
+     * @Assert\NotNull()
      */
     private $createur;
 
@@ -39,6 +41,7 @@ class Operation
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="vehicule_concerne", referencedColumnName="id", nullable=false)
      * })
+     * @Assert\NotNull()
      */
     private $vehiculeConcerne;
 
@@ -46,6 +49,11 @@ class Operation
      * @var string
      *
      * @ORM\Column(name="sujet", type="string", length=50)
+     * @Assert\NotBlank()
+     * @Assert\Length(
+     *      min = 4,
+     *      max = 50
+     * )
      */
     private $sujet;
 
@@ -53,6 +61,7 @@ class Operation
      * @var string
      *
      * @ORM\Column(name="description", type="text")
+     * @Assert\NotBlank()
      */
     private $description;
 
@@ -60,6 +69,8 @@ class Operation
      * @var \DateTime
      *
      * @ORM\Column(name="date_debut", type="date")
+     * @Assert\NotBlank()
+     * )
      */
     private $dateDebut;
 
@@ -67,6 +78,7 @@ class Operation
      * @var \DateTime
      *
      * @ORM\Column(name="date_fin_prevue", type="date")
+     * @Assert\NotBlank()
      */
     private $dateFinPrevue;
 
@@ -95,6 +107,7 @@ class Operation
      * @var \AppBundle\Entity\Work\Piece[]|\Doctrine\Common\Collections\ArrayCollection
      *
      * @ORM\OneToMany(targetEntity="\AppBundle\Entity\Work\Piece", mappedBy="operation", cascade={"persist"})
+     * @Assert\Valid()
      */
     private $pieces;
 
@@ -376,5 +389,60 @@ class Operation
     public function preUpdate()
     {
         $this->updatedAt = new \DateTime();
+    }
+
+    /**
+     * Vérifie la validité du véhicule affecté.
+     *
+     * @return bool
+     * @Assert\IsTrue(message = "Ce véhicule n'existe pas")
+     */
+    public function isVehiculeValid()
+    {
+        return $this->vehiculeConcerne ? ($this->vehiculeConcerne->getDeletedAt() ? false : true) : false;
+    }
+
+    /**
+     * Vérifie la validité de l'utilisateur affecté.
+     *
+     * @return bool
+     * @Assert\IsTrue(message = "Ce compte n'existe pas")
+     */
+    public function isCreateurValid()
+    {
+        return $this->createur ? ($this->createur->getDeletedAt() ? false : true) : false;
+    }
+
+    /**
+     * Vérifie la validité de la date de début de l'opération.
+     *
+     * @return bool
+     * @Assert\IsTrue(message = "La date de début ne peut être avant la date de d'achat du véhicule")
+     */
+    public function isDateDebutValid()
+    {
+        return $this->dateDebut >= $this->vehiculeConcerne->getDateAchat();
+    }
+    
+    /**
+     * Vérifie la validité des dates.
+     *
+     * @return bool
+     * @Assert\IsTrue(message = "La date de fin prévue ne peut être avant la date de début")
+     */
+    public function isDatesValid()
+    {
+        return $this->dateFinPrevue >= $this->dateDebut;
+    }
+
+    /**
+     * Vérifie la validité de la date de fin effective.
+     *
+     * @return bool
+     * @Assert\IsTrue(message = "La date de fin effective ne peut être avant la date de début")
+     */
+    public function isDateFinEffectiveValid()
+    {
+        return $this->dateFinEffective ? $this->dateFinEffective >= $this->dateDebut : true;
     }
 }

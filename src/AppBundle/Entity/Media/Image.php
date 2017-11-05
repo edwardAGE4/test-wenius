@@ -3,6 +3,7 @@
 namespace AppBundle\Entity\Media;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Image
@@ -47,9 +48,12 @@ class Image
     private $repertoire;
 
     /**
-     * @var \Symfony\Component\HttpFoundation\File\UploadedFile
-     *
      * Fichier de l'image
+     *
+     * @var \Symfony\Component\HttpFoundation\File\UploadedFile
+     * @Assert\Image(
+     *     maxSize = "2048k"
+     * )
      */
     private $file;
 

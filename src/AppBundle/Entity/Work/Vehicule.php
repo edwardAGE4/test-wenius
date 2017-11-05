@@ -3,6 +3,8 @@
 namespace AppBundle\Entity\Work;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * Véhicule
@@ -10,6 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="vehicule")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\Work\VehiculeRepository")
  * @ORM\HasLifecycleCallbacks()
+ * @UniqueEntity("immatriculation")
  */
 class Vehicule
 {
@@ -31,6 +34,7 @@ class Vehicule
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="created_by", referencedColumnName="id", nullable=false)
      * })
+     * @Assert\NotNull()
      */
     private $createur;
 
@@ -38,6 +42,11 @@ class Vehicule
      * @var string
      *
      * @ORM\Column(name="immatriculation", type="string", length=10, unique=true)
+     * @Assert\NotBlank()
+     * @Assert\Length(
+     *      min = 4,
+     *      max = 10
+     * )
      */
     private $immatriculation;
 
@@ -45,6 +54,11 @@ class Vehicule
      * @var string
      *
      * @ORM\Column(name="marque", type="string", length=25)
+     * @Assert\NotBlank()
+     * @Assert\Length(
+     *      min = 1,
+     *      max = 25
+     * )
      */
     private $marque;
 
@@ -52,6 +66,11 @@ class Vehicule
      * @var string
      *
      * @ORM\Column(name="modele", type="string", length=15)
+     * @Assert\NotBlank()
+     * @Assert\Length(
+     *      min = 1,
+     *      max = 10
+     * )
      */
     private $modele;
 
@@ -59,6 +78,11 @@ class Vehicule
      * @var string
      *
      * @ORM\Column(name="type", type="string", length=15)
+     * @Assert\NotBlank()
+     * @Assert\Length(
+     *      min = 2,
+     *      max = 15
+     * )
      */
     private $type;
 
@@ -66,6 +90,7 @@ class Vehicule
      * @var \DateTime
      *
      * @ORM\Column(name="date_achat", type="date")
+     * @Assert\NotBlank()
      */
     private $dateAchat;
 
@@ -286,5 +311,16 @@ class Vehicule
     public function prePersist()
     {
         $this->createdAt = new \DateTime();
+    }
+
+    /**
+     * Vérifie la validité de l'utilisateur affecté.
+     *
+     * @return bool
+     * @Assert\IsTrue(message = "Ce compte n'existe pas")
+     */
+    public function isCreateurValid()
+    {
+        return $this->createur ? ($this->createur->getDeletedAt() ? false : true) : false;
     }
 }

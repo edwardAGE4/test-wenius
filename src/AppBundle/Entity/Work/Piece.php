@@ -3,6 +3,7 @@
 namespace AppBundle\Entity\Work;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Pièce
@@ -25,6 +26,11 @@ class Piece
      * @var string
      *
      * @ORM\Column(name="nom", type="string", length=40)
+     * @Assert\NotBlank()
+     * @Assert\Length(
+     *      min = 3,
+     *      max = 40
+     * )
      */
     private $nom;
 
@@ -32,6 +38,7 @@ class Piece
      * @var string
      *
      * @ORM\Column(name="description", type="text")
+     * @Assert\NotBlank()
      */
     private $description;
 
@@ -42,6 +49,7 @@ class Piece
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="operation_affectee", referencedColumnName="id", nullable=false)
      * })
+     * @Assert\NotNull()
      */
     private $operation;
 

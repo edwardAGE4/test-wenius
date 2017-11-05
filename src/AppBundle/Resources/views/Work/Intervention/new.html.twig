@@ -24,13 +24,10 @@
             var $container = $('div#app_intervention_images');
             var index = $container.children('div.row').length;
             $('#add_image').click(function(e) {
-                appImage($container);
+                addImage($container);
                 e.preventDefault();
                 return false;
             });
-            if (index == 0) {
-                addImage($container);
-            }
 
             function addImage($container) {
                 var template = $container.attr('data-prototype')
