@@ -4,6 +4,7 @@ namespace AppBundle\Entity\Work;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * Opération
@@ -20,28 +21,31 @@ class Operation
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"list_operation", "details_operation"})
      */
     private $idOperation;
 
     /**
      * @var \AppBundle\Entity\Security\Technicien
      *
-     * @ORM\ManyToOne(targetEntity="\AppBundle\Entity\Security\Technicien")
+     * @ORM\ManyToOne(targetEntity="\AppBundle\Entity\Security\Technicien", inversedBy="operations")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="created_by", referencedColumnName="id", nullable=false)
      * })
      * @Assert\NotNull()
+     * @Groups({"details_operation"})
      */
     private $createur;
 
     /**
      * @var \AppBundle\Entity\Work\Vehicule
      *
-     * @ORM\ManyToOne(targetEntity="\AppBundle\Entity\Work\Vehicule")
+     * @ORM\ManyToOne(targetEntity="\AppBundle\Entity\Work\Vehicule", inversedBy="operations")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="vehicule_concerne", referencedColumnName="id", nullable=false)
      * })
      * @Assert\NotNull()
+     * @Groups({"details_operation"})
      */
     private $vehiculeConcerne;
 
@@ -54,6 +58,7 @@ class Operation
      *      min = 4,
      *      max = 50
      * )
+     * @Groups({"list_operation", "details_operation"})
      */
     private $sujet;
 
@@ -62,6 +67,7 @@ class Operation
      *
      * @ORM\Column(name="description", type="text")
      * @Assert\NotBlank()
+     * @Groups({"list_operation", "details_operation"})
      */
     private $description;
 
@@ -70,6 +76,7 @@ class Operation
      *
      * @ORM\Column(name="date_debut", type="date")
      * @Assert\NotBlank()
+     * @Groups({"list_operation", "details_operation"})
      * )
      */
     private $dateDebut;
@@ -79,6 +86,7 @@ class Operation
      *
      * @ORM\Column(name="date_fin_prevue", type="date")
      * @Assert\NotBlank()
+     * @Groups({"list_operation", "details_operation"})
      */
     private $dateFinPrevue;
 
@@ -86,6 +94,7 @@ class Operation
      * @var \DateTime
      *
      * @ORM\Column(name="date_fin_effective", type="date", nullable=true)
+     * @Groups({"list_operation", "details_operation"})
      */
     private $dateFinEffective;
 
@@ -93,6 +102,7 @@ class Operation
      * @var \DateTime
      *
      * @ORM\Column(name="created_at", type="datetime")
+     * @Groups({"list_operation", "details_operation"})
      */
     private $createdAt;
 
@@ -100,6 +110,7 @@ class Operation
      * @var \DateTime
      *
      * @ORM\Column(name="updated_at", type="datetime", nullable=true)
+     * @Groups({"list_operation", "details_operation"})
      */
     private $updatedAt;
 
@@ -108,8 +119,18 @@ class Operation
      *
      * @ORM\OneToMany(targetEntity="\AppBundle\Entity\Work\Piece", mappedBy="operation", cascade={"persist"})
      * @Assert\Valid()
+     * @Groups({"details_operation"})
      */
     private $pieces;
+
+    /**
+     * @var \AppBundle\Entity\Work\Intervention[]|\Doctrine\Common\Collections\ArrayCollection
+     *
+     * @ORM\OneToMany(targetEntity="\AppBundle\Entity\Work\Intervention", mappedBy="operation")
+     * @Assert\Valid()
+     * @Groups({"details_operation"})
+     */
+    private $interventions;
 
 
     /**
@@ -369,6 +390,7 @@ class Operation
     public function __construct()
     {
         $this->pieces = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->interventions = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -389,28 +411,6 @@ class Operation
     public function preUpdate()
     {
         $this->updatedAt = new \DateTime();
-    }
-
-    /**
-     * Vérifie la validité du véhicule affecté.
-     *
-     * @return bool
-     * @Assert\IsTrue(message = "Ce véhicule n'existe pas")
-     */
-    public function isVehiculeValid()
-    {
-        return $this->vehiculeConcerne ? ($this->vehiculeConcerne->getDeletedAt() ? false : true) : false;
-    }
-
-    /**
-     * Vérifie la validité de l'utilisateur affecté.
-     *
-     * @return bool
-     * @Assert\IsTrue(message = "Ce compte n'existe pas")
-     */
-    public function isCreateurValid()
-    {
-        return $this->createur ? ($this->createur->getDeletedAt() ? false : true) : false;
     }
 
     /**
@@ -444,5 +444,65 @@ class Operation
     public function isDateFinEffectiveValid()
     {
         return $this->dateFinEffective ? $this->dateFinEffective >= $this->dateDebut : true;
+    }
+
+    /**
+     * Add intervention
+     *
+     * @param \AppBundle\Entity\Work\Intervention $intervention
+     *
+     * @return Operation
+     */
+    public function addIntervention(\AppBundle\Entity\Work\Intervention $intervention)
+    {
+        $this->interventions[] = $intervention;
+
+        return $this;
+    }
+
+    /**
+     * Remove intervention
+     *
+     * @param \AppBundle\Entity\Work\Intervention $intervention
+     */
+    public function removeIntervention(\AppBundle\Entity\Work\Intervention $intervention)
+    {
+        $this->interventions->removeElement($intervention);
+    }
+
+    /**
+     * Get interventions
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getInterventions()
+    {
+        return $this->interventions;
+    }
+
+    /**
+     * Vérifie la validité de la date de début de l'opération.
+     *
+     * @return bool
+     * @Assert\IsTrue(message = "La date de début n'est pas valide. Une opération ne peut être démarrée avant l'acquisition du véhicule")
+     */
+    public function isDateDetectionValid()
+    {
+        return $this->dateDebut >= $this->vehiculeConcerne->getDateAchat();
+    }
+
+    /**
+     * Vérifie la validité de la date de fin effective de l'opération lors de l'édition.
+     *
+     * @return bool
+     * @Assert\IsTrue(message = "La date de fin n'est pas valide. Une opération ne peut prendre fin avant une intervention la concernant")
+     */
+    public function isFinEffectiveValid()
+    {
+        foreach ($this->interventions as $intervention) {
+            if ($intervention->getDateIntervention() > $this->dateFinEffective)
+                return false;
+        }
+        return true;
     }
 }

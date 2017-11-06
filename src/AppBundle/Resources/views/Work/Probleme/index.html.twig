@@ -1,6 +1,33 @@
-{% extends 'AppBundle:Work/Probleme:layout.html.twig' %}
+{% extends 'AppBundle::base.html.twig' %}
 
-{% block content %}
+{% block body %}
+    <h1><a href="{{ path('cars_show', { 'idVehicule': vehicule.idVehicule }) }}">Vehicule</a></h1>
+
+    <table>
+        <tbody>
+        <tr>
+            <th>Immatriculation</th>
+            <td>{{ vehicule.immatriculation }}</td>
+        </tr>
+        <tr>
+            <th>Marque</th>
+            <td>{{ vehicule.marque }}</td>
+        </tr>
+        <tr>
+            <th>Modele</th>
+            <td>{{ vehicule.modele }}</td>
+        </tr>
+        <tr>
+            <th>Type</th>
+            <td>{{ vehicule.type }}</td>
+        </tr>
+        <tr>
+            <th>Date achat</th>
+            <td>{{ vehicule.dateAchat|date('d/m/Y') }}</td>
+        </tr>
+        </tbody>
+    </table>
+
     <h1>Problemes list</h1>
 
     <table>
@@ -21,7 +48,7 @@
                 <td>
                     <ul>
                         <li>
-                            <a href="{{ path('problems_show', { 'idVehicule': vehicule.idVehicule, 'idProbleme': probleme.idProbleme }) }}">show</a>
+                            <a href="{{ path('problems_show', { 'idProbleme': probleme.idProbleme }) }}">show</a>
                         </li>
                     </ul>
                 </td>

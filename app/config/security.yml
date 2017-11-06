@@ -43,7 +43,11 @@ security:
                 target: app_login
 
     access_control:
+        # les routes de l'api sont accessibles à tous
+        - { path: ^/api, role: IS_AUTHENTICATED_ANONYMOUSLY }
         # la route de login est accessible à toute personne non authentifiée
         - { path: ^/login$, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        # la route de premier login est accessible quand non authentifiée
+        - { path: ^/firstLogin$, role: IS_AUTHENTICATED_ANONYMOUSLY }
         # toutes les autres routes ne sont accessibles qu'aux personnes authentifiées
         - { path: ^/, role: IS_AUTHENTICATED_FULLY }

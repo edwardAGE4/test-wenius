@@ -4,6 +4,7 @@ namespace AppBundle\Entity\Work;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * Intervention
@@ -20,29 +21,32 @@ class Intervention
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"list_intervention", "details_intervention"})
      */
     private $idIntervention;
 
     /**
      * @var \AppBundle\Entity\Work\Operation
      *
-     * @ORM\ManyToOne(targetEntity="\AppBundle\Entity\Work\Operation")
+     * @ORM\ManyToOne(targetEntity="\AppBundle\Entity\Work\Operation", inversedBy="intervensions")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="operation", referencedColumnName="id", nullable=false)
      * })
      * @Assert\NotNull()
      * @Assert\Valid()
+     * @Groups({"details_intervention"})
      */
     private $operation;
 
     /**
      * @var \AppBundle\Entity\Security\Technicien
      *
-     * @ORM\ManyToOne(targetEntity="\AppBundle\Entity\Security\Technicien")
+     * @ORM\ManyToOne(targetEntity="\AppBundle\Entity\Security\Technicien", inversedBy="interventions")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="created_by", referencedColumnName="id", nullable=false)
      * })
      * @Assert\NotNull()
+     * @Groups({"details_intervention"})
      */
     private $createur;
 
@@ -51,6 +55,7 @@ class Intervention
      *
      * @ORM\Column(name="date_intervention", type="date")
      * @Assert\NotBlank()
+     * @Groups({"list_intervention", "details_intervention"})
      */
     private $dateIntervention;
 
@@ -59,6 +64,7 @@ class Intervention
      *
      * @ORM\Column(name="notes", type="text")
      * @Assert\NotBlank()
+     * @Groups({"list_intervention", "details_intervention"})
      */
     private $notes;
 
@@ -67,6 +73,7 @@ class Intervention
      *
      * @ORM\OneToMany(targetEntity="\AppBundle\Entity\Media\Image", mappedBy="intervention", cascade={"persist"})
      * @Assert\Valid()
+     * @Groups({"details_intervention"})
      */
     private $images;
 
@@ -74,6 +81,7 @@ class Intervention
      * @var \DateTime
      *
      * @ORM\Column(name="created_at", type="datetime")
+     * @Groups({"list_intervention", "details_intervention"})
      */
     private $createdAt;
 
@@ -252,17 +260,6 @@ class Intervention
     public function __construct()
     {
         $this->images = new \Doctrine\Common\Collections\ArrayCollection();
-    }
-
-    /**
-     * Vérifie la validité de l'utilisateur affecté.
-     *
-     * @return bool
-     * @Assert\IsTrue(message = "Ce compte n'existe pas")
-     */
-    public function isCreateurValid()
-    {
-        return $this->createur ? ($this->createur->getDeletedAt() ? false : true) : false;
     }
 
     /**

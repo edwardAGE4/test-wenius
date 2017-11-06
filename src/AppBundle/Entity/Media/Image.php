@@ -4,6 +4,7 @@ namespace AppBundle\Entity\Media;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * Image
@@ -30,6 +31,7 @@ class Image
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="intervention", referencedColumnName="id", nullable=false)
      * })
+     * @Groups({"details_image"})
      */
     private $intervention;
 
@@ -37,6 +39,7 @@ class Image
      * @var string
      *
      * @ORM\Column(name="nom_fichier", type="string", length=255)
+     * @Groups({"list_image", "details_image"})
      */
     private $nomFichier;
 
@@ -44,6 +47,7 @@ class Image
      * @var string
      *
      * @ORM\Column(name="repertoire", type="string", length=255)
+     * @Groups({"list_image", "details_image"})
      */
     private $repertoire;
 
@@ -51,9 +55,7 @@ class Image
      * Fichier de l'image
      *
      * @var \Symfony\Component\HttpFoundation\File\UploadedFile
-     * @Assert\Image(
-     *     maxSize = "2048k"
-     * )
+     * @Assert\Image(maxSize = "2048k")
      */
     private $file;
 
@@ -199,6 +201,7 @@ class Image
      * Renvoie le répertoire précis où sont uploadées les images dans le répertoire des uploads sur le serveur
      *
      * @return string
+     * @Groups({"list_image", "details_image"})
      */
     private function getUploadDir()
     {
@@ -240,4 +243,18 @@ class Image
 
         $this->file = null;
     }
+
+    /**
+     * Supression de l'image après suppresion de son occurence.
+     *
+     * @ORM\PostRemove()
+     */
+    public function removeUpload()
+    {
+        $file = $this->getAbsolutePath();
+        if ($file) {
+            unlink($file);
+        }
+    }
+
 }

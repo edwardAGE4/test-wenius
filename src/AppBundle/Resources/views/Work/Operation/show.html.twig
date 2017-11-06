@@ -51,10 +51,10 @@
             <a href="{{ path('interventions_index', { 'idOperation': operation.idOperation }) }}">Interventions</a>
         </li>
         <li>
-            <a href="{{ path('operations_index', { 'idVehicule': vehicule.idVehicule }) }}">Back to the list</a>
+            <a href="{{ path('operations_index', { 'idVehicule': operation.vehiculeConcerne.idVehicule }) }}">Back to the list</a>
         </li>
         <li>
-            <a href="{{ path('operations_edit', { 'idVehicule': vehicule.idVehicule, 'idOperation': operation.idOperation }) }}">Edit</a>
+            <a href="{{ path('operations_edit', { 'idOperation': operation.idOperation }) }}">Edit</a>
         </li>
     </ul>
 {% endblock %}

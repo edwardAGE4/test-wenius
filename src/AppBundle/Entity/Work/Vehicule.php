@@ -5,6 +5,7 @@ namespace AppBundle\Entity\Work;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * Véhicule
@@ -24,17 +25,19 @@ class Vehicule
      * @ORM\Column(name="id", type="integer", nullable=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"list_car", "details_car"})
      */
     private $idVehicule;
     
     /**
      * @var \AppBundle\Entity\Security\Gestionnaire
      *
-     * @ORM\ManyToOne(targetEntity="\AppBundle\Entity\Security\Gestionnaire")
+     * @ORM\ManyToOne(targetEntity="\AppBundle\Entity\Security\Gestionnaire", inversedBy="vehicules")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="created_by", referencedColumnName="id", nullable=false)
      * })
      * @Assert\NotNull()
+     * @Groups({"details_car"})
      */
     private $createur;
 
@@ -47,6 +50,7 @@ class Vehicule
      *      min = 4,
      *      max = 10
      * )
+     * @Groups({"list_car", "details_car"})
      */
     private $immatriculation;
 
@@ -59,6 +63,7 @@ class Vehicule
      *      min = 1,
      *      max = 25
      * )
+     * @Groups({"list_car", "details_car"})
      */
     private $marque;
 
@@ -71,6 +76,7 @@ class Vehicule
      *      min = 1,
      *      max = 10
      * )
+     * @Groups({"list_car", "details_car"})
      */
     private $modele;
 
@@ -83,6 +89,7 @@ class Vehicule
      *      min = 2,
      *      max = 15
      * )
+     * @Groups({"list_car", "details_car"})
      */
     private $type;
 
@@ -91,6 +98,7 @@ class Vehicule
      *
      * @ORM\Column(name="date_achat", type="date")
      * @Assert\NotBlank()
+     * @Groups({"list_car", "details_car"})
      */
     private $dateAchat;
 
@@ -102,11 +110,20 @@ class Vehicule
     private $createdAt;
 
     /**
-     * @var \DateTime
+     * @var \AppBundle\Entity\Work\Probleme[]|\Doctrine\Common\Collections\ArrayCollection
      *
-     * @ORM\Column(name="deleted_at", type="datetime", nullable=true)
+     * @ORM\OneToMany(targetEntity="\AppBundle\Entity\Work\Probleme", mappedBy="vehiculeConcerne")
+     * @Groups({"details_car"})
      */
-    private $deletedAt;
+    private $problemes;
+
+    /**
+     * @var \AppBundle\Entity\Work\Operation[]|\Doctrine\Common\Collections\ArrayCollection
+     *
+     * @ORM\OneToMany(targetEntity="\AppBundle\Entity\Work\Operation", mappedBy="vehiculeConcerne")
+     * @Groups({"details_car"})
+     */
+    private $operations;
 
 
     /**
@@ -258,29 +275,6 @@ class Vehicule
     }
 
     /**
-     * Set deletedAt
-     *
-     * @param \DateTime $deletedAt
-     * @return Vehicule
-     */
-    public function setDeletedAt($deletedAt)
-    {
-        $this->deletedAt = $deletedAt;
-
-        return $this;
-    }
-
-    /**
-     * Get deletedAt
-     *
-     * @return \DateTime 
-     */
-    public function getDeletedAt()
-    {
-        return $this->deletedAt;
-    }
-
-    /**
      * Set createur
      *
      * @param \AppBundle\Entity\Security\Gestionnaire $createur
@@ -314,13 +308,79 @@ class Vehicule
     }
 
     /**
-     * Vérifie la validité de l'utilisateur affecté.
-     *
-     * @return bool
-     * @Assert\IsTrue(message = "Ce compte n'existe pas")
+     * Constructor
      */
-    public function isCreateurValid()
+    public function __construct()
     {
-        return $this->createur ? ($this->createur->getDeletedAt() ? false : true) : false;
+        $this->problemes = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->operations = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add probleme
+     *
+     * @param \AppBundle\Entity\Work\Probleme $probleme
+     *
+     * @return Vehicule
+     */
+    public function addProbleme(\AppBundle\Entity\Work\Probleme $probleme)
+    {
+        $this->problemes[] = $probleme;
+
+        return $this;
+    }
+
+    /**
+     * Remove probleme
+     *
+     * @param \AppBundle\Entity\Work\Probleme $probleme
+     */
+    public function removeProbleme(\AppBundle\Entity\Work\Probleme $probleme)
+    {
+        $this->problemes->removeElement($probleme);
+    }
+
+    /**
+     * Get problemes
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getProblemes()
+    {
+        return $this->problemes;
+    }
+
+    /**
+     * Add operation
+     *
+     * @param \AppBundle\Entity\Work\Operation $operation
+     *
+     * @return Vehicule
+     */
+    public function addOperation(\AppBundle\Entity\Work\Operation $operation)
+    {
+        $this->operations[] = $operation;
+
+        return $this;
+    }
+
+    /**
+     * Remove operation
+     *
+     * @param \AppBundle\Entity\Work\Operation $operation
+     */
+    public function removeOperation(\AppBundle\Entity\Work\Operation $operation)
+    {
+        $this->operations->removeElement($operation);
+    }
+
+    /**
+     * Get operations
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getOperations()
+    {
+        return $this->operations;
     }
 }

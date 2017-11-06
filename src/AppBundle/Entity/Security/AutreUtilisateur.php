@@ -4,13 +4,13 @@ namespace AppBundle\Entity\Security;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * AutreUtilisateur
  *
  * @ORM\Table(name="autre_utilisateur")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\Security\AutreUtilisateurRepository")
- * @ORM\HasLifecycleCallbacks()
  */
 class AutreUtilisateur extends Utilisateur
 {
@@ -22,6 +22,7 @@ class AutreUtilisateur extends Utilisateur
      *   @ORM\JoinColumn(name="created_by", referencedColumnName="id", nullable=false)
      * })
      * @Assert\NotNull()
+     * @Groups({"details_user"})
      */
     protected $createur;
 
@@ -30,22 +31,9 @@ class AutreUtilisateur extends Utilisateur
      *
      * @var string
      * @Assert\Choice({"gestionnaire", "technicien"})
+     * @Groups({"list_user", "details_user"})
      */
-    protected $type;
-
-    /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="created_at", type="datetime")
-     */
-    protected $createdAt;
-
-    /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="deleted_at", type="datetime", nullable=true)
-     */
-    protected $deletedAt;
+    protected $typeUtilisateur;
 
     /**
      * Set createur
@@ -78,7 +66,7 @@ class AutreUtilisateur extends Utilisateur
      */
     public function setType($type)
     {
-        $this->type = $type;
+        $this->typeUtilisateur = $type;
 
         return $this;
     }
@@ -90,63 +78,7 @@ class AutreUtilisateur extends Utilisateur
      */
     public function getType()
     {
-        return $this->type;
-    }
-
-    /**
-     * Set createdAt
-     *
-     * @param \DateTime $createdAt
-     * @return AutreUtilisateur
-     */
-    public function setCreatedAt($createdAt)
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    /**
-     * Get createdAt
-     *
-     * @return \DateTime 
-     */
-    public function getCreatedAt()
-    {
-        return $this->createdAt;
-    }
-
-    /**
-     * Set deletedAt
-     *
-     * @param \DateTime $deletedAt
-     * @return AutreUtilisateur
-     */
-    public function setDeletedAt($deletedAt)
-    {
-        $this->deletedAt = $deletedAt;
-
-        return $this;
-    }
-
-    /**
-     * Get deletedAt
-     *
-     * @return \DateTime 
-     */
-    public function getDeletedAt()
-    {
-        return $this->deletedAt;
-    }
-
-    /**
-     * Instructions exécutées juste avant enregistrement du nouvel utilisateur 
-     * 
-     * @ORM\PrePersist()
-     */
-    public function prePersist()
-    {
-        $this->createdAt = new \DateTime();
+        return $this->typeUtilisateur;
     }
 
     /**
@@ -161,15 +93,5 @@ class AutreUtilisateur extends Utilisateur
         $this->identifiant = $utilisateur->identifiant;
         $this->motDePasse = $utilisateur->motDePasse;
         $this->createur = $utilisateur->createur;
-    }
-
-    /**
-     * Renvoie faux si l'utilisateur a été supprimé, ainsi il ne peut se connecter
-     *
-     * @inheritDoc
-     */
-    public function isEnabled()
-    {
-        return $this->deletedAt?false:true;
     }
 }

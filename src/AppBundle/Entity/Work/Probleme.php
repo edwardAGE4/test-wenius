@@ -4,6 +4,7 @@ namespace AppBundle\Entity\Work;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * Problème
@@ -20,28 +21,31 @@ class Probleme
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"details_problem", "list_problem"})
      */
     private $idProbleme;
 
     /**
      * @var \AppBundle\Entity\Security\Technicien
      *
-     * @ORM\ManyToOne(targetEntity="\AppBundle\Entity\Security\Technicien")
+     * @ORM\ManyToOne(targetEntity="\AppBundle\Entity\Security\Technicien", inversedBy="problemes")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="created_by", referencedColumnName="id", nullable=false)
      * })
      * @Assert\NotNull()
+     * @Groups({"details_problem"})
      */
     private $createur;
 
     /**
      * @var \AppBundle\Entity\Work\Vehicule
      *
-     * @ORM\ManyToOne(targetEntity="\AppBundle\Entity\Work\Vehicule")
+     * @ORM\ManyToOne(targetEntity="\AppBundle\Entity\Work\Vehicule", inversedBy="problemes")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="vehicule_concerne", referencedColumnName="id", nullable=false)
      * })
      * @Assert\NotNull()
+     * @Groups({"details_problem"})
      */
     private $vehiculeConcerne;
 
@@ -54,6 +58,7 @@ class Probleme
      *      min = 3,
      *      max = 50
      * )
+     * @Groups({"details_problem", "list_problem"})
      */
     private $resume;
 
@@ -62,6 +67,7 @@ class Probleme
      *
      * @ORM\Column(name="description", type="text")
      * @Assert\NotBlank()
+     * @Groups({"details_problem", "list_problem"})
      */
     private $description;
 
@@ -70,6 +76,7 @@ class Probleme
      *
      * @ORM\Column(name="date_detection", type="date")
      * @Assert\NotBlank()
+     * @Groups({"details_problem", "list_problem"})
      */
     private $dateDetection;
 
@@ -77,6 +84,7 @@ class Probleme
      * @var \DateTime
      *
      * @ORM\Column(name="created_at", type="datetime")
+     * @Groups({"details_problem", "list_problem"})
      */
     private $createdAt;
 
@@ -240,24 +248,13 @@ class Probleme
     }
 
     /**
-     * Vérifie la validité du véhicule affecté.
+     * Vérifie la validité de la date de détection du problème.
      *
      * @return bool
-     * @Assert\IsTrue(message = "Ce véhicule n'existe pas")
+     * @Assert\IsTrue(message = "La date de détection n'est pas valide. Un problème ne peut être détecté avant l'acquisition du véhicule")
      */
-    public function isVehiculeValid()
+    public function isDateDetectionValid()
     {
-        return $this->vehiculeConcerne ? ($this->vehiculeConcerne->getDeletedAt() ? false : true) : false;
-    }
-
-    /**
-     * Vérifie la validité de l'utilisateur affecté.
-     *
-     * @return bool
-     * @Assert\IsTrue(message = "Ce compte n'existe pas")
-     */
-    public function isCreateurValid()
-    {
-        return $this->createur ? ($this->createur->getDeletedAt() ? false : true) : false;
+        return $this->dateDetection >= $this->vehiculeConcerne->getDateAchat();
     }
 }

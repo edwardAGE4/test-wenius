@@ -3,9 +3,10 @@
 namespace AppBundle\Entity\Security;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Security\Core\User\AdvancedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * Utilisateur
@@ -16,8 +17,9 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * @ORM\DiscriminatorColumn(name="type", type="string")
  * @UniqueEntity("identifiant")
  * @UniqueEntity(fields={"nom", "prenom"})
+ * @ORM\HasLifecycleCallbacks()
  */
-class Utilisateur implements AdvancedUserInterface
+abstract class Utilisateur implements UserInterface
 {
     /**
      * Id auto incrément des utilisateurs
@@ -27,6 +29,7 @@ class Utilisateur implements AdvancedUserInterface
      * @ORM\Column(name="id", type="integer", nullable=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"list_user", "details_user"})
      */
     protected $idUtilisateur;
 
@@ -39,6 +42,7 @@ class Utilisateur implements AdvancedUserInterface
      *      min = 4,
      *      max = 25
      * )
+     * @Groups({"list_user", "details_user"})
      */
     protected $identifiant;
 
@@ -60,6 +64,7 @@ class Utilisateur implements AdvancedUserInterface
      *      min = 2,
      *      max = 25
      * )
+     * @Groups({"list_user", "details_user"})
      */
     protected $nom;
 
@@ -72,6 +77,7 @@ class Utilisateur implements AdvancedUserInterface
      *      min = 2,
      *      max = 25
      * )
+     * @Groups({"list_user", "details_user"})
      */
     protected $prenom;
 
@@ -82,10 +88,20 @@ class Utilisateur implements AdvancedUserInterface
      * @Assert\NotBlank()
      * @Assert\Length(
      *      min = 5,
-     *      max = 15
+     *      max = 15,
+     *      minMessage = "Le mot de passe doit avoir au moins 5 caractères",
+     *      maxMessage = "Le mot de passe doit avoir au plus 15 caractères"
      * )
      */
     protected $motDePasseClair;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="created_at", type="datetime")
+     * @Groups({"list_user", "details_user"})
+     */
+    protected $createdAt;
 
     
     /**
@@ -214,6 +230,29 @@ class Utilisateur implements AdvancedUserInterface
     }
 
     /**
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
+     * @return Utilisateur
+     */
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * Get createdAt
+     *
+     * @return \DateTime
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
      * @inheritDoc
      */
     public function getRoles()
@@ -254,34 +293,12 @@ class Utilisateur implements AdvancedUserInterface
     }
 
     /**
-     * @inheritDoc
+     * Instructions exécutées juste avant enregistrement du nouvel utilisateur
+     *
+     * @ORM\PrePersist()
      */
-    public function isAccountNonExpired()
+    public function prePersist()
     {
-        return true;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function isAccountNonLocked()
-    {
-        return true;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function isCredentialsNonExpired()
-    {
-        return true;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function isEnabled()
-    {
-        return true;
+        $this->createdAt = new \DateTime();
     }
 }

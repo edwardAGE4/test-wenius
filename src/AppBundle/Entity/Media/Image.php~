@@ -3,6 +3,8 @@
 namespace AppBundle\Entity\Media;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * Image
@@ -29,6 +31,7 @@ class Image
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="intervention", referencedColumnName="id", nullable=false)
      * })
+     * @Groups({"details_image"})
      */
     private $intervention;
 
@@ -36,6 +39,7 @@ class Image
      * @var string
      *
      * @ORM\Column(name="nom_fichier", type="string", length=255)
+     * @Groups({"list_image", "details_image"})
      */
     private $nomFichier;
 
@@ -43,13 +47,15 @@ class Image
      * @var string
      *
      * @ORM\Column(name="repertoire", type="string", length=255)
+     * @Groups({"list_image", "details_image"})
      */
     private $repertoire;
 
     /**
      * Fichier de l'image
      *
-     * @var \Symfony\Component\HttpFoundation\File\File
+     * @var \Symfony\Component\HttpFoundation\File\UploadedFile
+     * @Assert\Image(maxSize = "2048k")
      */
     private $file;
 
@@ -57,7 +63,7 @@ class Image
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getIdImage()
     {
@@ -80,7 +86,7 @@ class Image
     /**
      * Get nomFichier
      *
-     * @return string 
+     * @return string
      */
     public function getNomFichier()
     {
@@ -103,7 +109,7 @@ class Image
     /**
      * Get repertoire
      *
-     * @return string 
+     * @return string
      */
     public function getRepertoire()
     {
@@ -136,13 +142,14 @@ class Image
     /**
      * Sets file.
      *
-     * @param \Symfony\Component\HttpFoundation\File\File $file
+     * @param \Symfony\Component\HttpFoundation\File\UploadedFile $file
      * @return Image
      */
-    public function setFile(\Symfony\Component\HttpFoundation\File\File $file = null)
+    public function setFile(\Symfony\Component\HttpFoundation\File\UploadedFile $file = null)
     {
         $this->file = $file;
-        
+        $this->nomFichier = null;
+
         return $this;
     }
 
@@ -157,8 +164,8 @@ class Image
     }
 
     /**
-     * Renvoie le chemin absolu sur le serveur jusqu'au fichier uploadé 
-     * 
+     * Renvoie le chemin absolu sur le serveur jusqu'au fichier uploadé
+     *
      * @return null|string
      */
     public function getAbsolutePath()
@@ -170,7 +177,7 @@ class Image
 
     /**
      * Renvoie le chemin relatif jusqu'au fichier uploadé, chemin utilisé sur les pages web
-     * 
+     *
      * @return null|string
      */
     public function getWebPath()
@@ -182,7 +189,7 @@ class Image
 
     /**
      * Renvoie le chemin jusqu'au répertoire des uploads sur le serveur
-     * 
+     *
      * @return string
      */
     private function getUploadRootDir()
@@ -192,7 +199,7 @@ class Image
 
     /**
      * Renvoie le répertoire précis où sont uploadées les images dans le répertoire des uploads sur le serveur
-     * 
+     *
      * @return string
      */
     private function getUploadDir()
@@ -202,30 +209,36 @@ class Image
 
     /**
      * Instructions exécutées avant enregistrement des infos de l'image dans la base de données
-     * 
+     *
      * @ORM\PrePersist()
-     * @ORM\PreUpdate()
      */
     public function preUpload()
     {
-        // Génération d'un nom de fichier unique
-        $filename = md5($this->idImage);
-        // Ajout de l'extension au nom de fichier généré
-        $this->nomFichier = $filename.'.'.$this->getFile()->guessExtension();
+        // Définition du répertoire du fichier
+        $this->repertoire = 'Operation'.$this->intervention->getOperation()->getIdOperation();
+
+        if (null !== $this->getFile()) {
+            // Génération d'un nom de fichier unique
+            $filename = md5($this->idImage);
+            // Ajout de l'extension au nom de fichier généré
+            $this->nomFichier = $filename.'.'.$this->getFile()->guessExtension();
+        }
     }
 
     /**
      * Instructions exécutées après enregistrement des infos de l'image dans la base de données
-     * 
+     *
      * @ORM\PostPersist()
-     * @ORM\PostUpdate()
      */
     public function postUpload()
     {
+        if (null === $this->getFile()) {
+            return;
+        }
 
         // Déplacement du fichier dans le répertoire des uploads.
-        // Une erreur est déchenchée automatiquement en cas d'erreur et l'enregistrement des infos de l'images est annulé 
-        $this->getFile()->move($this->getUploadRootDir().$this->repertoire, $this->nomFichier);
+        // Une erreur est déchenchée automatiquement en cas d'erreur et l'enregistrement des infos de l'images est annulé
+        $this->getFile()->move($this->getUploadRootDir().'/'.$this->repertoire, $this->nomFichier);
 
         $this->file = null;
     }

@@ -4,6 +4,7 @@ namespace AppBundle\Entity\Work;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * Pièce
@@ -31,6 +32,7 @@ class Piece
      *      min = 3,
      *      max = 40
      * )
+     * @Groups({"details_operation"})
      */
     private $nom;
 
@@ -39,6 +41,7 @@ class Piece
      *
      * @ORM\Column(name="description", type="text")
      * @Assert\NotBlank()
+     * @Groups({"details_operation"})
      */
     private $description;
 

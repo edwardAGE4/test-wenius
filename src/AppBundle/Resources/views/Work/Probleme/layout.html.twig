@@ -1,29 +1,29 @@
 {% extends 'AppBundle::base.html.twig' %}
 
 {% block body %}
-    <h1><a href="{{ path('cars_show', { 'idVehicule': vehicule.idVehicule }) }}">Vehicule</a></h1>
+    <h1><a href="{{ path('cars_show', { 'idVehicule': probleme.vehiculeConcerne.idVehicule }) }}">Vehicule</a></h1>
 
     <table>
         <tbody>
         <tr>
             <th>Immatriculation</th>
-            <td>{{ vehicule.immatriculation }}</td>
+            <td>{{ probleme.vehiculeConcerne.immatriculation }}</td>
         </tr>
         <tr>
             <th>Marque</th>
-            <td>{{ vehicule.marque }}</td>
+            <td>{{ probleme.vehiculeConcerne.marque }}</td>
         </tr>
         <tr>
             <th>Modele</th>
-            <td>{{ vehicule.modele }}</td>
+            <td>{{ probleme.vehiculeConcerne.modele }}</td>
         </tr>
         <tr>
             <th>Type</th>
-            <td>{{ vehicule.type }}</td>
+            <td>{{ probleme.vehiculeConcerne.type }}</td>
         </tr>
         <tr>
             <th>Date achat</th>
-            <td>{{ vehicule.dateAchat|date('d/m/Y') }}</td>
+            <td>{{ probleme.vehiculeConcerne.dateAchat|date('d/m/Y') }}</td>
         </tr>
         </tbody>
     </table>
