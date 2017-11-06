@@ -1,51 +1,30 @@
-{% extends 'AppBundle::base.html.twig' %}
+{% extends 'AppBundle:Default:index.html.twig' %}
 
-{% block body %}
-    <h1>Vehicule</h1>
+{% block title %}Vehicule{% endblock %}
 
-    <table>
-        <tbody>
-            <tr>
-                <th>Immatriculation</th>
-                <td>{{ vehicule.immatriculation }}</td>
-            </tr>
-            <tr>
-                <th>Marque</th>
-                <td>{{ vehicule.marque }}</td>
-            </tr>
-            <tr>
-                <th>Modele</th>
-                <td>{{ vehicule.modele }}</td>
-            </tr>
-            <tr>
-                <th>Type</th>
-                <td>{{ vehicule.type }}</td>
-            </tr>
-            <tr>
-                <th>Date achat</th>
-                <td>{{ vehicule.dateAchat|date('d/m/Y') }}</td>
-            </tr>
-            <tr>
-                <th>Created at</th>
-                <td>{{ vehicule.createdAt|date('d/m/Y H:i') }}</td>
-            </tr>
-        </tbody>
-    </table>
+{% block page %}
+    <div class="row">
+        <div class="col-sm-10 col-sm-offset-1">
+            <h1 class="page-header">Vehicule</h1>
+            <div class="row">
+                <div class="col-sm-7 col-sm-offset-2">
+                    <h4>Immatriculation : {{ vehicule.immatriculation }}</h4>
+                    <h4>Marque : {{ vehicule.marque }}</h4>
+                    <h4>Modele : {{ vehicule.modele }}</h4>
+                    <h4>Type : {{ vehicule.type }}</h4>
+                    <h4>Date achat : {{ vehicule.dateAchat|date('d/m/Y') }}</h4>
+                    <h4>Date et heure création : {{ vehicule.createdAt|date('d/m/Y H:i') }}</h4>
+                </div>
+                <div class="col-sm-3">
+                    <a href="{{ path('problems_index', { 'idVehicule': vehicule.idVehicule }) }}" type="button" class="btn btn-primary btn-block">Problemes liés</a>
+                    <a href="{{ path('operations_index', { 'idVehicule': vehicule.idVehicule }) }}" type="button" class="btn btn-info btn-block">Operations liées</a>
+                    {{ form_start(delete_form) }}
+                        <input type="submit" class="btn btn-danger btn-block" value="Supprimer">
+                    {{ form_end(delete_form) }}
+                </div>
+            </div>
 
-    <ul>
-        <li>
-            <a href="{{ path('problems_index', { 'idVehicule': vehicule.idVehicule }) }}">Problemes</a>
-        </li>
-        <li>
-            <a href="{{ path('operations_index', { 'idVehicule': vehicule.idVehicule }) }}">Opérations</a>
-        </li>
-        <li>
-            <a href="{{ path('cars_index') }}">Back to the list</a>
-        </li>
-        <li>
-            {{ form_start(delete_form) }}
-                <input type="submit" value="Delete">
-            {{ form_end(delete_form) }}
-        </li>
-    </ul>
+            <h2 class="sub-header"><a href="{{ path('cars_index') }}">Retour à la liste</a></h2>
+        </div>
+    </div>
 {% endblock %}

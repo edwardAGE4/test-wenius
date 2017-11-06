@@ -1,60 +1,37 @@
 {% extends 'AppBundle:Work/Operation:layout.html.twig' %}
 
+{% block title %}Operation{% endblock %}
+
 {% block content %}
-    <h1>Operation</h1>
-
-    <table>
-        <tbody>
-            <tr>
-                <th>Sujet</th>
-                <td>{{ operation.sujet }}</td>
-            </tr>
-            <tr>
-                <th>Description</th>
-                <td>{{ operation.description }}</td>
-            </tr>
-            <tr>
-                <th>Date debut</th>
-                <td>{{ operation.dateDebut|date('d/m/Y') }}</td>
-            </tr>
-            <tr>
-                <th>Date fin prevue</th>
-                <td>{{ operation.dateFinPrevue|date('d/m/Y') }}</td>
-            </tr>
-            <tr>
-                <th>Date fin effective</th>
-                <td>{% if operation.dateFinEffective %}{{ operation.dateFinEffective|date('d/m/Y') }}{% endif %}</td>
-            </tr>
-            <tr>
-                <th>Pièces</th>
-                {% if operation.pieces.count > 0 %}
-                    {% for piece in operation.pieces %}
-                        <td>{{ piece.nom ~ ' : ' ~ piece.description }}</td>
-                    {% endfor %}
-                {% else %}
-                    <td>Aucune pièce</td>
-                {% endif %}
-            </tr>
-            <tr>
-                <th>Created at</th>
-                <td>{{ operation.createdAt|date('d/m/Y H:i') }}</td>
-            </tr>
-            <tr>
-                <th>Updated at</th>
-                <td>{% if operation.updatedAt %}{{ operation.updatedAt|date('d/m/Y H:i') }}{% endif %}</td>
-            </tr>
-        </tbody>
-    </table>
-
-    <ul>
-        <li>
-            <a href="{{ path('interventions_index', { 'idOperation': operation.idOperation }) }}">Interventions</a>
-        </li>
-        <li>
-            <a href="{{ path('operations_index', { 'idVehicule': operation.vehiculeConcerne.idVehicule }) }}">Back to the list</a>
-        </li>
-        <li>
-            <a href="{{ path('operations_edit', { 'idOperation': operation.idOperation }) }}">Edit</a>
-        </li>
-    </ul>
+    
+    <div class="col-sm-8">
+        <h2 class="sub-header">Operation</h2>
+        
+        <div class="row">
+            <div class="col-sm-8">
+                <h4>Sujet : {{ operation.sujet }}</h4>
+                <h4>Description : {{ operation.description }}</h4>
+                <h4>Date debut : {{ operation.dateDebut|date('d/m/Y') }}</h4>
+                <h4>Date fin prevue : {{ operation.dateFinPrevue|date('d/m/Y') }}</h4>
+                <h4>Date fin effective : {% if operation.dateFinEffective %}{{ operation.dateFinEffective|date('d/m/Y') }}{% endif %}</h4>
+                <p>
+                    <h4>Pièces :</h4>
+                    {% if operation.pieces.count > 0 %}
+                        {% for piece in operation.pieces %}
+                            <h3>{{ piece.nom ~ ' : ' ~ piece.description }}</h3>
+                        {% endfor %}
+                    {% endif %}
+                </p>
+                <h4>Date et heure creation : {{ operation.createdAt|date('d/m/Y H:i') }}</h4>
+                <h4>Date et heure modification : {% if operation.updatedAt %}{{ operation.updatedAt|date('d/m/Y H:i') }}{% endif %}</h4>
+            </div>
+            
+            <div class="col-sm-4">
+                <a href="{{ path('interventions_index', { 'idOperation': operation.idOperation }) }}" type="button" class="btn btn-primary btn-block">Interventions effectuées</a>
+                <a href="{{ path('operations_edit', { 'idOperation': operation.idOperation }) }}" type="button" class="btn btn-default btn-block">Modifier</a>
+            </div>
+        </div>
+        
+        <h3 class="sub-header"><a href="{{ path('operations_index', { 'idVehicule': operation.vehiculeConcerne.idVehicule }) }}">Retour à la liste</a></h2>
+    </div>
 {% endblock %}

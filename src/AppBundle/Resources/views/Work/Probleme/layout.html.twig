@@ -1,33 +1,23 @@
-{% extends 'AppBundle::base.html.twig' %}
+{% extends 'AppBundle:Default:index.html.twig' %}
 
-{% block body %}
-    <h1><a href="{{ path('cars_show', { 'idVehicule': probleme.vehiculeConcerne.idVehicule }) }}">Vehicule</a></h1>
-
-    <table>
-        <tbody>
-        <tr>
-            <th>Immatriculation</th>
-            <td>{{ probleme.vehiculeConcerne.immatriculation }}</td>
-        </tr>
-        <tr>
-            <th>Marque</th>
-            <td>{{ probleme.vehiculeConcerne.marque }}</td>
-        </tr>
-        <tr>
-            <th>Modele</th>
-            <td>{{ probleme.vehiculeConcerne.modele }}</td>
-        </tr>
-        <tr>
-            <th>Type</th>
-            <td>{{ probleme.vehiculeConcerne.type }}</td>
-        </tr>
-        <tr>
-            <th>Date achat</th>
-            <td>{{ probleme.vehiculeConcerne.dateAchat|date('d/m/Y') }}</td>
-        </tr>
-        </tbody>
-    </table>
-
-    {% block content %}
-    {% endblock %}
+{% block page %}
+    <div class="row">
+        <div class="col-sm-12">
+            <h1 class="page-header">Problemes de vehicule</h1>
+            <div class="row">
+                <div class=col-sm-4>
+                    <h2 class="sub-header"><a href="{{ path('cars_show', { 'idVehicule': probleme.VehiculeConcerne.idVehicule }) }}">Vehicule concerné</a></h2>
+                    <h3>Immatriculation : {{ probleme.VehiculeConcerne.immatriculation }}</h3>
+                    <h3>Marque : {{ probleme.VehiculeConcerne.marque }}</h3>
+                    <h3>Modele : {{ probleme.VehiculeConcerne.modele }}</h3>
+                    <h3>Type : {{ probleme.VehiculeConcerne.type }}</h3>
+                    <h3>Date achat : {{ probleme.VehiculeConcerne.dateAchat|date('d/m/Y') }}</h3>
+                </div>
+                
+                {% block content %}
+                {% endblock %} 
+                
+            </div>
+        </div>
+    </div>
 {% endblock %}

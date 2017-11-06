@@ -1,16 +1,22 @@
-{% extends 'AppBundle::base.html.twig' %}
+{% extends 'AppBundle:Default:index.html.twig' %}
 
-{% block body %}
-    <h1>Vehicule creation</h1>
+{% block title %}Vehicule creation{% endblock %}
 
-    {{ form_start(form) }}
-        {{ form_widget(form) }}
-        <input type="submit" value="Create" />
-    {{ form_end(form) }}
-
-    <ul>
-        <li>
-            <a href="{{ path('cars_index') }}">Back to the list</a>
-        </li>
-    </ul>
+{% block page %}
+    <div class="row">
+        <div class="col-sm-10 col-sm-offset-1">
+            <h1 class="page-header">Vehicule creation</h1>
+            
+            <div class="row">
+                <div class="col-sm-6 col-sm-offset-3">
+                    {{ form_start(form) }}
+                    {{ form_widget(form) }}
+                    <input type="submit" class="btn btn-primary btn-block" value="Valider" />
+                    {{ form_end(form) }}
+                </div>
+            </div>
+            
+            <h2 class="sub-header"><a href="{{ path('cars_index') }}">Retour à la liste</a></h2>
+        </div>
+    </div>
 {% endblock %}

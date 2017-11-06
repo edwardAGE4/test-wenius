@@ -1,60 +1,32 @@
-{% extends 'AppBundle::base.html.twig' %}
+{% extends 'AppBundle:Default:index.html.twig' %}
 
-{% block body %}
-    <h1><a href="{{ path('cars_show', { 'idVehicule': intervention.operation.vehiculeConcerne.idVehicule }) }}">Vehicule</a></h1>
-
-    <table>
-        <tbody>
-        <tr>
-            <th>Immatriculation</th>
-            <td>{{ intervention.operation.vehiculeConcerne.immatriculation }}</td>
-        </tr>
-        <tr>
-            <th>Marque</th>
-            <td>{{ intervention.operation.vehiculeConcerne.marque }}</td>
-        </tr>
-        <tr>
-            <th>Modele</th>
-            <td>{{ intervention.operation.vehiculeConcerne.modele }}</td>
-        </tr>
-        <tr>
-            <th>Type</th>
-            <td>{{ intervention.operation.vehiculeConcerne.type }}</td>
-        </tr>
-        <tr>
-            <th>Date achat</th>
-            <td>{{ intervention.operation.vehiculeConcerne.dateAchat|date('d/m/Y') }}</td>
-        </tr>
-        </tbody>
-    </table>
-
-    <h1><a href="{{ path('operations_show', { 'idOperation': intervention.operation.idOperation }) }}">Opération</a></h1>
-
-    <table>
-        <tbody>
-        <tr>
-            <th>Sujet</th>
-            <td>{{ intervention.operation.sujet }}</td>
-        </tr>
-        <tr>
-            <th>Description</th>
-            <td>{{ intervention.operation.description }}</td>
-        </tr>
-        <tr>
-            <th>Date debut</th>
-            <td>{{ intervention.operation.dateDebut|date('d/m/Y') }}</td>
-        </tr>
-        <tr>
-            <th>Date fin prevue</th>
-            <td>{{ intervention.operation.dateFinPrevue|date('d/m/Y') }}</td>
-        </tr>
-        <tr>
-            <th>Date fin effective</th>
-            <td>{% if intervention.operation.dateFinEffective %}{{ intervention.operation.dateFinEffective|date('d/m/Y') }}{% endif %}</td>
-        </tr>
-        </tbody>
-    </table>
-
-    {% block content %}
-    {% endblock %}
+{% block page %}
+    <div class="row">
+        <div class="col-sm-12">
+            <h1 class="page-header">Interventions de operation</h1>
+            <div class="row">
+                <div class=col-sm-3>
+                    <h2 class="sub-header"><a href="{{ path('cars_show', { 'idVehicule': intervention.operation.vehiculeConcerne.idVehicule }) }}">Vehicule concerné</a></h2>
+                    <h3>Immatriculation : {{ intervention.operation.VehiculeConcerne.immatriculation }}</h3>
+                    <h3>Marque : {{ intervention.operation.VehiculeConcerne.marque }}</h3>
+                    <h3>Modele : {{ intervention.operation.VehiculeConcerne.modele }}</h3>
+                    <h3>Type : {{ intervention.operation.VehiculeConcerne.type }}</h3>
+                    <h3>Date achat : {{ intervention.operation.VehiculeConcerne.dateAchat|date('d/m/Y') }}</h3>
+                </div>
+                
+                <div class=col-sm-3>
+                    <h2 class="sub-header"><a href="{{ path('operations_show', { 'idOperation': intervention.operation.idOperation }) }}">Operation concernée</a></h2>
+                    <h3>Sujet : {{ intervention.operation.sujet }}</h3>
+                    <h3>Description : {{ intervention.operation.description }}</h3>
+                    <h3>Date debut : {{ intervention.operation.dateDebut|date('d/m/Y') }}</h3>
+                    <h3>Date fin prevue : {{ intervention.operation.dateFinPrevue|date('d/m/Y') }}</h3>
+                    <h3>Date fin effective : {% if intervention.operation.dateFinEffective %}{{ intervention.operation.dateFinEffective|date('d/m/Y') }}{% endif %}</h3>
+                </div>
+                
+                {% block content %}
+                {% endblock %} 
+                
+            </div>
+        </div>
+    </div>
 {% endblock %}

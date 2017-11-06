@@ -1,92 +1,65 @@
-{% extends 'AppBundle::base.html.twig' %}
+{% extends 'AppBundle:Default:index.html.twig' %}
 
-{% block body %}
-    <h1><a href="{{ path('cars_show', { 'idVehicule': operation.vehiculeConcerne.idVehicule }) }}">Vehicule</a></h1>
+{% block title %}Interventions{% endblock %}
 
-    <table>
-        <tbody>
-        <tr>
-            <th>Immatriculation</th>
-            <td>{{ operation.vehiculeConcerne.immatriculation }}</td>
-        </tr>
-        <tr>
-            <th>Marque</th>
-            <td>{{ operation.vehiculeConcerne.marque }}</td>
-        </tr>
-        <tr>
-            <th>Modele</th>
-            <td>{{ operation.vehiculeConcerne.modele }}</td>
-        </tr>
-        <tr>
-            <th>Type</th>
-            <td>{{ operation.vehiculeConcerne.type }}</td>
-        </tr>
-        <tr>
-            <th>Date achat</th>
-            <td>{{ operation.vehiculeConcerne.dateAchat|date('d/m/Y') }}</td>
-        </tr>
-        </tbody>
-    </table>
-
-    <h1><a href="{{ path('operations_show', { 'idVehicule': operation.vehiculeConcerne.idVehicule, 'idOperation': operation.idOperation }) }}">Opération</a></h1>
-
-    <table>
-        <tbody>
-        <tr>
-            <th>Sujet</th>
-            <td>{{ operation.sujet }}</td>
-        </tr>
-        <tr>
-            <th>Description</th>
-            <td>{{ operation.description }}</td>
-        </tr>
-        <tr>
-            <th>Date debut</th>
-            <td>{{ operation.dateDebut|date('d/m/Y') }}</td>
-        </tr>
-        <tr>
-            <th>Date fin prevue</th>
-            <td>{{ operation.dateFinPrevue|date('d/m/Y') }}</td>
-        </tr>
-        <tr>
-            <th>Date fin effective</th>
-            <td>{% if operation.dateFinEffective %}{{ operation.dateFinEffective|date('d/m/Y') }}{% endif %}</td>
-        </tr>
-        </tbody>
-    </table>
-
-    <h1>Interventions list</h1>
-
-    <table>
-        <thead>
-            <tr>
-                <th>Date intervention</th>
-                <th>Notes</th>
-                <th>Created at</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for intervention in interventions %}
-            <tr>
-                <td>{{ intervention.dateIntervention|date('Y-m-d') }}</td>
-                <td>{{ intervention.notes }}</td>
-                <td>{{ intervention.createdAt|date('d/m/Y H:i') }}</td>
-                <td>
-                    <ul>
-                        <li>
-                            <a href="{{ path('interventions_show', { 'idOperation': operation.idOperation, 'idIntervention': intervention.idIntervention }) }}">show</a>
-                        </li>
-                    </ul>
-                </td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-
-    <ul>
-        <li>
-            <a href="{{ path('interventions_new', { 'idOperation': operation.idOperation }) }}">Create a new intervention</a>
-        </li>
-    </ul>
+{% block page %}
+    <div class="row">
+        <div class="col-sm-12">
+            <h1 class="page-header">Interventions de operation</h1>
+            <div class="row">
+                <div class=col-sm-3>
+                    <h2 class="sub-header"><a href="{{ path('cars_show', { 'idVehicule': operation.vehiculeConcerne.idVehicule }) }}">Vehicule concerné</a></h2>
+                    <h3>Immatriculation : {{ operation.VehiculeConcerne.immatriculation }}</h3>
+                    <h3>Marque : {{ operation.VehiculeConcerne.marque }}</h3>
+                    <h3>Modele : {{ operation.VehiculeConcerne.modele }}</h3>
+                    <h3>Type : {{ operation.VehiculeConcerne.type }}</h3>
+                    <h3>Date achat : {{ operation.VehiculeConcerne.dateAchat|date('d/m/Y') }}</h3>
+                </div>
+                
+                <div class=col-sm-3>
+                    <h2 class="sub-header"><a href="{{ path('operations_show', { 'idOperation': operation.idOperation }) }}">Operation concernée</a></h2>
+                    <h3>Sujet : {{ operation.sujet }}</h3>
+                    <h3>Description : {{ operation.description }}</h3>
+                    <h3>Date debut : {{ operation.dateDebut|date('d/m/Y') }}</h3>
+                    <h3>Date fin prevue : {{ operation.dateFinPrevue|date('d/m/Y') }}</h3>
+                    <h3>Date fin effective : {% if operation.dateFinEffective %}{{ operation.dateFinEffective|date('d/m/Y') }}{% endif %}</h3>
+                </div>
+                
+                <div class="col-sm-6">
+                    <h2 class="sub-header">Interventions</h2>
+                    <h3 class="sub-header"><a href="{{ path('interventions_new', { 'idOperation': operation.idOperation }) }}">Créer une nouvelle intervention pour cette operation</a></h2>
+                
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                            <tr>
+                                <th>Date intervention</th>
+                                <th>Intervenant</th>
+                                <th>Notes</th>
+                                <th>Date et heure creation</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                {% for intervention in interventions %}
+                                    <tr>
+                                        <td>{{ intervention.dateIntervention|date('Y-m-d') }}</td>
+                                        <td>{{ intervention.createur.prenom ~ ' ' ~ intervention.createur.nom }}</td>
+                                        <td>{{ intervention.notes }}</td>
+                                        <td>{{ intervention.createdAt|date('d/m/Y H:i') }}</td>
+                                        <td>
+                                            <div class="btn-group btn-group-xs" role="group">
+                                                <a type="button" class="btn btn-primary" href="{{ path('interventions_show', { 'idIntervention': intervention.idIntervention }) }}"><span class="glyphicon glyphicon-eye-open"></span> Détails</a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
 {% endblock %}

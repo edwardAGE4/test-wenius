@@ -1,39 +1,33 @@
 {% extends 'AppBundle:Work/Intervention:layout.html.twig' %}
 
+{% block title %}Intervention{% endblock %}
+
 {% block content %}
-    <h1>Intervention</h1>
-
-    <table>
-        <tbody>
-            <tr>
-                <th>Date intervention</th>
-                <td>{{ intervention.dateIntervention|date('d/m/Y') }}</td>
-            </tr>
-            <tr>
-                <th>Notes</th>
-                <td>{{ intervention.notes }}</td>
-            </tr>
-            <tr>
-                <th>Images</th>
-                <td>
-                    {% if intervention.images.count > 0 %}
-                        {% for image in intervention.images %}
-                            <img src="{{ asset(image.webPath) }}">
-                        {% endfor %}
-                    {% else %}
-                    {% endif %}
-                </td>
-            </tr>
-            <tr>
-                <th>Created at</th>
-                <td>{{ intervention.createdAt|date('d/m/Y H:i') }}</td>
-            </tr>
-        </tbody>
-    </table>
-
-    <ul>
-        <li>
-            <a href="{{ path('interventions_index', { 'idOperation': intervention.operation.idOperation }) }}">Back to the list</a>
-        </li>
-    </ul>
+    
+    <div class="col-sm-6">
+        <h2 class="sub-header">Intervention</h2>
+        
+        <div class="row">
+            <div class="col-sm-8">
+                <h4>Date intervention : {{ intervention.dateIntervention|date('d/m/Y') }}</h4>
+                <h4>{{ intervention.createur.prenom ~ ' ' ~ intervention.createur.nom }}</h4>
+                <h4>Notes : {{ intervention.notes }}</h4>
+                <h4>Date et heure creation : {{ intervention.createdAt|date('d/m/Y H:i') }}</h4>
+                <h4>Images</h4>
+                {% if intervention.images.count > 0 %}
+                <div class="row">
+                    {% for image in intervention.images %}
+                        <div class="col-sm-4 col-xs-6">
+                            <div class="thumbnail">
+                                <img src="{{ asset(image.webPath) }}">
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <h3 class="sub-header"><a href="{{ path('interventions_index', { 'idOperation': intervention.operation.idOperation }) }}">Retour à la liste</a></h2>
+    </div>
 {% endblock %}

@@ -1,16 +1,20 @@
 {% extends 'AppBundle:Work/Probleme:layout.html.twig' %}
 
+{% block title %}Probleme creation{% endblock %}
+
 {% block content %}
-    <h1>Probleme creation</h1>
-
-    {{ form_start(form) }}
-        {{ form_widget(form) }}
-        <input type="submit" value="Create" />
-    {{ form_end(form) }}
-
-    <ul>
-        <li>
-            <a href="{{ path('problems_index', { 'idVehicule': probleme.vehiculeConcerne.idVehicule }) }}">Back to the list</a>
-        </li>
-    </ul>
+    <div class="col-sm-8">
+        <h2 class="sub-header">Probleme creation</h2>
+        
+        <div class="row">
+            <div class="col-sm-8 col-sm-offset-2">
+                {{ form_start(form) }}
+                {{ form_widget(form) }}
+                <input type="submit" class="btn btn-primary btn-block" value="Valider" />
+                {{ form_end(form) }}
+            </div>
+        </div>
+        
+        <h3 class="sub-header"><a href="{{ path('problems_index', { 'idVehicule': probleme.vehiculeConcerne.idVehicule }) }}">Retour à la liste</a></h3>
+    </div>
 {% endblock %}

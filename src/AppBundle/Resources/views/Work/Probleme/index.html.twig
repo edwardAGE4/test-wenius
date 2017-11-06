@@ -1,65 +1,53 @@
-{% extends 'AppBundle::base.html.twig' %}
+{% extends 'AppBundle:Default:index.html.twig' %}
 
-{% block body %}
-    <h1><a href="{{ path('cars_show', { 'idVehicule': vehicule.idVehicule }) }}">Vehicule</a></h1>
+{% block title %}Problemes{% endblock %}
 
-    <table>
-        <tbody>
-        <tr>
-            <th>Immatriculation</th>
-            <td>{{ vehicule.immatriculation }}</td>
-        </tr>
-        <tr>
-            <th>Marque</th>
-            <td>{{ vehicule.marque }}</td>
-        </tr>
-        <tr>
-            <th>Modele</th>
-            <td>{{ vehicule.modele }}</td>
-        </tr>
-        <tr>
-            <th>Type</th>
-            <td>{{ vehicule.type }}</td>
-        </tr>
-        <tr>
-            <th>Date achat</th>
-            <td>{{ vehicule.dateAchat|date('d/m/Y') }}</td>
-        </tr>
-        </tbody>
-    </table>
-
-    <h1>Problemes list</h1>
-
-    <table>
-        <thead>
-            <tr>
-                <th>Resume</th>
-                <th>Date detection</th>
-                <th>Created at</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for probleme in problemes %}
-            <tr>
-                <td>{{ probleme.resume }}</td>
-                <td>{{ probleme.dateDetection|date('d/m/Y') }}</td>
-                <td>{{ probleme.createdAt|date('d/m/Y H:i') }}</td>
-                <td>
-                    <ul>
-                        <li>
-                            <a href="{{ path('problems_show', { 'idProbleme': probleme.idProbleme }) }}">show</a>
-                        </li>
-                    </ul>
-                </td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-
-    <ul>
-        <li>
-            <a href="{{ path('problems_new', { 'idVehicule': vehicule.idVehicule }) }}">Create a new probleme</a>
-        </li>
-    </ul>
+{% block page %}
+    <div class="row">
+        <div class="col-sm-12">
+            <h1 class="page-header">Problemes de vehicule</h1>
+            <div class="row">
+                <div class=col-sm-4>
+                    <h2 class="sub-header"><a href="{{ path('cars_show', { 'idVehicule': vehicule.idVehicule }) }}">Vehicule concerné</a></h2>
+                    <h3>Immatriculation : {{ vehicule.immatriculation }}</h3>
+                    <h3>Marque : {{ vehicule.marque }}</h3>
+                    <h3>Modele : {{ vehicule.modele }}</h3>
+                    <h3>Type : {{ vehicule.type }}</h3>
+                    <h3>Date achat : {{ vehicule.dateAchat|date('d/m/Y') }}</h3>
+                </div>
+                
+                <div class="col-sm-8">
+                    <h2 class="sub-header">Problemes</h2>
+                    <h3 class="sub-header"><a href="{{ path('problems_new', { 'idVehicule': vehicule.idVehicule }) }}">Créer un nouveau probleme concernant ce véhicule</a></h2>
+                
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                            <tr>
+                                <th>Resume</th>
+                                <th>Date detection</th>
+                                <th>Date et heure creation</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                {% for probleme in problemes %}
+                                    <tr>
+                                        <td>{{ probleme.resume }}</td>
+                                        <td>{{ probleme.dateDetection|date('d/m/Y') }}</td>
+                                        <td>{{ probleme.createdAt|date('d/m/Y H:i') }}</td>
+                                        <td>
+                                            <div class="btn-group btn-group-xs" role="group">
+                                                <a type="button" class="btn btn-primary" href="{{ path('problems_show', { 'idProbleme': probleme.idProbleme }) }}"><span class="glyphicon glyphicon-eye-open"></span> Détails</a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

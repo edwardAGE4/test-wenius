@@ -1,73 +1,60 @@
-{% extends 'AppBundle::base.html.twig' %}
+{% extends 'AppBundle:Default:index.html.twig' %}
 
-{% block body %}
-    <h1><a href="{{ path('cars_show', { 'idVehicule': vehicule.idVehicule }) }}">Vehicule</a></h1>
-    <table>
-        <tbody>
-        <tr>
-            <th>Immatriculation</th>
-            <td>{{ vehicule.immatriculation }}</td>
-        </tr>
-        <tr>
-            <th>Marque</th>
-            <td>{{ vehicule.marque }}</td>
-        </tr>
-        <tr>
-            <th>Modele</th>
-            <td>{{ vehicule.modele }}</td>
-        </tr>
-        <tr>
-            <th>Type</th>
-            <td>{{ vehicule.type }}</td>
-        </tr>
-        <tr>
-            <th>Date achat</th>
-            <td>{{ vehicule.dateAchat|date('d/m/Y') }}</td>
-        </tr>
-        </tbody>
-    </table>
+{% block title %}Operations{% endblock %}
 
-    <h1>Operations list</h1>
-
-    <table>
-        <thead>
-            <tr>
-                <th>Sujet</th>
-                <th>Date debut</th>
-                <th>Date fin prevue</th>
-                <th>Date fin effective</th>
-                <th>Created at</th>
-                <th>Updated at</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for operation in operations %}
-            <tr>
-                <td>{{ operation.sujet }}</td>
-                <td>{{ operation.dateDebut|date('Y-m-d') }}</td>
-                <td>{{ operation.dateFinPrevue|date('d/m/Y') }}</td>
-                <td>{% if operation.dateFinEffective %}{{ operation.dateFinEffective|date('d/m/Y') }}{% endif %}</td>
-                <td>{{ operation.createdAt|date('d/m/Y H:i') }}</td>
-                <td>{% if operation.updatedAt %}{{ operation.updatedAt|date('d/m/Y H:i') }}{% endif %}</td>
-                <td>
-                    <ul>
-                        <li>
-                            <a href="{{ path('operations_show', { 'idOperation': operation.idOperation }) }}">show</a>
-                        </li>
-                        <li>
-                            <a href="{{ path('operations_edit', { 'idOperation': operation.idOperation }) }}">edit</a>
-                        </li>
-                    </ul>
-                </td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-
-    <ul>
-        <li>
-            <a href="{{ path('operations_new', { 'idVehicule': vehicule.idVehicule }) }}">Create a new operation</a>
-        </li>
-    </ul>
+{% block page %}
+    <div class="row">
+        <div class="col-sm-12">
+            <h1 class="page-header">Operations sur vehicule</h1>
+            <div class="row">
+                <div class=col-sm-4>
+                    <h2 class="sub-header"><a href="{{ path('cars_show', { 'idVehicule': vehicule.idVehicule }) }}">Vehicule concerné</a></h2>
+                    <h3>Immatriculation : {{ vehicule.immatriculation }}</h3>
+                    <h3>Marque : {{ vehicule.marque }}</h3>
+                    <h3>Modele : {{ vehicule.modele }}</h3>
+                    <h3>Type : {{ vehicule.type }}</h3>
+                    <h3>Date achat : {{ vehicule.dateAchat|date('d/m/Y') }}</h3>
+                </div>
+                
+                <div class="col-sm-8">
+                    <h2 class="sub-header">Operations</h2>
+                    <h3 class="sub-header"><a href="{{ path('operations_new', { 'idVehicule': vehicule.idVehicule }) }}">Créer une nouvelle opération pour ce véhicule</a></h2>
+                
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                            <tr>
+                                <th>Sujet</th>
+                                <th>Date debut</th>
+                                <th>Date fin prevue</th>
+                                <th>Date fin effective</th>
+                                <th>Date et heure creation</th>
+                                <th>Date et heure modification</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                {% for operation in operations %}
+                                    <tr>
+                                        <td>{{ operation.sujet }}</td>
+                                        <td>{{ operation.dateDebut|date('Y-m-d') }}</td>
+                                        <td>{{ operation.dateFinPrevue|date('d/m/Y') }}</td>
+                                        <td>{% if operation.dateFinEffective %}{{ operation.dateFinEffective|date('d/m/Y') }}{% endif %}</td>
+                                        <td>{{ operation.createdAt|date('d/m/Y H:i') }}</td>
+                                        <td>{% if operation.updatedAt %}{{ operation.updatedAt|date('d/m/Y H:i') }}{% endif %}</td>
+                                        <td>
+                                            <div class="btn-group btn-group-xs" role="group">
+                                                <a type="button" class="btn btn-primary" href="{{ path('operations_show', { 'idOperation': operation.idOperation }) }}"><span class="glyphicon glyphicon-eye-open"></span> Détails</a>
+                                                <a type="button" class="btn btn-default" href="{{ path('operations_edit', { 'idOperation': operation.idOperation }) }}"><span class="glyphicon glyphicon-pen"></span> Modifier</a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

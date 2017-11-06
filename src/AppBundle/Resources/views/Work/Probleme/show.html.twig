@@ -1,32 +1,21 @@
 {% extends 'AppBundle:Work/Probleme:layout.html.twig' %}
 
+{% block title %}Probleme{% endblock %}
+
 {% block content %}
-    <h1>Probleme</h1>
-
-    <table>
-        <tbody>
-            <tr>
-                <th>Resume</th>
-                <td>{{ probleme.resume }}</td>
-            </tr>
-            <tr>
-                <th>Description</th>
-                <td>{{ probleme.description }}</td>
-            </tr>
-            <tr>
-                <th>Date detection</th>
-                <td>{{ probleme.dateDetection|date('Y-m-d') }}</td>
-            </tr>
-            <tr>
-                <th>Created at</th>
-                <td>{{ probleme.createdAt|date('Y-m-d H:i:s') }}</td>
-            </tr>
-        </tbody>
-    </table>
-
-    <ul>
-        <li>
-            <a href="{{ path('problems_index', {'idVehicule': probleme.vehiculeConcerne.idVehicule }) }}">Back to the list</a>
-        </li>
-    </ul>
+    
+    <div class="col-sm-8">
+        <h2 class="sub-header">Probleme</h2>
+        
+        <div class="row">
+            <div class="col-sm-8">
+                <h4>Resume : {{ probleme.resume }}</h4>
+                <h4>Description : {{ probleme.description }}</h4>
+                <h4>Date detection : {{ probleme.dateDetection|date('Y-m-d') }}</h4>
+                <h4>Date et heure creation : {{ probleme.createdAt|date('Y-m-d H:i:s') }}</h4>
+            </div>
+        </div>
+        
+        <h3 class="sub-header"><a href="{{ path('problems_index', {'idVehicule': probleme.vehiculeConcerne.idVehicule }) }}">Retour à la liste</a></h2>
+    </div>
 {% endblock %}
