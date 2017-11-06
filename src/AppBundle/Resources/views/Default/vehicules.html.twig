@@ -1,0 +1,48 @@
+<div class="panel-group" id="accordion-vehicules" role="tablist" aria-multiselectable="true">
+
+    <div class="panel panel-default">
+        <div class="panel-heading" role="tab" id="headingVehiculesEnCours">
+            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion-vehicules" href="#collapseVehiculesEnCours" aria-expanded="true" aria-controls="collapseVehiculesEnCours">
+                <h4 class="panel-title">{% if en_cours %}<span class="badge">{{ en_cours|length }}</span> {% endif %}En maintenance</h4>
+            </a>
+        </div>
+
+        <div id="collapseVehiculesEnCours" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingVehiculesEnCours">
+            {% if en_cours %}
+                <ul class="list-group">
+                    {% for element in en_cours %}
+                        <li class="list-group-item">
+                            <a href="{{ path('cars_show', { 'idVehicule': element.vehicule.idVehicule }) }}">
+                                {{ element.vehicule.immatriculation ~ ' : ' ~ element.vehicule.marque ~ ' | ' ~ element.vehicule.modele ~ ' | ' ~ element.vehicule.type }}
+                            </a>
+                            <span class="badge">{{ element.nombreOperations }}</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading" role="tab" id="headingVehiculesFutures">
+            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion-vehicules" href="#collapseVehiculesFutures" aria-expanded="false" aria-controls="collapseVehiculesFutures">
+                <h4 class="panel-title">{% if futures %}<span class="badge">{{ futures|length }}</span> {% endif %}Prochainement en maintenance</h4>
+            </a>
+        </div>
+
+        <div id="collapseVehiculesFutures" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingVehiculesFutures">
+            {% if futures %}
+                <ul class="list-group">
+                    {% for element in en_cours %}
+                        <li class="list-group-item">
+                            <a href="{{ path('cars_show', { 'idVehicule': element.vehicule.idVehicule }) }}">
+                                {{ element.vehicule.immatriculation ~ ' : ' ~ element.vehicule.marque ~ ' | ' ~ element.vehicule.modele ~ ' | ' ~ element.vehicule.type }}
+                            </a>
+                            <span class="badge">{{ element.nombreOperations }}</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+    </div>
+</div>

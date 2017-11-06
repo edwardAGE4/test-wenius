@@ -505,4 +505,15 @@ class Operation
         }
         return true;
     }
+
+    /**
+     * Vérifie la validité de la date de fin effective de l'opération par rapport à la date du jour.
+     *
+     * @return bool
+     * @Assert\IsTrue(message = "La date de fin n'est pas valide. Vous ne pouvez définir une date de fin effective ultérieure à la date du jour.")
+     */
+    public function isFinEffectiveValidWithToday()
+    {
+        return $this->dateFinEffective <= new \DateTime();
+    }
 }

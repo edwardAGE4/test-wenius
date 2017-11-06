@@ -1,0 +1,46 @@
+<div class="panel-group" id="accordion-operations" role="tablist" aria-multiselectable="true">
+    
+    <div class="panel panel-default">
+        <div class="panel-heading" role="tab" id="headingOperationsEnCours">
+            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion-operations" href="#collapseOperationsEnCours" aria-expanded="true" aria-controls="collapseOperationsEnCours">
+                <h4 class="panel-title">{% if en_cours %}<span class="badge">{{ en_cours|length }}</span> {% endif %}En cours</h4>
+            </a>
+        </div>
+        
+        <div id="collapseOperationsEnCours" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOperationsEnCours">
+            {% if en_cours %}
+                <ul class="list-group">
+                    {% for operation in en_cours %}
+                        <li class="list-group-item">
+                            <a href="{{ path('operations_show', { 'idOperation': operation.idOperation }) }}">{{ operation.sujet }}</a>.
+                            Débutée le {{ operation.dateDebut|date('d/m/Y') }}.
+                            Fin prévue le {{ operation.dateFinPrevue|date('d/m/Y') }}.
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading" role="tab" id="headingOperationsFutures">
+            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion-operations" href="#collapseOperationsFutures" aria-expanded="false" aria-controls="collapseOperationsFutures">
+            <h4 class="panel-title">{% if futures %}<span class="badge">{{ futures|length }}</span> {% endif %}Futures</h4>
+            </a>
+        </div>
+
+        <div id="collapseOperationsFutures" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOperationsFutures">
+            {% if futures %}
+                <ul class="list-group">
+                    {% for operation in en_cours %}
+                        <li class="list-group-item">
+                            <a href="{{ path('operations_show', { 'idOperation': operation.idOperation }) }}">{{ operation.sujet }}</a>.
+                            Débutera le {{ operation.dateDebut|date('d/m/Y') }}.
+                            Fin prévue le {{ operation.dateFinPrevue|date('d/m/Y') }}.
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+    </div>
+</div>

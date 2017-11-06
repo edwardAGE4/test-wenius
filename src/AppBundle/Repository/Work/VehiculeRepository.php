@@ -12,4 +12,42 @@ use Doctrine\ORM\EntityRepository;
  */
 class VehiculeRepository extends EntityRepository
 {
+    /**
+     * Recherche les véhicules actuellement maintenus
+     *
+     * @return array
+     */
+    public function getEnCours()
+    {
+        return $this->getEntityManager()
+            ->createQuery(
+                'SELECT v AS vehicule, COUNT(o) AS nombreOperations
+                  FROM AppBundle:Work\Vehicule v, AppBundle:Work\Operation o 
+                  WHERE o.vehiculeConcerne = v
+                  AND o.dateDebut <= :now
+                  AND o.dateFinEffective IS NULL
+                  GROUP BY v'
+            )
+            ->setParameter('now', new \DateTime())
+            ->getResult();
+    }
+
+    /**
+     * Recherche les véhicules qui subiront des opérations dans le futur
+     *
+     * @return array
+     */
+    public function getFutures()
+    {
+        return $this->getEntityManager()
+            ->createQuery(
+                'SELECT v AS vehicule, COUNT(o) AS nombreOperations
+                  FROM AppBundle:Work\Vehicule v, AppBundle:Work\Operation o 
+                  WHERE o.vehiculeConcerne = v
+                  AND o.dateDebut > :now
+                  GROUP BY v'
+            )
+            ->setParameter('now', new \DateTime())
+            ->getResult();
+    }
 }
