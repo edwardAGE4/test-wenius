@@ -7,18 +7,18 @@
         <div class="col-sm-12">
             <h1 class="page-header">Operations sur vehicule</h1>
             <div class="row">
-                <div class=col-sm-4>
-                    <h2 class="sub-header"><a href="{{ path('cars_show', { 'idVehicule': vehicule.idVehicule }) }}">Vehicule concerné</a></h2>
-                    <h3>Immatriculation : {{ vehicule.immatriculation }}</h3>
-                    <h3>Marque : {{ vehicule.marque }}</h3>
-                    <h3>Modele : {{ vehicule.modele }}</h3>
-                    <h3>Type : {{ vehicule.type }}</h3>
-                    <h3>Date achat : {{ vehicule.dateAchat|date('d/m/Y') }}</h3>
+                <div class=col-sm-3>
+                    <h4 class="sub-header"><a href="{{ path('cars_show', { 'idVehicule': vehicule.idVehicule }) }}">Vehicule concerné</a></h4>
+                    <h5>Immatriculation : {{ vehicule.immatriculation }}</h5>
+                    <h5>Marque : {{ vehicule.marque }}</h5>
+                    <h5>Modele : {{ vehicule.modele }}</h5>
+                    <h5>Type : {{ vehicule.type }}</h5>
+                    <h5>Date achat : {{ vehicule.dateAchat|date('d/m/Y') }}</h5>
                 </div>
                 
-                <div class="col-sm-8">
+                <div class="col-sm-9">
                     <h2 class="sub-header">Operations</h2>
-                    <h3 class="sub-header"><a href="{{ path('operations_new', { 'idVehicule': vehicule.idVehicule }) }}">Créer une nouvelle opération pour ce véhicule</a></h2>
+                    <h3 class="sub-header"><a href="{{ path('operations_new', { 'idVehicule': vehicule.idVehicule }) }}">Créer une nouvelle opération pour ce véhicule</a></h3>
                 
                     <div class="table-responsive">
                         <table class="table table-hover">
@@ -37,7 +37,7 @@
                                 {% for operation in operations %}
                                     <tr>
                                         <td>{{ operation.sujet }}</td>
-                                        <td>{{ operation.dateDebut|date('Y-m-d') }}</td>
+                                        <td>{{ operation.dateDebut|date('d/m/Y') }}</td>
                                         <td>{{ operation.dateFinPrevue|date('d/m/Y') }}</td>
                                         <td>{% if operation.dateFinEffective %}{{ operation.dateFinEffective|date('d/m/Y') }}{% endif %}</td>
                                         <td>{{ operation.createdAt|date('d/m/Y H:i') }}</td>
@@ -45,7 +45,7 @@
                                         <td>
                                             <div class="btn-group btn-group-xs" role="group">
                                                 <a type="button" class="btn btn-primary" href="{{ path('operations_show', { 'idOperation': operation.idOperation }) }}"><span class="glyphicon glyphicon-eye-open"></span> Détails</a>
-                                                <a type="button" class="btn btn-default" href="{{ path('operations_edit', { 'idOperation': operation.idOperation }) }}"><span class="glyphicon glyphicon-pen"></span> Modifier</a>
+                                                <a type="button" class="btn btn-default" href="{{ path('operations_edit', { 'idOperation': operation.idOperation }) }}"><span class="glyphicon glyphicon-pencil"></span> Modifier</a>
                                             </div>
                                         </td>
                                     </tr>

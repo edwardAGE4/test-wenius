@@ -4,23 +4,23 @@
 
 {% block content %}
     
-    <div class="col-sm-6">
+    <div class="col-sm-7">
         <h2 class="sub-header">Intervention</h2>
         
         <div class="row">
             <div class="col-sm-8">
                 <h4>Date intervention : {{ intervention.dateIntervention|date('d/m/Y') }}</h4>
-                <h4>{{ intervention.createur.prenom ~ ' ' ~ intervention.createur.nom }}</h4>
+                <h4>Intervenant : {{ intervention.createur.prenom ~ ' ' ~ intervention.createur.nom }}</h4>
                 <h4>Notes : {{ intervention.notes }}</h4>
                 <h4>Date et heure creation : {{ intervention.createdAt|date('d/m/Y H:i') }}</h4>
                 <h4>Images</h4>
                 {% if intervention.images.count > 0 %}
                 <div class="row">
                     {% for image in intervention.images %}
-                        <div class="col-sm-4 col-xs-6">
-                            <div class="thumbnail">
+                        <div class="col-sm-6">
+                            <a class="thumbnail" href="{{ asset(image.webPath) }}" target="_blank">
                                 <img src="{{ asset(image.webPath) }}">
-                            </div>
+                            </a>
                         </div>
                     {% endfor %}
                 </div>
@@ -28,6 +28,6 @@
             </div>
         </div>
         
-        <h3 class="sub-header"><a href="{{ path('interventions_index', { 'idOperation': intervention.operation.idOperation }) }}">Retour à la liste</a></h2>
+        <h3 class="sub-header"><a href="{{ path('interventions_index', { 'idOperation': intervention.operation.idOperation }) }}">Retour à la liste</a></h3>
     </div>
 {% endblock %}

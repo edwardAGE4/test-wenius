@@ -7,27 +7,27 @@
         <div class="col-sm-12">
             <h1 class="page-header">Interventions de operation</h1>
             <div class="row">
-                <div class=col-sm-3>
-                    <h2 class="sub-header"><a href="{{ path('cars_show', { 'idVehicule': operation.vehiculeConcerne.idVehicule }) }}">Vehicule concerné</a></h2>
-                    <h3>Immatriculation : {{ operation.VehiculeConcerne.immatriculation }}</h3>
-                    <h3>Marque : {{ operation.VehiculeConcerne.marque }}</h3>
-                    <h3>Modele : {{ operation.VehiculeConcerne.modele }}</h3>
-                    <h3>Type : {{ operation.VehiculeConcerne.type }}</h3>
-                    <h3>Date achat : {{ operation.VehiculeConcerne.dateAchat|date('d/m/Y') }}</h3>
+                <div class=col-sm-2>
+                    <h4 class="sub-header"><a href="{{ path('cars_show', { 'idVehicule': operation.vehiculeConcerne.idVehicule }) }}">Vehicule concerné</a></h4>
+                    <h5>Immatriculation : {{ operation.VehiculeConcerne.immatriculation }}</h5>
+                    <h5>Marque : {{ operation.VehiculeConcerne.marque }}</h5>
+                    <h5>Modele : {{ operation.VehiculeConcerne.modele }}</h5>
+                    <h5>Type : {{ operation.VehiculeConcerne.type }}</h5>
+                    <h5>Date achat : {{ operation.VehiculeConcerne.dateAchat|date('d/m/Y') }}</h5>
                 </div>
                 
                 <div class=col-sm-3>
-                    <h2 class="sub-header"><a href="{{ path('operations_show', { 'idOperation': operation.idOperation }) }}">Operation concernée</a></h2>
-                    <h3>Sujet : {{ operation.sujet }}</h3>
-                    <h3>Description : {{ operation.description }}</h3>
-                    <h3>Date debut : {{ operation.dateDebut|date('d/m/Y') }}</h3>
-                    <h3>Date fin prevue : {{ operation.dateFinPrevue|date('d/m/Y') }}</h3>
-                    <h3>Date fin effective : {% if operation.dateFinEffective %}{{ operation.dateFinEffective|date('d/m/Y') }}{% endif %}</h3>
+                    <h4 class="sub-header"><a href="{{ path('operations_show', { 'idOperation': operation.idOperation }) }}">Operation concernée</a></h4>
+                    <h5>Sujet : {{ operation.sujet }}</h5>
+                    <h5>Description : {{ operation.description }}</h5>
+                    <h5>Date debut : {{ operation.dateDebut|date('d/m/Y') }}</h5>
+                    <h5>Date fin prevue : {{ operation.dateFinPrevue|date('d/m/Y') }}</h5>
+                    <h5>Date fin effective : {% if operation.dateFinEffective %}{{ operation.dateFinEffective|date('d/m/Y') }}{% endif %}</h5>
                 </div>
                 
-                <div class="col-sm-6">
+                <div class="col-sm-7">
                     <h2 class="sub-header">Interventions</h2>
-                    <h3 class="sub-header"><a href="{{ path('interventions_new', { 'idOperation': operation.idOperation }) }}">Créer une nouvelle intervention pour cette operation</a></h2>
+                    <h3 class="sub-header"><a href="{{ path('interventions_new', { 'idOperation': operation.idOperation }) }}">Créer une nouvelle intervention pour cette operation</a></h3>
                 
                     <div class="table-responsive">
                         <table class="table table-hover">
@@ -43,7 +43,7 @@
                             <tbody>
                                 {% for intervention in interventions %}
                                     <tr>
-                                        <td>{{ intervention.dateIntervention|date('Y-m-d') }}</td>
+                                        <td>{{ intervention.dateIntervention|date('d/m/Y') }}</td>
                                         <td>{{ intervention.createur.prenom ~ ' ' ~ intervention.createur.nom }}</td>
                                         <td>{{ intervention.notes }}</td>
                                         <td>{{ intervention.createdAt|date('d/m/Y H:i') }}</td>
