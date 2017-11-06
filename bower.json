@@ -1,5 +1,5 @@
 {
-  "name": "bright/test-wenius",
+  "name": "bright_test-wenius",
   "homepage": "https://github.com/dbissari/test-wenius",
   "authors": [
     "Serge Bissari <dbissari@gmail.com>"
@@ -12,6 +12,7 @@
     "web/assets"
   ],
   "dependencies": {
-    "bootstrap": "^3.3.7"
+    "bootstrap": "^3.3.7",
+    "eonasdan-bootstrap-datetimepicker": "^4.17.47"
   }
 }

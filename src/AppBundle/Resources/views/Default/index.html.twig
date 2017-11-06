@@ -90,3 +90,15 @@
         {% endblock %}
     </div>
 {% endblock %}
+
+{% block javascripts %}
+    <script type="text/javascript">
+        $(function () {
+            $("input.date.form-control").datetimepicker({
+                locale: 'fr',
+                format: 'D/M/Y',
+                ignoreReadonly: true
+            });
+        });
+    </script>
+{% endblock %}

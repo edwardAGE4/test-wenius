@@ -9,6 +9,9 @@
 
     <!-- Bootstrap -->
     <link href="{{ asset('assets/bootstrap/dist/css/bootstrap.min.css') }}" rel="stylesheet">
+    <!-- Date Picker -->
+    <link href="{{ asset('assets/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css') }}" rel="stylesheet">
+    <!-- Added styles -->
     <link href="{{ asset('custom/style.css') }}" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -30,6 +33,10 @@
 <script src="{{ asset('assets/jquery/dist/jquery.min.js') }}"></script>
 <!-- Include all compiled plugins (below), or include individual files as needed -->
 <script src="{{ asset('assets/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+<!-- Date picker -->
+<script type="text/javascript" src="{{ asset('assets/moment/min/moment.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset('assets/moment/min/locales.min.js') }}"></script>
+<script src="{{ asset('assets/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js') }}"></script>
 {% block javascripts %}{% endblock %}
 </body>
 </html>

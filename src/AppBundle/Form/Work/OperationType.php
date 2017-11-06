@@ -16,8 +16,24 @@ class OperationType extends AbstractType
         $builder
             ->add('sujet')
             ->add('description')
-            ->add('dateDebut')
-            ->add('dateFinPrevue')
+            ->add('dateDebut', 'Symfony\Component\Form\Extension\Core\Type\DateType', array(
+                'widget' => ('single_text'),
+                'format' => 'd/M/y',
+                'html5' => false,
+                'read_only' => true,
+                'attr' => array(
+                    'class' => 'date'
+                )
+            ))
+            ->add('dateFinPrevue', 'Symfony\Component\Form\Extension\Core\Type\DateType', array(
+                'widget' => ('single_text'),
+                'format' => 'd/M/y',
+                'html5' => false,
+                'read_only' => true,
+                'attr' => array(
+                    'class' => 'date'
+                )
+            ))
             ->add('pieces', 'Symfony\Component\Form\Extension\Core\Type\CollectionType', array(
                 'entry_type' => 'AppBundle\Form\Work\PieceType',
                 'allow_add' => true,

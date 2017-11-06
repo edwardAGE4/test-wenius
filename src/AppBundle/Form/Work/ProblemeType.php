@@ -16,7 +16,15 @@ class ProblemeType extends AbstractType
         $builder
             ->add('resume')
             ->add('description')
-            ->add('dateDetection')
+            ->add('dateDetection', 'Symfony\Component\Form\Extension\Core\Type\DateType', array(
+                'widget' => ('single_text'),
+                'format' => 'd/M/y',
+                'html5' => false,
+                'read_only' => true,
+                'attr' => array(
+                    'class' => 'date'
+                )
+            ))
         ;
     }
     

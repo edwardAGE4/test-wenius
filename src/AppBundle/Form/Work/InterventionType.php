@@ -14,7 +14,15 @@ class InterventionType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('dateIntervention')
+            ->add('dateIntervention', 'Symfony\Component\Form\Extension\Core\Type\DateType', array(
+                'widget' => ('single_text'),
+                'format' => 'd/M/y',
+                'html5' => false,
+                'read_only' => true,
+                'attr' => array(
+                    'class' => 'date'
+                )
+            ))
             ->add('notes')
             ->add('images', 'Symfony\Component\Form\Extension\Core\Type\CollectionType', array(
                 'entry_type' => 'AppBundle\Form\Media\ImageType',

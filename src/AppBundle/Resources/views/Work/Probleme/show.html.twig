@@ -11,8 +11,8 @@
             <div class="col-sm-8">
                 <h4>Resume : {{ probleme.resume }}</h4>
                 <h4>Description : {{ probleme.description }}</h4>
-                <h4>Date detection : {{ probleme.dateDetection|date('Y-m-d') }}</h4>
-                <h4>Date et heure creation : {{ probleme.createdAt|date('Y-m-d H:i:s') }}</h4>
+                <h4>Date detection : {{ probleme.dateDetection|date('d/m/Y') }}</h4>
+                <h4>Date et heure creation : {{ probleme.createdAt|date('d/m/Y H:i') }}</h4>
             </div>
         </div>
         

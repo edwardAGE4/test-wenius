@@ -18,7 +18,15 @@ class VehiculeType extends AbstractType
             ->add('marque')
             ->add('modele')
             ->add('type')
-            ->add('dateAchat')
+            ->add('dateAchat', 'Symfony\Component\Form\Extension\Core\Type\DateType', array(
+                'widget' => ('single_text'),
+                'format' => 'd/M/y',
+                'html5' => false,
+                'read_only' => true,
+                'attr' => array(
+                    'class' => 'date'
+                )
+            ))
         ;
     }
     
