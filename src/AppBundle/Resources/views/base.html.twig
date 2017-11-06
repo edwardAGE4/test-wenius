@@ -9,6 +9,7 @@
 
     <!-- Bootstrap -->
     <link href="{{ asset('assets/bootstrap/dist/css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('custom/style.css') }}" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -22,9 +23,8 @@
 </head>
 
 <body>
-<div class="container">
-    {% block body %}{% endblock %}
-</div>
+
+{% block body %}{% endblock %}
 
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 <script src="{{ asset('assets/jquery/dist/jquery.min.js') }}"></script>

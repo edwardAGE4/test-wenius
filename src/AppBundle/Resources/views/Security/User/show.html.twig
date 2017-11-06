@@ -1,37 +1,23 @@
-{% extends 'AppBundle::base.html.twig' %}
+{% extends 'AppBundle:Default:index.html.twig' %}
 
-{% block body %}
-    <h1>Utilisateur</h1>
+{% block page %}
+    <div class="row">
+        <div class="col-sm-10 col-sm-offset-1">
+            <h1 class="page-header">Utilisateur</h1>
+            <div class="row">
+                <div class="col-sm-7 col-sm-offset-2">
+                    <h4>Nom : {{ user.nom }}</h4>
+                    <h4>Prenom : {{ user.prenom }}</h4>
+                    <h4>Date et heure création : {{ user.createdAt|date('d/m/Y H:i') }}</h4>
+                </div>
+                <div class="col-sm-3">
+                    {{ form_start(delete_form) }}
+                        <input type="submit" class="btn btn-danger btn-block" value="Supprimer">
+                    {{ form_end(delete_form) }}
+                </div>
+            </div>
 
-    <table>
-        <tbody>
-            <tr>
-                <th>Identifiant</th>
-                <td>{{ user.identifiant }}</td>
-            </tr>
-            <tr>
-                <th>Nom</th>
-                <td>{{ user.nom }}</td>
-            </tr>
-            <tr>
-                <th>Prenom</th>
-                <td>{{ user.prenom }}</td>
-            </tr>
-            <tr>
-                <th>Created at</th>
-                <td>{{ user.createdAt|date('d/m/Y H:i') }}</td>
-            </tr>
-        </tbody>
-    </table>
-
-    <ul>
-        <li>
-            <a href="{{ path('users_index') }}">Retour à la liste</a>
-        </li>
-        <li>
-            {{ form_start(delete_form) }}
-                <input type="submit" value="Delete">
-            {{ form_end(delete_form) }}
-        </li>
-    </ul>
+            <h2 class="sub-header"><a href="{{ path('users_index') }}">Retour à la liste</a></h2>
+        </div>
+    </div>
 {% endblock %}
