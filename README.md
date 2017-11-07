@@ -1,5 +1,7 @@
 # test-wenius
 
+_Par Déromba Serge Bissari_
+
 ## Test d’aptitudes Développeur Informatique Wenius
 
 ___
@@ -35,17 +37,17 @@ ___
 1. Ouvrir un terminal et se placer dans le répertoire du projet
 1. Exécuter `./deploy.sh`
 1. Remplir les informations demandées durant l'exécution du script à savoir :
-    2. L'hôte du serveur MySQL
-    2. Le port du serveur MySQL
-    2. Le nom de la base de données créée précédemment
-    2. Le nom d'utilisateur pour se connecter à la base de données
-    2. Le mot de passe pour se connecter à la base de données
+    1. L'hôte du serveur MySQL
+    1. Le port du serveur MySQL
+    1. Le nom de la base de données créée précédemment
+    1. Le nom d'utilisateur pour se connecter à la base de données
+    1. Le mot de passe pour se connecter à la base de données
 1. Lancer votre serveur apache
 1. Ouvrir un navigateur vous rendre à l'accueil de l'application :
-    2. Si `mod_rewrite` est activé et `AllowOverride` à `All` dans la configuration du `VirtualHost` de Apache
+    1. Si `mod_rewrite` est activé et `AllowOverride` à `All` dans la configuration du `VirtualHost` de Apache
         * `{adresse du serveur}:{port du serveur}/{repertoire du projet}/web`
         * Exemple : `localhost:80/test-wenius/web`
-    2. Sinon
+    1. Sinon
         * `{adresse du serveur}:{port du serveur}/{repertoire du projet}/web/app.php`
         * Exemple : `localhost:80/test-wenius/web/app.php`
 
