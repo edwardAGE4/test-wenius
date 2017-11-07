@@ -1,10 +1,15 @@
 # test-wenius
 
-Test d’aptitudes Développeur Informatique Wenius
+## Test d’aptitudes Développeur Informatique Wenius
 
 ===
 
-A Symfony project created on November 3, 2017, 1:14 pm.
+### Technologies
+
+* Symfony 2 (PHP)
+* MySQL
+* HTML + CSS + JS
+* Twitter Bootstrap
 
 ===
 
