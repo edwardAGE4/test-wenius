@@ -127,7 +127,6 @@ class Operation
      * @var \AppBundle\Entity\Work\Intervention[]|\Doctrine\Common\Collections\ArrayCollection
      *
      * @ORM\OneToMany(targetEntity="\AppBundle\Entity\Work\Intervention", mappedBy="operation")
-     * @Assert\Valid()
      * @Groups({"details_operation"})
      */
     private $interventions;
@@ -478,17 +477,6 @@ class Operation
     public function getInterventions()
     {
         return $this->interventions;
-    }
-
-    /**
-     * Vérifie la validité de la date de début de l'opération.
-     *
-     * @return bool
-     * @Assert\IsTrue(message = "La date de début n'est pas valide. Une opération ne peut être démarrée avant l'acquisition du véhicule")
-     */
-    public function isDateDetectionValid()
-    {
-        return $this->dateDebut >= $this->vehiculeConcerne->getDateAchat();
     }
 
     /**

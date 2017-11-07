@@ -18,7 +18,15 @@ class AdministrateurType extends AbstractType
             ->add('nom')
             ->add('prenom')
             ->add('identifiant')
-            ->add('motDePasseClair', 'Symfony\Component\Form\Extension\Core\Type\PasswordType')
+            ->add('motDePasseClair', 'Symfony\Component\Form\Extension\Core\Type\RepeatedType', array(
+                'type' => 'Symfony\Component\Form\Extension\Core\Type\PasswordType',
+                'first_options' => array(
+                    'label' => 'Mot de passe'
+                ),
+                'second_options' => array(
+                    'label' => 'Confirmation mot de passe'
+                )
+            ))
         ;
     }
     

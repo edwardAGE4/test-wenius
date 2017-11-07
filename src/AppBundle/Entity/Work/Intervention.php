@@ -33,7 +33,6 @@ class Intervention
      *   @ORM\JoinColumn(name="operation", referencedColumnName="id", nullable=false)
      * })
      * @Assert\NotNull()
-     * @Assert\Valid()
      * @Groups({"details_intervention"})
      */
     private $operation;

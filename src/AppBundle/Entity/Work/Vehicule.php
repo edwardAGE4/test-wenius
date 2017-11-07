@@ -383,4 +383,15 @@ class Vehicule
     {
         return $this->operations;
     }
+
+    /**
+     * Vérifie la validité de la date de'achat du véhicule.
+     *
+     * @return bool
+     * @Assert\IsTrue(message = "Vous ne pouvez enregistrer de véhicule que vous n'avez pas encore acquis")
+     */
+    public function isDateDebutValid()
+    {
+        return $this->dateAchat <= new \DateTime();
+    }
 }
