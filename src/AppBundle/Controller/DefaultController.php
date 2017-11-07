@@ -47,8 +47,6 @@ class DefaultController extends Controller
         $vehiculesEnCours = $em->getRepository('AppBundle:Work\Vehicule')->getEnCours();
         $vehiculesFutures = $em->getRepository('AppBundle:Work\Vehicule')->getFutures();
 
-        dump($vehiculesEnCours);
-
         return $this->render('AppBundle:Default:vehicules.html.twig', array(
             'en_cours' => $vehiculesEnCours,
             'futures' => $vehiculesFutures
